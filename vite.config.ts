@@ -38,6 +38,7 @@ export default defineConfig({
         alias: {
             '~': fileURLToPath(new URL('./src', import.meta.url)),
             '@': path.resolve(__dirname, './src'),
+            'vuetify/labs/VPullToRefresh': 'vuetify/lib/labs/VPullToRefresh',
         },
     },
 })
