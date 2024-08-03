@@ -14,7 +14,7 @@
         </v-container>
     </div>
     <div class="scrollable-container p-[20px]" v-show="pageStep === 2">
-        <v-pull-to-refresh class=" text-[#263238]" :pull-down-threshold="pullDownThreshold" @load="load">
+        <!-- <v-pull-to-refresh class=" text-[#263238]" :pull-down-threshold="pullDownThreshold" @load="load"> -->
             <div class="transaction-list text-[#263238]">
                 <div class="transaction-card z-" v-for="(transaction, index) in transactions" :key="index">
                     <img :src="ava" class="transaction-icon" alt="icon">
@@ -56,7 +56,7 @@
                     <div class="blob"></div>
                 </div>
             </v-container>
-        </v-pull-to-refresh>
+        <!-- </v-pull-to-refresh> -->
     </div>
 
 </template>
@@ -66,7 +66,7 @@ import update from "../../assets/vallet/update.svg"
 import ava from "../../assets/demo/projectsmallphoto.svg"
 import { ref } from 'vue'
 import Header from '../../components/Header.vue'
-import MazPullToRefresh from 'maz-ui/components/MazPullToRefresh'
+// import MazPullToRefresh from 'maz-ui/components/MazPullToRefresh'
 import UiButton from "~/components/ui-kit/UiButton.vue"
 // Images
 import tonKeeper from '../../assets/vallet/tonkeeper.svg'
