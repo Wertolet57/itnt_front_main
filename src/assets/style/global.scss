@@ -2,7 +2,10 @@
 @import './typography.scss';
 @import './vars.scss';
 
-
+:root {
+    --v-theme-surface-variant: 255, 255, 255;
+    --v-theme-on-surface-variant: 0, 0, 0;
+  }
 .error-txt {
     color: $def-error;
 }

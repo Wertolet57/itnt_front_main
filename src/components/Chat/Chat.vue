@@ -50,8 +50,8 @@
             </div>
             <div class="input-container">
                 <div class="inner-input">
-                    <input v-model="newMessage" @keyup.enter="sendMessages" placeholder="Type a message..." />
-                    <button @click="sendMessages"><img :src="chat" alt=""></button>
+                    <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type a message..." />
+                    <button @click="sendMessage"><img :src="chat" alt=""></button>
                 </div>
             </div>
         </div>

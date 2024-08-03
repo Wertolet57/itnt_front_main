@@ -5,46 +5,35 @@
         <!-- {{ ProjectSearch() }} -->
         <v-stepper non-linear>
             <v-stepper-header>
-                <v-stepper-item value="1" class="white-background" editable>
+                <v-stepper-item :items="items" v-for="(item, index) in items" :key="index" :value="index + 1"
+                    class="white-background" :class="{ 'white--text': true }" editable>
                     <template v-slot:icon>
-                        <img class="" src="../assets/icons/projectStages/A.svg" alt="">
-                        <!-- <v-icon >mdi-progress-clock</v-icon> -->
+                        <img :src="item.iconSrc" :alt="item.alt">
                     </template>
-                    Select campaign settings
-                </v-stepper-item>
-                <v-stepper-item editable>
-                    <template v-slot:default="{ active, complete }">
-                        <span style="display: none;">{{ value }}</span>
-                        <v-icon v-if="complete">mdi-check-circle</v-icon>
-                        <v-icon v-else-if="active">mdi-progress-clock</v-icon>
-                        <v-icon v-else>mdi-checkbox-blank-circle-outline</v-icon>
-                        Create an ad
-                    </template>
-                </v-stepper-item>
-                <!-- <v-divider></v-divider> -->
-
-                <v-stepper-item value="2" editable>
-                    <template v-slot:default="{ active, complete }">
-                        <!-- <v-icon v-if="complete">mdi-check</v-icon>
-        <v-icon v-else-if="active">mdi-settings</v-icon>
-        <v-icon v-else>mdi-settings</v-icon> -->
-                        Create an ad group
-                    </template>
-                </v-stepper-item>
-
-                <!-- <v-divider></v-divider> -->
-
-                <v-stepper-item value="3" editable>
-                    <template v-slot:default="{ active, complete }">
-                        <!-- <v-icon v-if="complete">mdi-check</v-icon>
-        <v-icon v-else-if="active">mdi-settings</v-icon>
-        <v-icon v-else>mdi-settings</v-icon> -->
-                        Create an ad
+                    <template v-slot:item.1>
+                        <img :src="item.iconSrc" :alt="item.alt">
                     </template>
                 </v-stepper-item>
             </v-stepper-header>
-        </v-stepper>
+            <v-stepper-items>
+      <v-stepper-content step="2">
+        <h3 class="text-h6">Shipping</h3>
+        <br>
+        <v-radio-group v-model="shipping" label="Delivery Method">
+          <v-radio label="Standard Shipping" value="5"></v-radio>
+          <v-radio label="Priority Shipping" value="10"></v-radio>
+          <v-radio label="Express Shipping" value="15"></v-radio>
+        </v-radio-group>
+      </v-stepper-content>
 
+      <v-stepper-content step="3">
+        <h3 class="text-h6">Confirm</h3>
+        <!-- Добавьте здесь контент для подтверждения -->
+      </v-stepper-content>
+
+      <!-- Добавьте дополнительные v-stepper-content для остальных шагов -->
+    </v-stepper-items>
+        </v-stepper>
         <UiSwitch @changeValue="searchPageSwitchState = $event" :items="['Проекты', 'Люди']" />
         <UiInput v-model="searchQuery" placeholder="Поиск..." />
         <!-- Детальный поиск -->
@@ -93,6 +82,11 @@
 </template>
 
 <script setup lang="ts">
+import a from '../assets/icons/projectStages/A.svg'
+import b from '../assets/icons/projectStages/B.svg'
+import c from '../assets/icons/projectStages/C.svg'
+import d from '../assets/icons/projectStages/D.svg'
+
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 import UiSwitch from '~/components/ui-kit/UiSwitch.vue'
@@ -108,6 +102,15 @@ const route = useRoute();
 onMounted(() => {
     searchQuery.value = route.query.skill as string || '';
 });
+const items = ref([
+    { iconSrc: a, alt: 'Stage A' },
+    { iconSrc: a, alt: 'Stage A' },
+    { iconSrc: b, alt: 'Stage B' },
+    { iconSrc: b, alt: 'Stage B' },
+    { iconSrc: d, alt: 'Stage D' },
+    { iconSrc: d, alt: 'Stage D' },
+    { iconSrc: c, alt: 'Stage C' },
+]);
 const searchPageSwitchState = ref(0)
 const detailsValue = ref(false)
 interface User {
@@ -188,17 +191,15 @@ onMounted(fetchUsers);
 </script>
 
 <style lang="scss" scoped>
-.v-stepper-item--selected .v-stepper-item__avatar.v-avatar {
-    background: none;
-    color: white;
+::v-deep .v-stepper-item__avatar.v-avatar {
+    background: white !important;
+    color: black !important;
 }
-.v-avatar .v-theme--itntTheme .v-avatar--density-default .v-avatar--variant-flat .v-stepper-item__avatar{
-    background: white;
 
-}
-.v-stepper-item__avatar.v-avatar {
-    background: none;
-    color: none;
+/* или для Vue 3 */
+:deep(.v-stepper-item__avatar.v-avatar) {
+    background: white !important;
+    color: black !important;
 }
 
 .details {

@@ -17,6 +17,7 @@ export default {
                     <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body3 cursor-pointer">{{
                     props.projectInfoSet.name }}</p>
                     <p style="color: #9e9e9e" class="txt-cap1">Здоровье, стартапы, приложение</p>
+                    <!-- {{ props.projectInfoSet.id }} -->
                 </div>
             </div>
             <v-icon @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="font-weight-bold" />

@@ -85,15 +85,29 @@
                 <div class="searchTeammateModal modal">
                     <h6 class="text mb-2">Создание новой беседы</h6>
                     <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
+                    <div class="mt-4 date rounded-xl d-inline-block">Пользователи из ваших контактов:</div>
                     <div class="searchTeammateModal__items">
                         <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center"
-                            @click="() => handleUserClick(user.id)">
+                        @click="() => handleUserClick(user.id)">
                             <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
                             <div>
                                 <div class="d-flex align-center">
                                     <p class="txt-body3">{{ user.id }}</p>
                                 </div>
-                                <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p>
+                                <p class="txt-cap1 text-[#9E9E9E]">{{ user.login }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 date rounded-xl d-inline-block">Взаимная подписка:</div>
+                    <div class="searchTeammateModal__items">
+                        <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center"
+                        @click="() => handleUserClick(user.id)">
+                            <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
+                            <div>
+                                <div class="d-flex align-center">
+                                    <p class="txt-body3">{{ user.id }}</p>
+                                </div>
+                                <p class="txt-cap1 text-[#9E9E9E]">{{ user.login }}</p>
                             </div>
                         </div>
                     </div>
@@ -188,6 +202,13 @@ onMounted(showDialog);
 
 
 <style scoped lang="scss">
+.date {
+    background: rgba(224, 224, 224, 0.5);
+    font-size: 13px !important;
+    letter-spacing: 0.01em !important;
+    padding: 6px 20px;
+    line-height: 14px;
+}
 .card {
     // font-family: Roboto;
     display: flex;

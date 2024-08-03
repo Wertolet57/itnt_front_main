@@ -11,7 +11,9 @@ const getProjectByID = (id: any) => {
 const getAllProjects = () => {
     return API.get(`${prefix}/search`)
 }
-
+export const getNewProjects = (newProjects:Boolean) => {
+    return API.get(`${prefix}/search?${newProjects}`)
+}
 const getProjectsByValue = (prjValue: any) => {
     return API.get(`${prefix}/search?searchString=${prjValue}`)
 }

@@ -10,7 +10,11 @@
 
         <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event" :items="['Неделя', 'Месяц', 'Год']" />
 
-        <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
+        <div v-if="projectsType === 0" v-for="(project, id) in newProjectsInfo" :key="id" class="mt-6">
+            <RatingProjectCard :projectInfoSet="project" />
+        </div>
+        
+        <div v-if="projectsType === 1" v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div>
 
@@ -27,7 +31,7 @@ import UiSwitch from '~/components/ui-kit/UiSwitch.vue'
 import RatingProjectCard from '~/components/projects/RatingProjectCard.vue'
 
 import { ref, onMounted } from 'vue'
-import { getAllProjects } from '~/API/ways/project'
+import { getAllProjects, getNewProjects } from '~/API/ways/project'
 
 let projectsInfo = ref({})
 
@@ -40,7 +44,19 @@ onMounted(async () => {
         }
     })
 })
+let newProjectsInfo = ref({})
 
+onMounted(async () => {
+    await getNewProjects(true).then((response) => {
+        try {
+            newProjectsInfo.value = response.data.object.content
+            console.log(newProjectsInfo.value);
+            
+        } catch (e) {
+            console.error('text error:', e)
+        }
+    })
+})
 const projectsType = ref(0)
 const topProjectsData = ref(null)
 </script>
