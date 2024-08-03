@@ -88,7 +88,7 @@
                     <div class="mt-4 date rounded-xl d-inline-block">Пользователи из ваших контактов:</div>
                     <div class="searchTeammateModal__items">
                         <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center"
-                        @click="() => handleUserClick(user.id)">
+                         @click="() => handleUserClick(user.id)">
                             <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
                             <div>
                                 <div class="d-flex align-center">
