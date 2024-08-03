@@ -3,7 +3,7 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
-import { VPullToRefresh } from 'vuetify/labs/VPullToRefresh'
+// import { VPullToRefresh } from 'vuetify/labs/VPullToRefresh'
 
 const itntTheme = {
     dark: false,
@@ -14,7 +14,7 @@ const itntTheme = {
 
 export const vuetifyConfig = createVuetify({
     components:{
-        VPullToRefresh,
+        // VPullToRefresh,
     },
     directives,
     theme: {

@@ -43,7 +43,7 @@ const i18n = createI18n({
 
 const app = createApp(App);
 app.component('MazPhoneNumberInput', MazPhoneNumberInput)
-app.component('MazPullToRefresh', MazPullToRefresh)
+// app.component('MazPullToRefresh', MazPullToRefresh)
 app.use(router);
 app.use(VueCookies);
 app.use(VueAppleLogin, appleLoginConfig);
