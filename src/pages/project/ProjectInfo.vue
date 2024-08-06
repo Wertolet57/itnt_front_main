@@ -7,15 +7,17 @@
         <ProjectVacancys class="mt-12" readOnly />
         <!-- <ProjectMedia class="mt-12"  readOnly :link="data.projectFiles[3]" :adress="data.projectFiles[3].pictureUrl" /> -->
         <!-- {{ data.projectFiles[3].pictureUrl }} -->
-        <ProjectMedia class="mt-12" :files="data.projectFiles" readOnly />
+        <!-- <ProjectMedia class="mt-12" :files="data.projectFiles" readOnly /> -->
         <!-- <img :src="data.projectFiles[1].pictureUrl" alt="1"> -->
+        <ProjectStage readOnly />
+
         <!-- {{ data.projectFiles[1] }} -->
     </v-container>
     <Footer />
 </template>
 
 <script setup lang="ts">
-// import ProjectStage from '~/components/projects/ProjectStage.vue'
+import ProjectStage from '~/components/projects/ProjectStage.vue'
 import { onMounted, ref, computed } from 'vue'
 import { getProjectByID } from '~/API/ways/project.ts'
 import { useRoute } from 'vue-router'

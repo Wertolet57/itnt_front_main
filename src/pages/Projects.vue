@@ -9,7 +9,7 @@
         <UiSwitch @change-value="projectsType = $event" :items="['Свежее', 'Топ']" />
 
         <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event" :items="['Неделя', 'Месяц', 'Год']" />
-
+        
         <div v-if="projectsType === 0" v-for="(project, id) in newProjectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :projectInfoSet="project" />
         </div>

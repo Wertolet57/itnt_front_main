@@ -43,12 +43,14 @@ export default {
                 truncateFileName(fileNames[index])
             }}</p>
                             </div>
-                            <button v-show="fileNames[index]" @click="deleteFile(index)" class="delete p-1">
+                            
+                            <button v-show="fileNames[index]" @click="deleteFile(index)" class="delete bg-black p-1">
                                 <div class="rounded-[50%] bg-[#FFEBEE] p-[2px]">
                                     <v-icon icon="mdi-close" />
                                 </div>
                             </button>
                         </label>
+                        <p>Debug: {{ fileNames[index] }}</p>
                     </div>
                 </div>
             </template>
@@ -58,7 +60,7 @@ export default {
             <UiButton @click="postBlog" bg-color="smBlue" class="mt-[48px]">Опубликовать</UiButton>
         </div>
     </div>
-    <!-- <v-snackbar color='white' rounded="lg" v-model="snackbar" :timeout="timeout">
+    <v-snackbar color='white' rounded="lg" v-model="snackbar" :timeout="timeout">
         <div class="snacbar">
             <img :src="trashBlack" alt="">
             Навык удалён
@@ -68,7 +70,7 @@ export default {
                 Отмена
             </v-btn>
         </template>
-    </v-snackbar> -->
+    </v-snackbar>
 </template>
 
 <script lang="ts" setup>
@@ -84,8 +86,8 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const postStore = usePostStore();
-// const snackbar = ref(true);
-// const timeout = 2000;
+const snackbar = ref(false);
+const timeout = 2000;
 
 const props = withDefaults(defineProps<{
     data?: {

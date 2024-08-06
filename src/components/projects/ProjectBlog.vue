@@ -62,7 +62,7 @@
         <!-- footer -->
         <div class="feedCard__footer">
             <UiButton bgColor="def" class="feedCard__footer__button"
-                @click="$router.push(props.blogID + '/blogComment')" fit>
+                @click="$router.push('/blogComment')" fit>
                 <p class="txt-cap1">Обсудить этот пост</p>
             </UiButton>
             <!-- <UiButton bgColor="def"></UiButton> -->

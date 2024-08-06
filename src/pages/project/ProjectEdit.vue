@@ -7,8 +7,7 @@
         <!-- <ProjectInvesting /> -->
         <ProjectVacancys class="mt-12" />
         <!-- <ProjectMedia :files="data.projectFiles" :read-only="false" class="mt-12 mb-12" /> -->
-        <!-- <ProjectStage /> -->
-        <ProjectStage readOnly />
+        <ProjectStage />
         <!-- {{ prj.projectFiles[1].pictureUrl }} -->
         <!-- <h2>Изображения проекта</h2>
         <div v-for="image in projectImageUrls" :key="image.id">

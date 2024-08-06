@@ -99,11 +99,11 @@ const routes: Array<routes> = [
         component: ProjectInfo,
     },
     {
-        path: '/project/:ID/comment',
+        path: '/project/comment',
         component: ProjectComment,
     },
     {
-        path: '/blog/:ID/blogComment',
+        path: '/blogComment',
         component: ProjectComment,
     },
     {
