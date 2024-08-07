@@ -190,7 +190,7 @@
             </div>
         </vue-bottom-sheet>
         <vue-bottom-sheet full-screen ref="joinTeam">
-            <div class="searchTeammateModal modal">
+            <div class="searchTeammateModal px-4 modal">
                 <p class="mb-2 p-4">К команде iTalent хотят присоединиться пользователи:</p>
                 <div v-for="(user, index) in userss" :key="user.id" class="user-item"
                     :class="{ 'expanded': expandedIndex === index }">
@@ -224,7 +224,7 @@
 
         </vue-bottom-sheet>
         <vue-bottom-sheet ref="searchTeammateModal">
-            <div class="searchTeammateModal modal">
+            <div class="searchTeammateModal px-4 modal">
                 <p class="mb-2">Поиск человека для добавления в проект</p>
                 <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
                 <div class="searchTeammateModal__items">

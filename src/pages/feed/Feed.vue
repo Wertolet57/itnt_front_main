@@ -33,12 +33,13 @@
                     <FeedPost :post="object" />
                 </div> -->
             </div>
-
-            <ProjectBlog user-type="me" withoutBg feedCardType="newProjectStage" />
+            <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
+                <!-- {{ post }} -->
+                <ProjectBlog :blog-data="post" user-type="user" withoutBg feedCardType="newProjectStage" />
+            </div>
             <ProjectBlog user-type="me" feedCardType="newProjectStage" />
             <ProjectBlog user-type="user" withoutBg feedCardType="newProjectPhotos" />
             <ProjectBlog user-type="user" feedCardType="newProjectPhotos" />
-
         </v-container>
     </v-col>
     <Footer />
@@ -47,17 +48,17 @@
 <script lang="ts" setup>
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import { onMounted, ref } from 'vue';
-import { getPost } from '~/API/ways/user';
+import { getPost } from '~/API/ways/post';
 import Footer from '~/components/Footer.vue';
 import FeedCard from '~/components/feed/FeedCard.vue';
 import Header from '~/components/Header.vue';
-import FeedPost from '~/components/feed/FeedPost.vue';
+// import FeedPost from '~/components/feed/FeedPost.vue';
 import FeedPanels from '~/components/feed/FeedPanels.vue';
-let posts = ref();
+let posts = ref(null);
 const getPosts = async () => {
     try {
         const data = await getPost();
-        posts.value = data;
+        posts.value = data.data;
     } catch (error) {
         console.error(error);
     }

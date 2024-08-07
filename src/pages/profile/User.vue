@@ -12,22 +12,26 @@
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
-                    <UiPost :author="User" card :data="demoVacancy" />
+                    <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
+                        v-model:description="postData.description" :author-project="postData.authorProject"
+                        :author-user="postData.authorUser" card />
                 </div>
             </div>
         </vue-bottom-sheet>
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
         <div class="my-[48px]">
             <h1>Что у меня нового:</h1>
-            <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день"/>
+            <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
-        <div v-for="(post, id) in posts" :key="id" class="mt-6">
+        <!-- <div v-for="(post, id) in posts" :key="id" class="mt-6">
             <div class="" v-for="(object, id) in post.object" :key="id">
                 <FeedPost :post="object" :id="object.id" />
             </div>
+        </div> -->
+        <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
+            <!-- {{ post }} -->
+            <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
         </div>
-        <ProjectBlog user-type="me" class="" withoutBg feedCardType="newProjectStage" />
-        <ProjectBlog user-type="me" feedCardType="newProjectStage" />
     </v-container>
     <Footer />
 </template>
@@ -56,12 +60,17 @@ let posts = ref();
 const getPosts = async () => {
     try {
         const data = await getPost();
-        posts.value = data;
+        posts.value = data.data;
     } catch (error) {
         console.error(error);
     }
 };
-
+const postData = ref({
+    descriptionHeader: '',
+    description: '',
+    authorProject: null,
+    authorUser: localStorage.getItem('userId'),
+});
 onMounted(getPosts);
 const modalState = ref(null);
 

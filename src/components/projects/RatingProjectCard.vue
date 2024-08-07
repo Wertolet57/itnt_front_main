@@ -26,12 +26,13 @@ export default {
         <div class="card__stats">
             <div class="card__stats--chip">
                 <img width="14" height="14" src="@/assets/icons/account-black.svg" alt="" />
-                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet?.users?.length }}</p>
+                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.usersCount }}
+                </p>
             </div>
-            <!-- {{  props.projectInfoSet?.owner }} -->
             <div class="card__stats--chip">
                 <img width="14" height="14" src="@/assets/icons/search-black.svg" alt="" />
-                <p class="txt-cap1"><span>&#183;</span> 3</p>
+                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.usersCount }}
+                </p>
             </div>
 
             <div class="card__stats--chip">
@@ -63,7 +64,7 @@ export default {
                     <img :src="item.icon" alt="" />
                     <p :class="item.name === 'Пожаловаться' && 'error-txt'" class="txt-body1">{{ item.name }}</p>
                 </div>
-                <div  class="modal__list__item">
+                <div class="modal__list__item">
                     <img :src="warning" alt="" />
                     <p @click="complainState.open()" class="txt-body1 error-txt">Пожаловаться</p>
                 </div>
@@ -71,22 +72,22 @@ export default {
         </div>
     </vue-bottom-sheet>
     <vue-bottom-sheet max-height="380px" full-screen ref="complainState">
-            <div class="searchTeammateModal modal">
-                <p class="mb-2">Выберите причину жалобы на пользователя:</p>
-                <div class="searchTeammateModal__item">
-                    <input type="radio" name="complaint" id=""> Спам
-                </div>
-                <div class="searchTeammateModal__item">
-                    <input type="radio" name="complaint" id=""> Агрессивное поведение
-                </div>
-                <div class="searchTeammateModal__item">
-                    <input type="radio" name="complaint" id=""> Взрослый контент (ссылки, картинки, видео и
-                    т.п.)
-                </div>
-                <UiTextArea v-model="complaint" />
-                <UiButton bg-color="blue" @click="sendComplaint">Отправить жалобу</UiButton>
+        <div class="searchTeammateModal modal">
+            <p class="mb-2">Выберите причину жалобы на пользователя:</p>
+            <div class="searchTeammateModal__item">
+                <input type="radio" name="complaint" id=""> Спам
             </div>
-        </vue-bottom-sheet>
+            <div class="searchTeammateModal__item">
+                <input type="radio" name="complaint" id=""> Агрессивное поведение
+            </div>
+            <div class="searchTeammateModal__item">
+                <input type="radio" name="complaint" id=""> Взрослый контент (ссылки, картинки, видео и
+                т.п.)
+            </div>
+            <UiTextArea v-model="complaint" />
+            <UiButton bg-color="blue" @click="sendComplaint">Отправить жалобу</UiButton>
+        </div>
+    </vue-bottom-sheet>
     <v-dialog class="elevation-0" v-model="dialog" width="90%">
         <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
             <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
