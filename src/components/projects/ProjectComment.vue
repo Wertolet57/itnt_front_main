@@ -56,9 +56,15 @@
             </div>
         </div>
     </div>
+
     <div class="mx-4" v-for="comments in displayedComments">
-        <Comments :comment="true" :id="comments.user.id" :message="comments.message" />
+
+        <!-- <Comments :comment="true" :id="comments.user.id" :message="comments.message" /> -->
+
     </div>
+    <Comments :comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+    <Comments :nestingDepth="1":comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+
     <!-- <div v-if="!allCommentsShown" @click="showMoreComments" class="showMore mx-4">
         <button class="text-[#29B6F6] ml-4">Показать еще</button>
         <button class="bg-[#E1F5FE] rounded-[8px] px-[8px] gap-1 py-[2px] flex justify-center">
@@ -66,10 +72,15 @@
             <v-icon color="#1769AA" :icon="'mdi-chevron-down'"></v-icon>
         </button>
     </div> -->
+
     <div class="input">
-        <div v-if="replyToComment">
-            <p>В ответ Save and Brave</p>
-            <p>{{ replyToComment.text }}</p>
+        <div class="reply p-2" v-if="true">
+            <img class="rotate-180" width="30" height="30" src="../../assets/icons/reply.svg" />
+
+            <img class="mx-2" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
+
+            <p class="reply__text" >Здравствуйте, друзья! Большое спасибо за советы и предложения. Мы сейчас занима...</p>
+            <!-- <p>{{ replyToComment.text }}</p> -->
         </div>
         <div class="input-container">
             <input @keyup.enter="pushComment" type="text" v-model="commentText" placeholder="Ваш комментарий..." />
@@ -80,6 +91,7 @@
 </template>
 
 <script setup lang="ts">
+
 import Header from '~/components/Header.vue';
 import ProjectHeader from '~/components/projects/ProjectHeader.vue';
 import { ref, onMounted, computed } from 'vue';
@@ -93,9 +105,11 @@ const commentText = ref('');
 const comments = ref([]);
 let replyToComment = ref(null);
 const startReply = (comment) => {
+    
     replyToComment.value = comment;
 }
 const pushComment = async () => {
+
     if (commentText.value) {
         try {
             const response = await addComment(Number(route.params.ID), Number(localStorage.getItem("userId")), commentText.value);
@@ -111,6 +125,7 @@ const pushComment = async () => {
             console.error('Failed to add comment:', error);
         }
     }
+    
 }
 let showAllComments = ref(false);
 
@@ -137,6 +152,7 @@ const remainingComments = computed(() => prjComments.value.length - displayedCom
 
 </script>
 <style scoped lang="scss">
+
 .input {
     position: absolute;
     bottom: 0px;
@@ -144,7 +160,12 @@ const remainingComments = computed(() => prjComments.value.length - displayedCom
     right: 0;
     background-color: white;
     padding: 10px;
-
+    .reply {
+        display: flex;
+        .reply__text {
+            color: #9e9e9e;
+        }
+    }
     .input-container {
         display: flex;
         flex-direction: row;
@@ -157,6 +178,7 @@ const remainingComments = computed(() => prjComments.value.length - displayedCom
         input {
             width: 100%;
             outline: none;
+      
         }
     }
 }

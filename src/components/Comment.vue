@@ -1,12 +1,16 @@
 <template>
-    <div v-if="props.comment" class="feedCard">
+    <div v-if="props.comment" class="feedCard" :style="{ 'margin-left': computedPaddingLeft + 'px' }">
         <!-- head -->
         <div class="feedCard__head">
             <div class="d-flex align-center">
                 <img class="mr-3" width="30" height="30" src="../assets/demo/ava-small-header.svg" />
                 <div>
-                    <div class="d-flex align-center">
-                        <p class="txt-body3">{{ props.id }}</p>
+                    <div class="d-flex">
+                        <div class="flex-col" >
+                            <p class="txt-body3">{{ props.id }}</p>
+                            <p style="color: #9e9e9e" class="txt-cap1">{{ props.subName }}</p>
+                        </div>
+
                         <img class="mx-2" src="../assets/icons/singeDot-gray.svg" />
                         <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                     </div>
@@ -19,14 +23,14 @@
             <p>{{ props.message }}</p>
             <!-- footer -->
             <div class="feedCard__footer">
-                
+                <button class="feedCard__footer__button" >Ответить</button>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import UiButton from '../ui-kit/UiButton.vue'
+// import UiButton from '../ui-kit/UiButton.vue'
 import { computed, defineProps } from 'vue'
 // import { postAddUserPicture } from "~/API/ways/user";
 
@@ -47,7 +51,19 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    subName: {
+        type: String,
+        default: '',
+    },
+    nestingDepth: {
+        type: Number,
+        default: 0
+    }
 })
+    // Вычисляем значение отступа на основе nestingDepth
+    const computedPaddingLeft = computed(() => props.nestingDepth * 20);
+
+    // Возвращаем вычисленное значение для использования в шаблоне
 
 </script>
 
@@ -109,8 +125,10 @@ const props = defineProps({
         align-items: center;
 
         &__button {
+            width: 100%;
             padding: 14.5px 20px;
-            box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset, 0px 23px 10px -23px rgba(0, 0, 0, 0.15);
+            // box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset, 0px 23px 10px -23px rgba(0, 0, 0, 0.15);
+            text-align: right;
         }
     }
 }
