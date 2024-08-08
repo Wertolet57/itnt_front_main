@@ -18,6 +18,10 @@ export const addPost = (description: String, descriptionHeader: String, authorPr
 export const getPost = () => {
     return API.get('/main/getPosts');
 }
+export const searcgUsers = (params: any) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`${prefix}/search?${queryParams}`);
+}
 const postUserLoginCode = (phone: String) => {
     return API.post(`${prefix}/loginCode`, {
         login: phone,

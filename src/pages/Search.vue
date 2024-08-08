@@ -4,7 +4,7 @@
     <v-container style="padding: 0 20px">
         <!-- {{ ProjectSearch() }} -->
         <UiSwitch @changeValue="searchPageSwitchState = $event" :items="['Проекты', 'Люди']" />
-        <UiInput v-model="searchQuery" placeholder="Поиск..." />
+        <UiInput @keyup.enter="" v-model="searchQuery" placeholder="Поиск..." append-inner-icon="mdi-magnify" />
         <!-- Детальный поиск -->
         <div :class="detailsValue === true ? 'details--opened' : 'details'" class="card">
             <div @click="detailsValue = !detailsValue" class="details__head">
@@ -13,9 +13,13 @@
                 <img v-show="detailsValue === true" src="@/assets/icons/close-black.svg" />
             </div>
 
-            <div class="details__body" v-show="detailsValue === true">
+            <div v-if="searchPageSwitchState === 0" class="details__body" v-show="detailsValue === true">
                 <div class="details__body__inputs">
                     <UiInput label="Теги" />
+                    <v-select menu-icon="mdi-chevron-down" variant="outlined" label="Страна" rounded="lg"
+                        class="mb-2 mt-[28px]" color="active"
+                        :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+                        hide-details></v-select>
                 </div>
 
                 <div class="details__body__switchs">
@@ -30,6 +34,24 @@
                     </div>
                 </div>
             </div>
+            <div v-if="searchPageSwitchState === 1" class="details__body" v-show="detailsValue === true">
+                <div class="details__body__inputs">
+                    <UiInput label="Теги" />
+                    <UiInput class="mt-[28px]" label="Город" />
+                </div>
+
+                <div class="details__body__switchs">
+                    <div class="details__body__switchs__item">
+                        <p class="txt-body1">Открыт к предложениям?</p>
+                        <p class="txt-body1 color-blue" @click="searchUsersByTegs">Открыт</p>
+                    </div>
+                </div>
+                <!-- {{openforProp  }} -->
+
+            </div>
+        </div>
+        <div v-if="searchPageSwitchState === 1" class="" v-for="(user, index) in openforProp" :key="index">
+            <SearchUserCard :user-info-set="user" />
         </div>
 
         <!-- Карточки проектов -->
@@ -60,14 +82,20 @@ import SearchUserCard from '~/components/search/SearchUserCard.vue'
 import SearchProjectCard from '~/components/search/SearchProjectCard.vue'
 import { ref, computed, onMounted } from 'vue';
 import { getAllProjects } from '~/API/ways/project'
-import { getUserSearch } from '~/API/ways/user'
+import { getUserSearch, searcgUsers } from '~/API/ways/user'
 import { useRoute } from 'vue-router';
 import ava from '../assets/Coop.svg'
 const route = useRoute();
 onMounted(() => {
     searchQuery.value = route.query.skill as string || '';
 });
+const items = [
+    { item: 'seend' },
+    { item: 'sdsdsd' },
+    { item: 'qwert' },
+    { item: '1234' }
 
+]
 const searchPageSwitchState = ref(0)
 const detailsValue = ref(false)
 interface User {
@@ -111,6 +139,19 @@ const filteredProjects = computed(() => {
         );
     });
 });
+const openforProp = ref()
+const searchUsersByTegs = async () => {
+    try {
+        const params = {
+            openedForProposition: true,
+        };
+        const response = await searcgUsers(params)
+        console.log(response);
+        openforProp.value = response.data.object
+    } catch (error) {
+        console.error('Error fetching users:', error)
+    }
+}
 const fetchUsers = async () => {
     try {
         const response = await getUserSearch();
