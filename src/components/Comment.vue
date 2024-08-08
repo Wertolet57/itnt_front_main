@@ -26,8 +26,8 @@
 </template>
 
 <script lang="ts" setup>
-import UiButton from '../ui-kit/UiButton.vue'
-import { computed, defineProps } from 'vue'
+// import UiButton from '../ui-kit/UiButton.vue'
+// import { computed, defineProps } from 'vue'
 // import { postAddUserPicture } from "~/API/ways/user";
 
 const props = defineProps({

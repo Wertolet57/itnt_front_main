@@ -21,6 +21,10 @@ export const searcgProjects = (params: any) => {
     const queryParams = new URLSearchParams(params).toString();
     return API.get(`${prefix}?${queryParams}`);
 }
+const getProjectComments = (projectID: number) => {
+    return API.get(`${prefix}/projectComments?projectId=${projectID}`)
+
+}
 const postProject = (prjInfo: Object) => {
     return API.post(`${prefix}/`, prjInfo)
 }
