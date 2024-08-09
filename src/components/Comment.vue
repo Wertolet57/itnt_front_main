@@ -23,7 +23,7 @@
             <p>{{ props.message }}</p>
             <!-- footer -->
             <div class="feedCard__footer">
-                <button class="feedCard__footer__button" >Ответить</button>
+                <button  @click="startReply(props.message)" class="feedCard__footer__button" >Ответить</button>
             </div>
         </div>
     </div>
@@ -31,8 +31,9 @@
 
 <script lang="ts" setup>
 // import UiButton from '../ui-kit/UiButton.vue'
-import { computed, defineProps } from 'vue'
+import { computed, defineProps, defineEmits  } from 'vue'
 // import { postAddUserPicture } from "~/API/ways/user";
+
 
 const props = defineProps({
     feedCardType: {
@@ -60,10 +61,16 @@ const props = defineProps({
         default: 0
     }
 })
-    // Вычисляем значение отступа на основе nestingDepth
     const computedPaddingLeft = computed(() => props.nestingDepth * 20);
 
-    // Возвращаем вычисленное значение для использования в шаблоне
+const emit = defineEmits(['startReply']);
+
+const text : String= props.message
+function startReply( text: String) {
+    
+    emit('startReply',text);
+
+}
 
 </script>
 

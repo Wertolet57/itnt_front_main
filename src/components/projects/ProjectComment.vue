@@ -62,8 +62,8 @@
         <!-- <Comments :comment="true" :id="comments.user.id" :message="comments.message" /> -->
 
     </div>
-    <Comments :comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
-    <Comments :nestingDepth="1":comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+    <Comments @startReply="startReply" :comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+    <Comments @startReply="startReply" :nestingDepth="1":comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
 
     <!-- <div v-if="!allCommentsShown" @click="showMoreComments" class="showMore mx-4">
         <button class="text-[#29B6F6] ml-4">Показать еще</button>
@@ -74,13 +74,14 @@
     </div> -->
 
     <div class="input">
-        <div class="reply p-2" v-if="true">
+        <div class="reply p-2" v-if="replyToComment != ''">
             <img class="rotate-180" width="30" height="30" src="../../assets/icons/reply.svg" />
 
             <img class="mx-2" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
 
-            <p class="reply__text" >Здравствуйте, друзья! Большое спасибо за советы и предложения. Мы сейчас занима...</p>
+            <p class="reply__text" >{{ replyToComment}}</p>
             <!-- <p>{{ replyToComment.text }}</p> -->
+             <img @click="clearReplyText" class="cursor-pointer" src="../../assets/icons/close-black.svg" alt="">
         </div>
         <div class="input-container">
             <input @keyup.enter="pushComment" type="text" v-model="commentText" placeholder="Ваш комментарий..." />
@@ -95,7 +96,7 @@
 import Header from '~/components/Header.vue';
 import ProjectHeader from '~/components/projects/ProjectHeader.vue';
 import { ref, onMounted, computed } from 'vue';
-import { getProjectComments, addComment } from '~/API/ways/project.ts'
+import { getPostComments, addComment } from '~/API/ways/main.ts'
 import { useRoute } from 'vue-router'
 import Comments from '~/components/Comment.vue'
 import send from "~/assets/icons/chat.svg"
@@ -103,16 +104,26 @@ let data = ref({})
 const route = useRoute()
 const commentText = ref('');
 const comments = ref([]);
-let replyToComment = ref(null);
-const startReply = (comment) => {
+let replyToComment = ref("");
+const startReply = (comment: string) => {
+    console.log(comment);
     
-    replyToComment.value = comment;
+    if (comment.length > 80) {
+        replyToComment.value = comment.substring(0, 80) + '...';
+    } else {
+        replyToComment.value = comment;
+    }
+}
+
+const clearReplyText = () => {
+    replyToComment.value = ""
 }
 const pushComment = async () => {
-
+    
     if (commentText.value) {
         try {
             const response = await addComment(Number(route.params.ID), Number(localStorage.getItem("userId")), commentText.value);
+            
             const newComment = {
                 id: response.data.id, // Replace with the actual id from the response
                 text: commentText.value,
@@ -120,7 +131,7 @@ const pushComment = async () => {
             };
             comments.value.push(newComment);
             commentText.value = '';
-            replyToComment.value = null;
+            replyToComment.value = "";
         } catch (error) {
             console.error('Failed to add comment:', error);
         }
@@ -138,16 +149,16 @@ const showMoreComments = () => {
 const allCommentsShown = ref(false);
 const displayedComments = ref([]);
 const prjComments = ref([])
-onMounted(async () => {
-    await getProjectComments(route.params.ID).then((response) => {
-        try {
-            prjComments.value = response.data.object;
-            displayedComments.value = prjComments.value.slice(0, 5);
-        } catch (e) {
-            console.error('error:', e);
-        }
-    });
-});
+// onMounted(async () => {
+//     await getPostComments(route.params.ID).then((response) => {
+//         try {
+//             prjComments.value = response.data.object;
+//             displayedComments.value = prjComments.value.slice(0, 5);
+//         } catch (e) {
+//             console.error('error:', e);
+//         }
+//     });
+// });
 const remainingComments = computed(() => prjComments.value.length - displayedComments.value.length);
 
 </script>
