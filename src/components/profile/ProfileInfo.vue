@@ -13,7 +13,7 @@
                 <!-- Статус предложений -->
                 <div class="flex flex-row justify-between">
                     <!-- Отображение статуса -->
-                    <div class="" v-if="props.readOnly">
+                    <div class="">
                         <div v-if="props.proposition == true" class="userInfo__status">
                             <p class="userInfo__status__title txt-body1">Открыт к предложениям</p>
                             <img src="../../assets/icons/footer/message.svg" alt="" />
@@ -27,10 +27,15 @@
                 </div>
             </div>
         </div>
-        <div v-if="props.profile" @click="changeImageColor" class="bg-white p-[10px] max-h-[48px] rounded-[12px] shadow-md">
+        <div @click="FollowUser" class="bg-white p-[10px] max-h-[48px] rounded-[12px] shadow-md">
             <img :src="imageUrl" alt="" />
         </div>
-        <div class="" v-else></div>
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
+            rounded="lg">
+            <div class="flex flex-row justify-between items-center">
+                Подписка оформлена
+            </div>
+        </v-snackbar>
     </div>
     <div class="" v-else-if="readOnly">
         <div class="userInfo">
@@ -44,25 +49,18 @@
             <!-- Статус предложений -->
             <div class="flex flex-row justify-between">
                 <!-- Отображение статуса -->
-                <div class="" v-if="props.readOnly">
+                <div>
                     <div v-if="props.proposition == true" class="userInfo__status">
                         <p class="userInfo__status__title txt-body1">Открыт к предложениям</p>
                         <img src="../../assets/icons/footer/message.svg" alt="" />
                     </div>
                 </div>
-                <button v-if="!props.readOnly" @click="changeImageColor"
-                    class="bg-white p-[10px] rounded-[12px] shadow-md">
-                    <img :src="imageUrl" alt="" />
-                </button>
-                <div class="" v-else></div>
             </div>
         </div>
 
         <div class="userInfo__body mb-[24px]">
             <div class="txt-body1">
                 {{ props.userDescription }}
-                <!-- Я сюда припёрся, чтобы нормально постартапить! Ждал нормального стартапа с нормальными мужиками. © Легенда -->
-                <!-- {{ props.userDescription }} -->
             </div>
         </div>
     </div>
@@ -83,12 +81,24 @@
 import follow from "~/assets/modal_icon/follow.svg"
 import star from "~/assets/modal_icon/star-filled.svg"
 import Arr from '~/helpers/set'
+import { nextTick } from 'vue'
 import UiInput from "../ui-kit/UiInput.vue";
 import { ref } from 'vue';
+import { addFollow, delFollow } from "~/API/ways/user";
 // import { useRoute } from 'vue-router';
 // const route = useRoute()
 const list = ref(Arr)
+const snackbarVisible = ref(false)
 
+const FollowUser = async () => {
+    try {
+        snackbarVisible.value = true
+        const response = await addFollow(11)
+        console.log(response)
+    } catch (error) {
+        console.log(error);
+    }
+}
 const imageUrl = ref<string>(follow);
 const props = defineProps({
     profile: {
@@ -98,6 +108,10 @@ const props = defineProps({
     readOnly: {
         type: Boolean,
         default: false,
+    },
+    userId: {
+        type: Number,
+
     },
     userName: {
         type: String,

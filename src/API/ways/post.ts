@@ -2,10 +2,10 @@ import { API } from '../main'
 // import ComplaintData from "~/helpers/types"
 const prefix = '/main'
 
-export const addPost = (description: String, descriptionHeader: String, authorProject: any, authorUser: any) => {
+export const addPostUser = (description: String, descriptionHeader: String, authorUser: any) => {
     let requestBody = {
         "authorProject": {
-            "id": authorProject
+            "id": 0
         },
         "authorUser": {
             "id": authorUser
@@ -15,8 +15,27 @@ export const addPost = (description: String, descriptionHeader: String, authorPr
     };
     return API.post(`${prefix}/addPost`, requestBody);
 }
+export const addPostProject = (description: String, descriptionHeader: String, authorProject: any) => {
+    let requestBody = {
+        "authorProject": {
+            "id": authorProject
+        },
+        "authorUser": {
+            "id": ''
+        },
+        description,
+        descriptionHeader,
+    };
+    return API.post(`${prefix}/addPost`, requestBody);
+}
 export const getPost = () => {
     return API.get(`${prefix}/getPosts`);
+}
+export const getPostByUser = (userId: Number) => {
+    return API.get(`${prefix}/user/${userId}/posts`)
+}
+export const getPostByProject = (projectId: Number) => {
+    return API.get(`${prefix}/project/${projectId}/posts`)
 }
 export const addLikes = (postId: number) => {
     return API.post(`${prefix}/${postId}/addLike`, postId)
@@ -35,3 +54,12 @@ export const addComplaint = (postId: number, userId: number, complaint: String) 
         }
     });
 };
+export const getProjectWeek = () => {
+    return API.get(`${prefix}/project/week`)
+}
+export const getProjectMonth = () => {
+    return API.get(`${prefix}/project/month`)
+}
+export const getProjectYear = () => {
+    return API.get(`${prefix}/project/year`)
+}

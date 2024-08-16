@@ -1,10 +1,10 @@
 <template>
-    <div v-if="readOnly"  class="stepper">
+    <div v-if="readOnly" class="stepper">
         <div class="stepper-header">
             <div v-for="(step, index) in steps" :key="index" class="step-icon" :class="{
-                'active': currentStep === index + 1,
-                'completed': currentStep > index + 1
-            }">
+        'active': currentStep === index + 1,
+        'completed': currentStep > index + 1
+    }">
                 <img v-if="currentStep > index + 1" :src="NULL" alt="">
 
                 <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
@@ -19,25 +19,16 @@
             </div>
             <div class="flex flex-col" v-html="currentStepContent.content"></div>
         </div>
-        <!-- <div class="stepper-actions">
-            <UiButton :fit="false" :class="currentStepContent.colorClass" @click="selectStep" v-if="currentStep !== 2">
-                Выбрать этот этап
-            </UiButton>
-            <UiButton bg-color="def" class="text-black" v-if="currentStep === 2">
-                Вы сейчас на этой стадии
-            </UiButton>
-        </div> -->
     </div>
-    <div v-else  class="stepper">
+    <div v-else class="stepper">
         <div class="stepper-header">
             <div v-for="(step, index) in steps" :key="index" class="step-icon" :class="{
-                'active': currentStep === index + 1,
-                'completed': currentStep > index + 1
-            }" @click="setStep(index + 1)">
-                <img v-if="currentStep > index + 1" :src="NULL" alt="">
-
+        'active': currentStep === index + 1,
+        'completed': currentStep > index + 1
+    }" @click="setStep(index + 1)">
+                <img v-if="currentStep > index + 1" :src="NULL" alt="Completed">
                 <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
-                <span class="not-active" v-else></span>
+                <span v-else class="not-active"></span>
             </div>
             <v-icon icon="mdi-dots-vertical" />
         </div>
@@ -49,12 +40,20 @@
             <div class="flex flex-col" v-html="currentStepContent.content"></div>
         </div>
         <div class="stepper-actions">
-            <UiButton :fit="false" :class="currentStepContent.colorClass" @click="selectStep" v-if="currentStep !== 2">
-                Выбрать этот этап
+            <UiButton v-if="project.projectStage !== currentStepContent.serverStage" :fit="false"
+                :class="currentStepContent.colorClass" @click="selectStep" :disabled="isUpdating">
+                {{ isUpdating ? 'Обновление...' : 'Выбрать этот этап' }}
             </UiButton>
-            <UiButton bg-color="def" class="text-black" v-if="currentStep === 2">
+            <UiButton v-else bg-color="def" class="text-black">
                 Вы сейчас на этой стадии
             </UiButton>
+            <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000" color="white "
+                rounded="lg">
+
+                <div class="flex flex-row justify-between items-center">
+                    Стадия проекта обновлена
+                </div>
+            </v-snackbar>
         </div>
     </div>
 </template>
@@ -67,34 +66,45 @@ import D from '../../assets/icons/projectStages/D.svg'
 
 import NULL from '../../assets/icons/projectStages/NULL.svg'
 import UiButton from '../ui-kit/UiButton.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { patchProject, getProjectByID } from '../../API/ways/project'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const props = defineProps({
-    readOnly:{
-        type:Boolean,
-        default:false,
+    readOnly: {
+        type: Boolean,
+        default: false,
     }
 })
 const steps = [
     {
-        title: 'Заказ', activeIcon: A, title: 'Пре-сид раунд (Pre-seed) - первые шаги проекта',spanClass:'pr-1 we-linear-blue', colorClass: 'button-blue',
+        serverStage: 'CUST_DEV',
+
+        title: 'Заказ', activeIcon: A, title: 'Пре-сид раунд (Pre-seed) - первые шаги проекта', spanClass: 'pr-1 we-linear-blue', colorClass: 'button-blue',
 
         content: `<p class="text-[14px] font-[500] pt-2">На этой стадии создатели инвестируют собственные средства. О временных рамках и лимитах финансирования говорить не приходится. Стартаперы стремятся привлечь максимум денег как можно быстрее</p>`
     },
     {
-        title: 'Доставка', activeIcon: A, title: 'Сид раунд (Seed-раунд)',spanClass:'we-linear-blue', colorClass: 'button-blue',
+        serverStage: 'IDEA',
+
+        title: 'Доставка', activeIcon: A, title: 'Сид раунд (Seed-раунд)', spanClass: 'we-linear-blue', colorClass: 'button-blue',
 
         content: `<span class="text-[14px] font-[500] pt-2">На этой стадии привлекают от 25 тыс до 1 млн $. Деньги нужны для того, чтобы завершить разработку прототипа или довести его до требований рынка.</span>
     <span class="text-[14px] font-[500] pt-3 m-0">Главный продукт - программа, итогом сид раунда должен стать финальный релиз программы.</span>
     <span class="text-[14px] font-[500] pt-3 m-0">Основная сложность - показать инвесторам перспективы проекта и правильно оценить необходимый объем финансирования.</span>
     `},
     {
-        title: 'Подтверждение', activeIcon: B, title: 'Ангельский раунд',spanClass:'we-linear-green', colorClass: 'button-green',
+        serverStage: 'TEAM_GATHERING',
+
+        title: 'Подтверждение', activeIcon: B, title: 'Ангельский раунд', spanClass: 'we-linear-green', colorClass: 'button-green',
 
         content: `<p class="text-[14px] font-[500]">Главная особенность ангельского раунда в том, что стартапы привлекают скорее не инвесторов, а менторов. Помощь бизнес-ангелов в организации всех процессов бывает настолько существенной, что финансы часто уходят на второй план.
         </p>
        <p class="text-[14px] font-[500] pt-3">Ангельский раунд можно назвать и разновидностью seed раунда. Главная сложность здесь - вовремя понять, что вашему стартапу нужны не только деньги, но и организационная поддержка. И, конечно, бывает непросто найти инвестора и ментора в одном лице.</p> ` },
     {
-        title: 'Заказ', activeIcon: B, title: 'Раунд А (Stage A)', spanClass:'we-linear-green',colorClass: 'button-green',
+        serverStage: 'FIRST_CLIENT',
+
+        title: 'Заказ', activeIcon: B, title: 'Раунд А (Stage A)', spanClass: 'we-linear-green', colorClass: 'button-green',
 
         content: `<p class="text-[14px] font-[500] pt-2">Эта стадия наступает если стартап успешно прошел сид-раунд. Стартапы привлекают суммы от 500 тысяч долларов.</p>
     <p class="text-[14px] font-[500] pt-3">Основные задачи: </p>
@@ -104,7 +114,9 @@ const steps = [
         </ul>
 <p class="text-[14px] font-[500]">Раунд А может быть первым для компании, если предыдущие задачи основатели стартапа решили собственными ресурсами.</p>` },
     {
-        title: 'Доставка', activeIcon: D, title: 'Раунд B (Stage B)',spanClass:'we-linear-purple', colorClass: 'button-purple',
+        serverStage: 'FIRST_PAYING_CLIENT',
+
+        title: 'Доставка', activeIcon: D, title: 'Раунд B (Stage B)', spanClass: 'we-linear-purple', colorClass: 'button-purple',
 
         content: `<p class="text-[14px] font-[500] pt-2">На этой стадии происходит масштабирование компаний. Раунд B начинается когда стартап достигает финансовых показателей, оговоренных с инвесторами на стадии А.</p>
        <p class="text-[14px] font-[500] pt-3"> Среди задач этого этапа:</p>
@@ -121,48 +133,89 @@ const steps = [
             <li  class="list-disc list-inside p-0 ml-4">неправильные решения при масштабировании.</li>
         </ul>`  },
     {
-        title: 'Подтверждение', activeIcon: D, title: 'Раунд C (Stage C)', spanClass:'we-linear-purple',colorClass: 'button-purple',
+        serverStage: 'MVP',
+
+        title: 'Подтверждение', activeIcon: D, title: 'Раунд C (Stage C)', spanClass: 'we-linear-purple', colorClass: 'button-purple',
 
         content: `<p class="text-[14px] font-[500] pt-2">Перед компанией и ее создателями стоит задача - достичь самоокупаемости. Стартап становится прибыльным только на стадии раунда C. После этого раунда компания способна существовать самостоятельно.
         </p>
         <p class="text-[14px] font-[500] pt-3">Главная сложность в том, чтобы наконец превратить смелый эксперимент в стабильный и прогнозируемый бизнес-проект. До этой стадии доходят далеко не все стартапы. Очень многие не достигают успеха из-за недостатка знаний и опыта, неспособности мыслить как бизнесмен, а не просто креативить.</p>` },
     {
-        title: 'Подтверждение', activeIcon: C, title: 'Раунд D (Stage D)',spanClass:'we-linear-orange', colorClass: 'button-orange',
+        serverStage: 'SECOND_STAGE',
+
+        title: 'Подтверждение', activeIcon: C, title: 'Раунд D (Stage D)', spanClass: 'we-linear-orange', colorClass: 'button-orange',
 
         content: `<p class="text-[14px] font-[500] pt-2"> Это финансирование перед продажей стратегическому инвестору или выходом на IPO
         </p>
         <p class="text-[14px] font-[500] pt-3">Основная сложность для компаний - привлечь стратегического инвестора, показать покупателям свою ценность.</p>` }
 ]
-
-const total = computed(() => {
-    return subtotal.value + shippingCost.value
-})
+const project = ref({
+    projectStage: '', // or any default value that makes sense for your case
+});
 const currentStep = ref(1)
 
 const currentStepContent = computed(() => {
-    return steps[currentStep.value - 1]
-})
+    return steps[currentStep.value - 1];
+});
 
 const setStep = (step) => {
-    currentStep.value = step
-}
+    currentStep.value = step;
+};
 
 const nextStep = () => {
     if (currentStep.value < steps.length) {
-        currentStep.value++
+        currentStep.value++;
+        updateProjectStage();
     }
-}
+};
 
 const prevStep = () => {
     if (currentStep.value > 1) {
-        currentStep.value--
+        currentStep.value--;
+        updateProjectStage();
     }
-}
-const selectStep = () => {
-  if (currentStep.value < steps.length) {
-    currentStep.value++
-  }
-}
+};
+const snackbarVisible = ref(false);
+const selectStep = async () => {
+    if (currentStep.value < steps.length) {
+        await updateProjectStage();
+        // currentStep.value++;
+        snackbarVisible.value = true;
+    }
+};
+
+const updateProjectStage = async () => {
+    const newStage = steps[currentStep.value - 1].serverStage;
+    try {
+        project.value.projectStage = newStage;
+        const response = await patchProject(project.value);
+        console.log('Стадия проекта обновлена:', response.data);
+    } catch (e) {
+        console.error('Ошибка при обновлении стадии проекта:', e);
+        // Возможно, здесь стоит вернуть предыдущее значение currentStep
+    }
+};
+
+// Добавим функцию для инициализации текущего шага при загрузке проекта
+const initializeCurrentStep = () => {
+    const currentServerStage = project.value.projectStage;
+    const stepIndex = steps.findIndex(step => step.serverStage === currentServerStage);
+    if (stepIndex !== -1) {
+        currentStep.value = stepIndex + 1;
+    }
+};
+
+onMounted(async () => {
+    await getProjectByID(route.params.ID).then((response) => {
+        try {
+            project.value = response.data.object
+            console.log(project.value.projectStage)
+            initializeCurrentStep();
+        } catch (e) {
+            console.error('error:', e)
+        }
+    })
+})
 </script>
 
 <style scoped lang="scss">
@@ -207,6 +260,7 @@ p {
     box-shadow: 0 22px 22px -17px #f68b29;
     border-radius: 12px;
 }
+
 .we-linear-blue {
     width: 5px;
     height: 28px;
@@ -239,7 +293,7 @@ p {
     background-color: white;
     border-radius: 12px;
     /* max-width: 600px; */
-    margin-top:48px;
+    margin-top: 48px;
     padding: 12px;
 }
 

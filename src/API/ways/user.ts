@@ -66,8 +66,16 @@ const postAddComplaint = (id: number, userId: number, complaint: String) => {
 const deleteUserPicture = (id: Number) => {
     return API.delete(`${prefix}/delUserPicture?id=${id}`);
 }
+export const addFollow = (userId: Number) => {
+    return API.post(`${prefix}/${userId}/addFollow`);
+}
+export const delFollow = (id: any) => {
+    return API.delete(`${prefix}/${id}/delFollow`);
+}
 
-
+export const getFollowed = ()=>{
+    return API.get(`${prefix}/followed`)
+}
 
 const getUserByID = (id: Number) => {
     if (id) {

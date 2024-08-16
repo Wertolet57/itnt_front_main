@@ -37,15 +37,14 @@ import ProjectsList from '~/components/profile/ProjectsList.vue'
 import ProfileHeader from '~/components/profile/ProfileHeader.vue'
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import { onMounted, ref, computed } from 'vue'
-import { getUserByID, patchUser } from '~/API/ways/user.ts'
+import { getUserByID } from '~/API/ways/user.ts'
 import { useRoute } from 'vue-router'
 const route = useRoute();
 let data = ref({})
 
 onMounted(async () => {
     try {
-        const userId = route.params.id;
-        const response = await getUserByID(Number(userId));
+        const response = await getUserByID(11);
         data.value = response.data.object;
         // data.value.firstName = '';
         // data.value.lastName = '';
@@ -55,16 +54,6 @@ onMounted(async () => {
         console.error('error:', e);
     }
 })
-
-// const changeUser = async () => {
-//     try {
-//         await patchUser(data.value);
-//         console.log('clicked');
-//         // router.push('/me')
-//     } catch (e) {
-//         console.error('error :', e);
-//     }
-// }
 const hasData = computed(() => {
     const excludedKeys = ['id', 'login', 'confirmed', 'loginType', 'errorConfirm', 'firstEntry', '', '', '']
     return Object.entries(data.value).some(([key, value]) => {

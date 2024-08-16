@@ -37,11 +37,19 @@ export default {
                 <div class="d-flex justify-space-between mb-4">
                     <UiButton bgColor="blue" @click="follow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
             'Подписаться' }}</UiButton>
-                    <UiButton @click="shareProject()" :imgSrc="share" onlyIcon />
-                    <Fire :id="props.prjID" />
+                    <<v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
+                        color="white " rounded="lg">
+
+                        <div class="flex flex-row justify-between items-center">
+                            Подписка оформлена
+                        </div>
+                        </v-snackbar>
+                        <UiButton @click="shareProject()" :imgSrc="share" onlyIcon />
+                        <Fire :id="props.prjID" />
                 </div>
                 <UiButton @click="$router.push('/project/' + props.prjID + '/comment')" bgColor="def" :imgSrc="message">
                     Обсуждение проекта</UiButton>
+
             </div>
         </div>
 
@@ -78,11 +86,6 @@ import { storeToRefs } from 'pinia'
 import { useProjectStore } from '~/store/projectStore'
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
-// const onlyENGletters = computed(() => {
-//     var reg = /^[a-z]+$/i
-//     return '+' + prjObject.nickName.match(reg)[0]
-// })
-// }
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -136,12 +139,14 @@ function shareProject() {
     }
 }
 const isFollowing = ref(false)
+const snackbarVisible = ref(false);
 
 async function follow() {
     try {
         const response = await addFollow(Number(props.prjID), Number(localStorage.getItem("userId")));
         console.log(response);
         isFollowing.value = true
+        snackbarVisible.value = true
     } catch (error) {
         console.error('Ошибка при подписке на проект:', error);
     }
@@ -190,11 +195,11 @@ async function follow() {
 
 .ava {
     display: flex;
-    padding:0 0 0 20px;
+    padding: 0 0 0 20px;
     justify-content: start;
 
     img {
-        width:20%;
+        width: 20%;
         height: 20%;
         border-radius: 100%;
     }

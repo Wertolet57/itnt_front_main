@@ -27,6 +27,12 @@ export default {
             <UiButton @click="handlePostBlogByUser" bg-color="smBlue" class="mt-[48px]">Опубликовать</UiButton>
         </div>
     </div>
+    <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
+        rounded="lg">
+        <div class="flex flex-row justify-between items-center">
+            Пост опубликован
+        </div>
+    </v-snackbar>
 </template>
 
 <script lang="ts" setup>
@@ -34,62 +40,67 @@ export default {
 import UiButton from './UiButton.vue';
 import UiInput from './UiInput.vue';
 // import file from "~/assets/icons/media/ppt-blue.svg";
-import { addPost } from "~/API/ways/user";
-import { ref,computed } from 'vue';
+// import { addPost } from "~/API/ways/user";
+import { addPostProject, addPostUser } from "~/API/ways/post";
+import { ref, computed } from 'vue';
+const snackbarVisible = ref(false)
 const props = defineProps({
-  descriptionHeader: String,
-  description: String,
-  authorUser: String,
-  authorProject: String,
-  prjAuth:{
-    type:Boolean,
-    default:false,
-  },
-  userAuth:{
-    type:Boolean,
-    default:false,
-  }
+    descriptionHeader: String,
+    description: String,
+    authorUser: String,
+    authorProject: String,
+    prjAuth: {
+        type: Boolean,
+        default: false,
+    },
+    userAuth: {
+        type: Boolean,
+        default: false,
+    }
 });
 
-const emit = defineEmits(['update:descriptionHeader', 'update:description']);
+const emit = defineEmits(['update:descriptionHeader', 'update:description', 'postSuccess']);
 
 const localDescriptionHeader = computed({
-  get: () => props.descriptionHeader,
-  set: (value) => emit('update:descriptionHeader', value),
+    get: () => props.descriptionHeader,
+    set: (value) => emit('update:descriptionHeader', value),
 });
 
 const localDescription = computed({
-  get: () => props.description,
-  set: (value) => emit('update:description', value),
+    get: () => props.description,
+    set: (value) => emit('update:description', value),
 });
-
 const handlePostBlogByUser = async () => {
-  try {
-    const data = await addPost(
-      localDescription.value,
-      localDescriptionHeader.value,
-      props.authorUser,
-      0
-    );
-    console.log('Post added successfully:', data);
-    // Add additional logic after successful post
-  } catch (error) {
-    console.error('Error adding post:', error);
-  }
+    try {
+        const data = await addPostUser(
+            localDescription.value,
+            localDescriptionHeader.value,
+            props.authorUser,
+        );
+        emit('postSuccess');
+
+        snackbarVisible.value = true
+        console.log('Post added successfully:', data);
+        // Add additional logic after successful post
+    } catch (error) {
+        console.error('Error adding post:', error);
+    }
 };
 const handlePostBlogByProject = async () => {
-  try {
-    const data = await addPost(
-      localDescription.value,
-      localDescriptionHeader.value,
-      0,
-      props.authorProject,
-    );
-    console.log('Post added successfully:', data);
-    // Add additional logic after successful post
-  } catch (error) {
-    console.error('Error adding post:', error);
-  }
+    try {
+        const data = await addPostProject(
+            localDescription.value,
+            localDescriptionHeader.value,
+            props.authorProject,
+        );
+        emit('postSuccess');
+
+        snackbarVisible.value = true
+        console.log('Post added successfully:', data);
+        // Add additional logic after successful post
+    } catch (error) {
+        console.error('Error adding post:', error);
+    }
 };
 </script>
 

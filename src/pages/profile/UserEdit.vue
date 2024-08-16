@@ -9,7 +9,6 @@
                 :items="Object.keys(list)" hide-details></v-select>
             <v-select menu-icon="mdi-chevron-down" v-model="user.city" :disabled="user.country ? false : true" variant="outlined" color="active"
                 label="Выберите город" rounded="lg" :items="(list as any)[user.country]"></v-select>
-        </div>
        
         <div class="props mb-12">
             <div class="props__inner" :class="{ 'props__inner--selected': user.openedForProposition === false }">
@@ -35,8 +34,10 @@
             <UiSkills />
             <ProjectsList showAdder class="mt-12" :projects="user.projects" />
         </div>
+        <UiAgree @click="changeUser" />
+    </div>
+
     </v-container>
-    <UiAgree @click="changeUser" />
 </template>
 
 <script setup lang="ts">
@@ -52,6 +53,7 @@ import Arr from '~/helpers/set'
 import UiInput from "~/components/ui-kit/UiInput.vue";
 import { ref, onMounted, computed } from 'vue';
 import { patchUser, getUserByID } from '~/API/ways/user';
+import { getPostByUser } from '~/API/ways/post';
 import { useRouter } from 'vue-router';
 const list = ref(Arr)
 const router = useRouter()
@@ -78,6 +80,16 @@ onMounted(async () => {
         };
         console.log(response);
     } catch (e) {
+        console.error('error: ss', e);
+    }
+});
+let posts= ref()
+onMounted(async () => {
+    try {
+        const response = await getPostByUser(Number(localStorage.getItem('userId')));
+        posts.value= response
+        console.log(response);
+    } catch (e) {
         console.error('error:', e);
     }
 });
@@ -87,7 +99,7 @@ const changeUser = async () => {
         try {
             router.push('/me')
         } catch (e) {
-            console.error('error :', e);
+            console.error('12221 error :', e);
         }
     });
 };
@@ -127,7 +139,7 @@ const fullBannerUrl = computed(() => {
     display: flex;
     flex-direction: column;
     gap: 12px;
-
+    position: relative;
     &__components {
         display: flex;
         flex-direction: column;

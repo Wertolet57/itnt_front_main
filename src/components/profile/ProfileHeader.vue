@@ -10,38 +10,60 @@
 
     <div v-else class="userPics">
         <div class="userPics__bg">
-            <img v-show="props.bgPic" class="hidden" :src="props.bgPic" />
+            <img @click="openBgModal" v-show="props.bgPic" :src="props.bgPic" />
         </div>
 
-        <v-dialog v-model="avaModal" width="100%">
-            <v-card class="ui-skills__search">
+        <v-dialog v-model="bgModal" width="100%">
+            <v-card class="ui-skills__search p-4">
                 <p>
                     <span>Изменение фонового изображения</span>
                 </p>
                 <div class="ui-skills__search__actions">
                     <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
-                    <UiButton bgColor="smOutlined" isSmall>Заменить</UiButton>
+                    <div class="p-0 flex w-full justify-end">
+                        <UiButton @click="uploadBg" bgColor="smOutlined" isSmall>Заменить</UiButton>
+                        <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
+                    </div>
                 </div>
             </v-card>
         </v-dialog>
 
         <div class="userPics__ava">
-            <img v-if="uploadedAvaImageUrl" :src="uploadedAvaImageUrl" />
+            <img @click="openAvaModal" v-show="props.avaPic" :src="props.avaPic" />
         </div>
-
-        <div v-if="!uploadedBgImageUrl" class="userPics__upload">
+        <v-dialog v-model="avaModal" width="100%">
+            <v-card class="ui-skills__search p-4">
+                <p>
+                    <span>Изменение аватарки</span>
+                </p>
+                <div class="ui-skills__search__actions">
+                    <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
+                    <div class="p-0 flex w-full justify-end">
+                        <UiButton @click="uploadAva" bgColor="smOutlined" isSmall>Заменить</UiButton>
+                        <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
+                    </div>
+                </div>
+            </v-card>
+        </v-dialog>
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
+            rounded="lg">
+            <div class="flex flex-row justify-between items-center">
+                Изображение добавлено
+            </div>
+        </v-snackbar>
+        <!-- <div v-if="!uploadedBgImageUrl" class="userPics__upload">
             <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
             <button class="userPics__btn" @click="uploadBg">
                 <img src="/src/assets/Profile/icons.svg" alt="">
             </button>
-        </div>
+        </div> -->
 
-        <div v-if="!uploadedAvaImageUrl" class="userPics__ava">
+        <!-- <div v-if="!uploadedAvaImageUrl" class="userPics__ava">
             <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
             <button class="" @click="uploadAva">
-                <img :src="ava" alt="">
+                <img v-if="!props.avaPic" :src="ava" alt="">
             </button>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -63,10 +85,15 @@ const props = defineProps({
         default: ava
     }
 })
-const searchModalState = ref(false)
+const avaModal = ref(false)
+const bgModal = ref(false)
+const snackbarVisible = ref(false)
 
-function openModal() {
-    searchModalState.value = true
+function openAvaModal() {
+    avaModal.value = true
+}
+function openBgModal() {
+    bgModal.value = true
 }
 const bgFileInput = ref<HTMLInputElement | null>(null);
 const uploadedBgImageUrl = ref<string>('');
@@ -91,6 +118,8 @@ const handleFileInputChange = () => {
             }
         };
     }
+    bgModal.value = false
+    snackbarVisible.value = true
 }
 const handleFileAva = () => {
     const files = avaFleInput.value?.files;
@@ -109,14 +138,19 @@ const handleFileAva = () => {
             }
         };
     }
+    avaModal.value = false
+    snackbarVisible.value = true
 }
 
 const uploadBg = async () => {
     bgFileInput.value?.click();
+   
 }
 
 const uploadAva = async () => {
     avaFleInput.value?.click();
+   
+
 }
 
 const id = ref<number>(0);
@@ -146,6 +180,7 @@ const removeBackgroundPicture = async (id: Number) => {
         background-position: center;
         min-height: 117px;
         max-height: 117px;
+
         img {
             width: 100%;
             min-height: 117px;
@@ -180,7 +215,7 @@ const removeBackgroundPicture = async (id: Number) => {
         justify-content: end;
         // width: 100%;
         padding: 0px 20px;
-        height: 120px;
+        // height: 120px;
         display: flex;
     }
 
@@ -188,7 +223,8 @@ const removeBackgroundPicture = async (id: Number) => {
         width: 100vw;
         height: 120px;
         display: hidden;
-        img{
+
+        img {
             height: 100px;
             width: 100%;
         }

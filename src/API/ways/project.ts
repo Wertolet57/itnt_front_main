@@ -74,6 +74,16 @@ const addFollow = (projectId: number, userId: number) => {
         }
     });
 }
+export const delFollow = (projectId: number, userId: number) => {
+    return API.post(`${prefix}/delFollow`, {
+        project: {
+            id: projectId
+        },
+        "user": {
+            "id": userId
+        }
+    });
+}
 const addProjectAvatar = (avatarUrl: FormData, projectID: number) => {
     return API.post(`${prefix}/addProjectAvatar?projectId=${projectID}`, avatarUrl, {
         headers: {
@@ -88,6 +98,50 @@ const addProjectFile = (file: FormData, projectID: number, link: String) => {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
+    });
+};
+export const addVacancy = (
+    projectId: number,
+    params: {
+        archive?: boolean;
+        description?: string;
+        id?: number;
+        offer?: string;
+        position?: {
+            favourite?: boolean;
+            id?: number;
+            interestGroup?: {
+                color?: string;
+                id?: number;
+                name?: string;
+            };
+            name?: string;
+        };
+    } = {}
+) => {
+    const queryParts = [];
+
+    if (params.archive !== undefined) queryParts.push(`archive=${params.archive}`);
+    if (params.description) queryParts.push(`description=${params.description}`);
+    if (params.id) queryParts.push(`id=${params.id}`);
+    if (params.offer) queryParts.push(`offer=${params.offer}`);
+    if (params.position) {
+        if (params.position.favourite !== undefined) queryParts.push(`position.favourite=${params.position.favourite}`);
+        if (params.position.id) queryParts.push(`position.id=${params.position.id}`);
+        if (params.position.interestGroup) {
+            if (params.position.interestGroup.color) queryParts.push(`position.interestGroup.color=${params.position.interestGroup.color}`);
+            if (params.position.interestGroup.id) queryParts.push(`position.interestGroup.id=${params.position.interestGroup.id}`);
+            if (params.position.interestGroup.name) queryParts.push(`position.interestGroup.name=${params.position.interestGroup.name}`);
+        }
+        if (params.position.name) queryParts.push(`position.name=${params.position.name}`);
+    }
+
+    const queryString = queryParts.join('&');
+    const url = `${prefix}/${projectId}/addVacancy${queryString ? `?${queryString}` : ''}`;
+    console.log(decodeURIComponent(queryString));
+
+    return API.post(url, '', {
+        headers: { 'accept': 'application/json;charset=UTF-8' }
     });
 };
 

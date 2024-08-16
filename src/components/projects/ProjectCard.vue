@@ -17,7 +17,7 @@
             </div>
             <div class="projectCard__info">
                 <p class="projectCard__info__title txt-body1">{{ props?.prjDescHead }}</p>
-                <p class="projectCard__info__body txt-body2">
+                <p class="projectCard__info__title txt-body2 flex-wrap">
                     {{ props?.prjDescBody }}
                 </p>
             </div>

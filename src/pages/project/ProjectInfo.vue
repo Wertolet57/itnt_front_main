@@ -9,12 +9,13 @@
         <!-- {{ data.projectFiles[3].pictureUrl }} -->
         <!-- <ProjectMedia class="mt-12" :files="data.projectFiles" readOnly /> -->
         <!-- <img :src="data.projectFiles[1].pictureUrl" alt="1"> -->
-        <ProjectStage readOnly />
+        <ProjectStage :stage="data.projectStage" readOnly />
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
-                    <UiPost :prj-auth="true"  v-model:description-header="postData.descriptionHeader"
-                        v-model:description="postData.description"   :author-user="postData.authorUser"  :author-project="postData.authorProject" card />
+                    <UiPost :prj-auth="true" v-model:description-header="postData.descriptionHeader"
+                        @postSuccess="closeModal" v-model:description="postData.description"
+                        :author-user="postData.authorUser" :author-project="postData.authorProject" card />
                 </div>
             </div>
         </vue-bottom-sheet>
@@ -22,21 +23,32 @@
             <h1>Что у меня нового:</h1>
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
+
         <!-- {{ data.projectFiles[1] }} -->
+        <div v-if="posts" v-for="(post, index) in posts " :key="index">
+            <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
+        </div>
     </v-container>
     <Footer />
 </template>
 
 <script setup lang="ts">
+import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import ProjectStage from '~/components/projects/ProjectStage.vue'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { getProjectByID } from '~/API/ways/project.ts'
 import { useRoute } from 'vue-router'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
+import { getPostByProject } from '~/API/ways/post';
 let data = ref({})
 const route = useRoute()
 const modalState = ref(null);
+const closeModal = () => {
+    if (modalState.value) {
+        modalState.value.close();
+    }
+};
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
@@ -46,6 +58,16 @@ onMounted(async () => {
         }
     })
 })
+let posts = ref()
+onMounted(async () => {
+    try {
+        const response = await getPostByProject(Number(route.params.ID));
+        posts.value = response.data.object
+        console.log(response);
+    } catch (e) {
+        console.error('error:', e);
+    }
+});
 const postData = ref({
     descriptionHeader: '',
     description: '',

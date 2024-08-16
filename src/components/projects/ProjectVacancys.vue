@@ -46,8 +46,27 @@
         <UiVacancyPanel card :data="demoVacancy" />
         <div class="d-flex mt-2 justify-space-between align-center">
             Добавить вакансию
-            <UiButton plus />
+            <UiButton @click="vacansyState.open()" plus />
         </div>
+        <div>
+
+        </div>
+        <vue-bottom-sheet ref="vacansyState">
+            <div class="min-h-[350px] p-4">
+                <!-- <input type="checkbox" label="Должность*" v-model="vacancyParams.archive" /> -->
+                <UiTextArea label="Описание*" v-model="vacancyParams.description" />
+                <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
+                <div class="" @click="vacansyState.close()">
+                    <UiButton class="mt-4"  @click="postVacancy" bg-color="blue">Добавить вакансию</UiButton>
+                </div>
+            </div>
+
+        </vue-bottom-sheet>
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="4000" color="white" rounded="lg">
+            <div class="flex flex-row justify-between items-center">
+                Вакансия добавлена в проект
+            </div>
+        </v-snackbar>
     </div>
 
 
@@ -57,20 +76,38 @@
 <script setup lang="ts">
 import UiVacancyPanel from '../ui-kit/UiVacancyPanel.vue'
 import UiButton from '../ui-kit/UiButton.vue'
+import UiInput from '../ui-kit/UiInput.vue'
+import UiTextArea from '../ui-kit/UiTextArea.vue'
 import { modalActionsList } from '~/helpers/types'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { ref } from 'vue'
 import { sendProposition } from '~/API/ways/notifications'
-import {useRoute} from 'vue-router'
+import { addVacancy } from '~/API/ways/project'
+import { useRoute } from 'vue-router'
 const router = useRoute()
-
+const snackbarVisible = ref(false)
+const vacancyParams = ref({
+    archive: false,
+    description: '',
+    offer: '',
+});
+const postVacancy = async () => {
+    try {
+        await addVacancy(router.params.ID, vacancyParams.value);
+        vacansyState.value = false
+        snackbarVisible.value = true
+        // alert('Vacancy added successfully!');
+    } catch (error) {
+        console.error('Error adding vacancy:', error);
+    }
+};
 const sendProp = async () => {
-    console.log(localStorage.getItem('userId'),router.params.ID );
-    
-    if (localStorage.getItem('userId') && router.params.ID){
+    console.log(localStorage.getItem('userId'), router.params.ID);
+
+    if (localStorage.getItem('userId') && router.params.ID) {
         try {
-            const response = await sendProposition( router.params.ID,1, 'vacancy',"US")
+            const response = await sendProposition(router.params.ID, 1, 'vacancy', "US")
             console.log(response)
         } catch (error) {
             console.error('Error sending proposition:', error)
@@ -85,6 +122,7 @@ const props = defineProps({
     },
 })
 const modalState = ref(null)
+const vacansyState = ref(false)
 
 const demoVacancy = {
     type: 'Driver',

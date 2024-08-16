@@ -59,7 +59,10 @@ onMounted(async () => {
 
 async function changeProject() {
     prjStore.$state.prjObject.id = route.params.ID
-    await patchProject(prjStore.$state.prjObject).then(() => {
+    const projectData = { ...prjStore.$state.prjObject };
+    delete projectData.projectStage;
+
+    await patchProject(projectData).then(() => {
         try {
             router.push('/project/' + route.params.ID)
         } catch (e) {

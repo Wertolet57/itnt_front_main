@@ -1,6 +1,9 @@
 <template>
-  <v-row class="container pa-0 ma-0" justify="center" align="center">
-    <v-col align="center">
+  <div class="flex  justify-end p-4">
+    <!-- <UiButton onlyIcon @click="$router.push('/reg')">Регистрация</UiButton> -->
+  </div>
+  <v-row class="pa-0 ma-0" align="center" justify="center">
+    <v-col class="container" align="center" justify="center">
       <img src="../../assets/img/logos/itnt.svg" />
       <!-- {{ o?s }} -->
       <div class="mt-12 pl-2 pr-2">
@@ -13,14 +16,19 @@
           <br />
           <router-link class="button-purse-subtitle-href" to="">Узнать</router-link>
         </p>
-        <div style="margin-top: 48px" @click="$router.push('/reg')">
+        <div style="margin-top: 48px" @click="$router.push('/log')">
           <UiButton bgColor="blue">{{ $t('entry.phone') }}</UiButton>
         </div>
+        <p class="button-purse-subtitle ma-0 mt-2 text-center">
+          Еще не регистрировались в ITalent?
+          <br />
+          <router-link class="button-purse-subtitle-href" to="/reg">Регистрация</router-link>
+        </p>
         <v-col class="mt-6">
           <v-row class="social" justify="center">
             <UiButton @click="googleSignIn" onlyIcon :imgSrc="googleIcon" />
             <UiButton @click="signInWithApple" onlyIcon :imgSrc="appleIcon" />
-            <UiButton  onlyIcon>VK
+            <UiButton onlyIcon>VK
               <v-dialog activator="parent" max-width="500">
                 <template v-slot:default="{ isActive }">
                   <v-card rounded="xl">
@@ -284,6 +292,7 @@ const loginWithVK = () => {
 
 .container {
   height: 100vh;
+  padding-top: 10%;
 }
 
 .button-purse {

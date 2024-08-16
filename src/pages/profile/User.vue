@@ -14,7 +14,7 @@
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
                         v-model:description="postData.description" :author-project="postData.authorProject"
-                        :author-user="postData.authorUser" card />
+                        @postSuccess="closeModal"  :author-user="postData.authorUser" card />
                 </div>
             </div>
         </vue-bottom-sheet>
@@ -28,8 +28,7 @@
                 <FeedPost :post="object" :id="object.id" />
             </div>
         </div> -->
-        <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
-            <!-- {{ post }} -->
+        <div v-if="posts && posts.object" v-for="(post, index) in posts" :key="index">
             <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
         </div>
     </v-container>
@@ -52,15 +51,18 @@ import ProfileHeader from '~/components/profile/ProfileHeader.vue'
 import { getUserByID } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { onMounted, ref, computed } from 'vue';
-import { getPost } from '~/API/ways/user';
-import FeedPost from '~/components/feed/FeedPost.vue';
-import { projectStatByID } from "~/API/ways/project-stat"
+import { getPostByUser } from '~/API/ways/post';
+// import FeedPost from '~/components/feed/FeedPost.vue';
 let posts = ref();
-
+const closeModal = () => {
+    if (modalState.value) {
+        modalState.value.close();
+    }
+};
 const getPosts = async () => {
     try {
-        const data = await getPost();
-        posts.value = data.data;
+        const data = await getPostByUser(Number(localStorage.getItem('userId')));
+        posts.value = data.data.object;
     } catch (error) {
         console.error(error);
     }

@@ -22,6 +22,7 @@ import Entry from '~/pages/registration/Entry.vue'
 import Agreement from '~/pages/registration/Agreement.vue'
 import FirstMeet from '~/pages/registration/FirstMeet.vue'
 import PhoneRegPage from '~/pages/registration/PhoneReg.vue'
+import PhoneLogIn from '~/pages/registration/PhoneLogIn.vue'
 import Screening from '~/pages/registration/Screening.vue'
 // etc
 import Feed from '~/pages/feed/Feed.vue'
@@ -55,6 +56,10 @@ const routes: Array<routes> = [
     {
         path: '/reg',
         component: PhoneRegPage,
+    },
+    {
+        path: '/log',
+        component: PhoneLogIn,
     },
     {
         path: '/screening',

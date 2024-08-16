@@ -28,6 +28,11 @@ export default {
                 </div>
             </div>
         </div>
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white" rounded="lg">
+            <div class="flex flex-row justify-between items-center">
+                Навык удален
+            </div>
+        </v-snackbar>
     </v-card>
     <div class="ui-skills__projects" v-else>
         <div @click="openModal(skill)" class="ui-skills__projects__tag" v-for="(skill, id) in chosenSkills" :key="id">
@@ -145,11 +150,13 @@ function toggleSkillSelection(id: number) {
         openModal(chosenSkills.value[id]);
     }
 }
+const snackbarVisible = ref(false)
+
 function deleteSelectedSkills() {
     selectedSkills.value.forEach(id => {
         chosenSkills.value.splice(id, 1);
     });
-    snackbar.value = !snackbar.value
+    snackbarVisible.value = true
 
     // Очищаем массив выбранных навыков
     selectedSkills.value = [];

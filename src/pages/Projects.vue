@@ -5,16 +5,34 @@
         <UiPrompt v-show="projectsType === 1">
             {{ $t('prompts.topProjects.top') }}
         </UiPrompt>
-
         <UiSwitch @change-value="projectsType = $event" :items="['Свежее', 'Топ']" />
 
-        <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event" :items="['Неделя', 'Месяц', 'Год']" />
-        
-        <div v-if="projectsType === 0" v-for="(project, id) in newProjectsInfo" :key="id" class="mt-6">
-            <RatingProjectCard :projectInfoSet="project" />
+        <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event"
+            :items="['Неделя', 'Месяц', 'Год']" />
+        <div v-if="projectsType === 1" class="">
+            <div v-if="topProjectsData === 0" class="">
+                {{ projectByWeek }} by week
+                <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
+                    <RatingProjectCard :projectInfoSet="project" />
+                </div>
+            </div>
+            <div v-if="topProjectsData === 1" class="">
+                {{ projectByMonth }} by month
+                <div v-for="(project, id) in projectByMonth" :key="id" class="mt-6">
+                    <RatingProjectCard :projectInfoSet="project" />
+                </div>
+            </div>
+            <div v-if="topProjectsData === 2" class="">
+                {{ projectByYear }} by year
+                <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
+                    <RatingProjectCard :projectInfoSet="project" />
+                </div>
+            </div>
         </div>
-        
-        <div v-if="projectsType === 1" v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
+
+
+
+        <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div>
 
@@ -31,8 +49,8 @@ import UiSwitch from '~/components/ui-kit/UiSwitch.vue'
 import RatingProjectCard from '~/components/projects/RatingProjectCard.vue'
 
 import { ref, onMounted } from 'vue'
-import { getAllProjects, getNewProjects } from '~/API/ways/project'
-
+import { getAllProjects } from '~/API/ways/project'
+import { getProjectWeek, getProjectMonth, getProjectYear } from '~/API/ways/post'
 let projectsInfo = ref({})
 
 onMounted(async () => {
@@ -44,19 +62,40 @@ onMounted(async () => {
         }
     })
 })
-let newProjectsInfo = ref({})
+
+let projectByWeek = ref({})
 
 onMounted(async () => {
-    await getNewProjects(true).then((response) => {
+    await getProjectWeek().then((response) => {
         try {
-            newProjectsInfo.value = response.data.object.content
-            console.log(newProjectsInfo.value);
-            
+            projectByWeek.value = response.data.object
+        } catch (e) {
+            console.error('text error:', e)
+        }
+    })
+})
+let projectByMonth = ref({})
+
+onMounted(async () => {
+    await getProjectMonth().then((response) => {
+        try {
+            projectByMonth.value = response.data.object
+        } catch (e) {
+            console.error('text error:', e)
+        }
+    })
+})
+let projectByYear = ref({})
+
+onMounted(async () => {
+    await getProjectYear().then((response) => {
+        try {
+            projectByYear.value = response.data.object
         } catch (e) {
             console.error('text error:', e)
         }
     })
 })
 const projectsType = ref(0)
-const topProjectsData = ref(null)
+const topProjectsData = ref(0)
 </script>
