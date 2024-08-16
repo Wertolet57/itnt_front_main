@@ -37,7 +37,7 @@ export default {
                 <div class="d-flex justify-space-between mb-4">
                     <UiButton bgColor="blue" @click="follow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
             'Подписаться' }}</UiButton>
-                    <<v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
+                    <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
                         color="white " rounded="lg">
 
                         <div class="flex flex-row justify-between items-center">
