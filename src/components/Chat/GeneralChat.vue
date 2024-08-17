@@ -2,7 +2,7 @@
     <ChatFolders />
     <div class="" @click="showSheet = false">
 
-        <div class="card shadow-none">
+        <div @click="$router.push(`/messenger/chat/1`)" class="card shadow-none">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
             </span>
@@ -20,7 +20,7 @@
                 </p>
             </div>
         </div>
-        <div class="card shadow-none">
+        <div @click="$router.push(`/messenger/chat/2`)"  class="card shadow-none">
             <span class="card__v2">
                 <v-chip class="card__v2__chip">
                     27
@@ -39,7 +39,7 @@
                 </p>
             </div>
         </div>
-        <div class="card shadow-none">
+        <div @click="$router.push(`/messenger/chat/3`)" class="card shadow-none">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
             </span>
@@ -57,7 +57,7 @@
                 </p>
             </div>
         </div>
-        <div class="card shadow-none">
+        <div @click="$router.push(`/messenger/chat/4`)" class="card shadow-none">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
             </span>
@@ -112,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-                <v-btn @click="showSheet = false" class="close-btn mr-2" icon="mdi-check" color="#00e676" />
+                <v-btn @click="showSheet = false" class="close-btn text-white mr-2" icon="mdi-check" color="#00e676" />
             </div>
         </transition>
     </div>

@@ -2,28 +2,35 @@ import { API } from '../main'
 
 const prefix = '/main'
 
-const getPostComments = (projectID: number) => {
-    console.log("getPostComments");
+const getPostComments = ( pageNumber: number, pageSize: number, postId: number) => {
     
-    // return API.get(`${prefix}/getPostComments?projectId=${projectID}`)
+    return API.get(`${prefix}/post/comments?pageNumber=${pageNumber}&pageSize=${pageSize}&postId=${postId}`)
 
 }
 
-const addComment = (postID: number, userID: number, message: string) => {
-    console.log("!!!");
+const addComment = (message: string, user, parentNode, parentId) => {
     
 
     return API.post(`${prefix}/post/addComment`, {
-
-        post: {
-            id: postID
-        },
-        user: {
-            id: userID
-        },
-        "message": message
+        'post': parentId,
+        'message': message,
+        'user': user,
+        'parentNode': parentNode
     });
 };
 
+// const addComment = (childNodes: [any], deep: number, id: number, userID: number, message: string) => {
+    
 
+//     return API.post(`${prefix}/post/addComment`, {
+//         childNodes: childNodes,
+//         deep: deep,
+//         id: id,
+
+//         user: {
+//             id: userID
+//         },
+//         "message": message
+//     });
+// };
 export { addComment, getPostComments}

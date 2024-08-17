@@ -1,7 +1,7 @@
 <template>
     <Header showID showUserMinify />
     <!-- <ProjectHeader  commentText :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" /> -->
-    <div v-for="(comment, index) in comments" :key="comment.id" class="mx-4">
+    <!-- <div v-for="(comment, index) in comments" :key="comment.id" class="mx-4">
         <div class="feedCard mx-4" v-if="comment.isReply && index < 2 || showAllComments">
             <div class="feedCard__head">
                 <div class="d-flex align-center">
@@ -14,14 +14,11 @@
                     </div>
                 </div>
             </div>
-            <!-- body -->
             <div class="feedCard__body">
-                <!-- Новый этап проекта -->
                 <p class="txt-cap1">
                     {{ comment.text }}
                 </p>
             </div>
-            <!-- footer -->
             <div class="feedCard__footer">
                 <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                 <button style="color: #9e9e9e" class="txt-cap1" @click="startReply(comment)">Ответить</button>
@@ -39,31 +36,30 @@
                     </div>
                 </div>
             </div>
-            <!-- body -->
             <div class="feedCard__body">
-                <!-- Новый этап проекта -->
                 <p class="txt-cap1">
                     {{ comment.text }}
                 </p>
             </div>
-            <!-- footer -->
             <div class="feedCard__footer">
-                <span v-if="comments.length > 2 && !showAllComments" @click="showMoreComments">
-                    Показать еще
-                </span>
+
                 <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                 <button style="color: #9e9e9e" class="txt-cap1" @click="startReply(comment)">Ответить</button>
             </div>
         </div>
+    </div> -->
+
+    <div class="mx-4 comments">
+        <div v-for="(comment, index) in visibleComments">
+            <Comment v-if="index < commentIndex" @startReply="startReply" :commentObject="comment"/>
+        </div>
+
+        <button @click="loadСomments"
+            v-if="comments.length > countCommentsBetweenClosings && commentIndex < comments.length">показать
+            еще</button>
     </div>
-
-    <div class="mx-4" v-for="comments in displayedComments">
-
-        <!-- <Comments :comment="true" :id="comments.user.id" :message="comments.message" /> -->
-
-    </div>
-    <Comments @startReply="startReply" :comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
-    <Comments @startReply="startReply" :nestingDepth="1":comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+    <!-- <Comments @startReply="startReply" :comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" />
+    <Comments @startReply="startReply" :nestingDepth="1":comment="true" :id="'12'" :subName="'Вдохновитель Dribbble'" :message="'Приветствую! Идея интересная, но как будете привлекать инвестиции? У нас сейчас без чёткого плана никуда!'" /> -->
 
     <!-- <div v-if="!allCommentsShown" @click="showMoreComments" class="showMore mx-4">
         <button class="text-[#29B6F6] ml-4">Показать еще</button>
@@ -76,12 +72,12 @@
     <div class="input">
         <div class="reply p-2" v-if="replyToComment != ''">
             <img class="rotate-180" width="30" height="30" src="../../assets/icons/reply.svg" />
-
+            
             <img class="mx-2" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
 
-            <p class="reply__text" >{{ replyToComment}}</p>
+            <p class="reply__text">{{ replyToComment }}</p>
             <!-- <p>{{ replyToComment.text }}</p> -->
-             <img @click="clearReplyText" class="cursor-pointer" src="../../assets/icons/close-black.svg" alt="">
+            <img @click="clearReplyText" class="cursor-pointer clear" src="../../assets/icons/close-black.svg" alt="">
         </div>
         <div class="input-container">
             <input @keyup.enter="pushComment" type="text" v-model="commentText" placeholder="Ваш комментарий..." />
@@ -89,6 +85,7 @@
             <button @click="pushComment"><img :src="send" alt=""></button>
         </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
@@ -97,58 +94,167 @@ import Header from '~/components/Header.vue';
 import ProjectHeader from '~/components/projects/ProjectHeader.vue';
 import { ref, onMounted, computed } from 'vue';
 import { getPostComments, addComment } from '~/API/ways/main.ts'
+import { getUserByID } from '~/API/ways/user.ts'
+
 import { useRoute } from 'vue-router'
-import Comments from '~/components/Comment.vue'
+import Comment from '~/components/Comment.vue'
 import send from "~/assets/icons/chat.svg"
+import { log } from 'console';
+const countCommentsBetweenClosings = 3
+let commentIndex = ref(countCommentsBetweenClosings)
 let data = ref({})
 const route = useRoute()
 const commentText = ref('');
 const comments = ref([]);
 let replyToComment = ref("");
-const startReply = (comment: string) => {
-    console.log(comment);
+let replyUserName = ref()
+let parentId = ""
+let visibleComments = ref([])
+let postID = ref(2)
+
+
+const startReply = (replyComment: object, name: string) => {
+    commentText.value = ""
+    replyUserName.value = name
     
-    if (comment.length > 80) {
-        replyToComment.value = comment.substring(0, 80) + '...';
+    commentText.value += replyUserName.value + ", "
+    parentId = replyComment.id
+    if (replyComment.message.length > 40) {
+        replyToComment.value = replyComment.message.substring(0, 80) + '...';
     } else {
-        replyToComment.value = comment;
+        replyToComment.value = replyComment.message;
     }
 }
 
 const clearReplyText = () => {
+    parentId = ""
     replyToComment.value = ""
+    replyUserName.value = ""
 }
+
+
+
 const pushComment = async () => {
-    
+
     if (commentText.value) {
         try {
-            const response = await addComment(Number(route.params.ID), Number(localStorage.getItem("userId")), commentText.value);
-            
+            // const response = await addComment(Number(route.params.ID), Number(localStorage.getItem("userId")), commentText.value);
+            let id = new Date().toISOString()
+            let parentComment = findCommentById(parentId)
+            let deep = parentId == "" ?  0 : parentComment.deep + 1
+            let insertDate =  new Date().toISOString()
+            let message = commentText.value
+            // const response = await addComment(message, getUserByID(Number(localStorage.getItem("userId"))), [], parentId);
+
             const newComment = {
-                id: response.data.id, // Replace with the actual id from the response
-                text: commentText.value,
-                isReply: replyToComment.value !== null
+                id: id,
+                message:  message,
+                parentId: parentId,
+                insertDate: insertDate,
+                userId: localStorage.getItem('userId'),
+                deep: deep,
+                commentsAboveThisDepth: 0,
+                replyUserName: replyUserName.value,
+                replyText: replyToComment.value
             };
-            comments.value.push(newComment);
+            
+
+
+            let indexParent = getIndexCommentById(parentId)
+            if (parentId == "") {
+                comments.value.push(newComment)
+            } else {
+
+                let curDepth = newComment.deep
+
+                let i = indexParent + 1
+                for (; i < comments.value.length; i++) {
+                    if (curDepth > comments.value[i].deep) {
+                        break
+                    }
+                    
+                }
+                
+                comments.value.splice(i , 0, newComment);
+            }
+
+            // comments.value[getIndexCommentById(id)-1]
+
+            if (comments.value.length <= commentIndex.value) {
+                visibleComments.value = comments.value
+            }
             commentText.value = '';
             replyToComment.value = "";
+            parentId = ""
+
+
         } catch (error) {
             console.error('Failed to add comment:', error);
         }
     }
-    
 }
-let showAllComments = ref(false);
 
-const showMoreComments = () => {
-    displayedComments.value = prjComments.value;
-    allCommentsShown.value = true;
-    showAllComments.value = true;
+const loadСomments = () => {
+    commentIndex.value += countCommentsBetweenClosings
+    visibleComments.value = comments.value.slice(0, commentIndex.value)
+}
+interface Comment {
+    id: string;
+    message: string;
+    parentId?: string | null;
+    insertDate: string;
+    userId: string;
+    deep?: number;
+    childrenCount: number
+}
 
-};
-const allCommentsShown = ref(false);
-const displayedComments = ref([]);
-const prjComments = ref([])
+function calculateDepth(comments: Comment[], parentId: string | null = null): number {
+    return comments.reduce((acc, comment) => {
+        if (comment.parentId === parentId) {
+            comment.deep = acc + 1;
+        } else {
+            comment.deep = acc;
+        }
+        return acc + 1;
+    }, 0);
+}
+function getIndexCommentById(id: string): number {
+    return comments.value.findIndex(comment => comment.id === id);
+}
+function findCommentById(id: string): Comment | undefined {
+    return comments.value.find(comment => comment.id === id);
+}
+
+
+// let showAllComments = ref(false);
+
+// const showMoreComments = () => {
+//     displayedComments.value = prjComments.value;
+//     allCommentsShown.value = true;
+//     showAllComments.value = true;
+
+// };
+// const allCommentsShown = ref(false);
+// const displayedComments = ref([]);
+// const prjComments = ref([])
+
+onMounted(async () => {
+  try {
+    let response = await getPostComments(3, 4, postID.value);
+    // comments.value = response.data.object;
+    response = response.data.object;
+
+
+        comments.value = response
+        visibleComments.value = comments.value
+    console.log(response);
+    
+  } catch (e) {
+    console.error('Error:', e);
+  }
+});
+
+// const remainingComments = computed(() => prjComments.value.length - displayedComments.value.length);
 // onMounted(async () => {
 //     await getPostComments(route.params.ID).then((response) => {
 //         try {
@@ -159,24 +265,33 @@ const prjComments = ref([])
 //         }
 //     });
 // });
-const remainingComments = computed(() => prjComments.value.length - displayedComments.value.length);
-
 </script>
 <style scoped lang="scss">
+.comments {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 80px 0;
+}
 
 .input {
-    position: absolute;
+    position: fixed;
     bottom: 0px;
     left: 0;
     right: 0;
     background-color: white;
     padding: 10px;
+
     .reply {
         display: flex;
+
         .reply__text {
             color: #9e9e9e;
+            width: 80%;
+            display: flex;
+            align-items: center;
         }
     }
+
     .input-container {
         display: flex;
         flex-direction: row;
@@ -189,7 +304,7 @@ const remainingComments = computed(() => prjComments.value.length - displayedCom
         input {
             width: 100%;
             outline: none;
-      
+
         }
     }
 }
@@ -206,67 +321,66 @@ const remainingComments = computed(() => prjComments.value.length - displayedCom
     gap: 16px;
 }
 
-.feedCard {
-    padding: 16px 14px;
-    margin-bottom: 4px;
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+// .feedCard {
+//     padding: 16px 14px;
+//     margin-bottom: 4px;
+//     border-radius: 12px;
+//     background: #fff;
+//     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+//     display: flex;
+//     flex-direction: column;
+//     gap: 16px;
 
-    &__head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+//     &__head {
+//         display: flex;
+//         align-items: center;
+//         justify-content: space-between;
 
-        &__subtitle {
-            color: #9e9e9e;
-            margin-top: 1px;
-            text-align: initial;
-        }
-    }
+//         &__subtitle {
+//             color: #9e9e9e;
+//             margin-top: 1px;
+//             text-align: initial;
+//         }
+//     }
 
-    &__body {
-        text-align: left;
+//     &__body {
+//         text-align: left;
 
-        &__slider {
-            display: flex;
-            gap: 16px;
-            -ms-overflow-style: none;
-            /* Internet Explorer 10+ */
-            scrollbar-width: none;
-            overflow-x: scroll;
+//         &__slider {
+//             display: flex;
+//             gap: 16px;
+//             -ms-overflow-style: none;
+//             /* Internet Explorer 10+ */
+//             scrollbar-width: none;
+//             overflow-x: scroll;
 
-            &::-webkit-scrollbar {
-                display: none;
-                /* Safari and Chrome */
-            }
-        }
-    }
+//             &::-webkit-scrollbar {
+//                 display: none;
+//                 /* Safari and Chrome */
+//             }
+//         }
+//     }
 
-    &__vacancy {
-        &__head {
-            padding: 10px 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            max-width: fit-content;
-            border-radius: 8px;
-            background: #e1f5fe;
-        }
-    }
+//     &__vacancy {
+//         &__head {
+//             padding: 10px 20px;
+//             display: flex;
+//             gap: 10px;
+//             align-items: center;
+//             max-width: fit-content;
+//             border-radius: 8px;
+//             background: #e1f5fe;
+//         }
+//     }
 
-    &__footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+//     &__footer {
+//         display: flex;
+//         justify-content: space-between;
+//         align-items: center;
 
-        &__button {
-            padding: 14.5px 20px;
-            box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset, 0px 23px 10px -23px rgba(0, 0, 0, 0.15);
-        }
-    }
-}
-</style>
+//         &__button {
+//             padding: 14.5px 20px;
+//             box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2) inset, 0px 23px 10px -23px rgba(0, 0, 0, 0.15);
+//         }
+//     }
+// }</style>

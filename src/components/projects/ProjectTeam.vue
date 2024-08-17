@@ -77,33 +77,33 @@
 
             <div class="d-flex mt-2 justify-space-between align-center">
                 Пригласить участника
-                <UiButton @click="searchTeammateModal.open()" plus />
+                <UiButton @click="joinTeam.open()" plus />
             </div>
         </div>
 
         <vue-bottom-sheet ref="modalState">
             <div class="modal">
                 <div class="modal__list">
-                    <div class="modal__list__item">
+                    <div @click="$router.push('/'+ 'user/'  + `5`)" class="modal__list__item">
                         <img :src="account" alt="" />
                         <p class="txt-body1">
                             Открыть профиль
                         </p>
                     </div>
-                    <div @click="authorityModal" class="modal__list__item">
+                    <div @click="teamRoles.open()" class="modal__list__item">
                         <img :src="commit" alt="" />
                         <p class="txt-body1">
                             Настроить полномочия
 
                         </p>
                     </div>
-                    <div class="modal__list__item">
+                    <div @click="delDialog" class="modal__list__item">
                         <img :src="close" alt="" />
                         <p class="txt-body1">
                             Удалить человека из проекта
                         </p>
                     </div>
-                    <div class="modal__list__item">
+                    <div @click="authority" class="modal__list__item">
                         <img :src="key" alt="" />
                         <p class="txt-body1">
                             Передать полномочия владельца проекта
@@ -112,111 +112,156 @@
                 </div>
             </div>
         </vue-bottom-sheet>
-
-        <vue-bottom-sheet ref="searchTeammateModal">
-            <div class="searchTeammateModal modal">
-                <p class="mb-2">Поиск человека для добавления в проект</p>
-                <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
-                <div class="searchTeammateModal__items">
-                    <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center">
-                        <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
-                        <div>
-                            <div class="d-flex align-center">
-                                <p class="txt-body3">{{ user.id }}</p>
-                            </div>
-                            <!-- <p class="searchUserCard__head__subtitle txt-cap1">г. Санкт-Петербург</p> -->
-                            <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p>
-                        </div>
-
+        <vue-bottom-sheet ref="teamRoles">
+            <div class="d-flex align-center mx-8">
+                <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
+                <div>
+                    <div class="d-flex align-center">
+                        <p class="txt-body3">qsa</p>
                     </div>
-                </div>
+                    <p class="searchUserCard__head__subtitle txt-cap1">asas</p>
 
+                </div>
+            </div>
+            <div class="mx-8">
+                <v-row align="center" justify="start" class="mt-12">
+                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32" variant="outlined"
+                        color="#29B6F6">
+                        <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
+                    </v-btn>
+
+                    <p class="license-text ma-0">
+                        Может отвечать тем, кто пишет <br />
+                        в личные сообщения проекту <br />
+                    </p>
+                </v-row>
+            </div>
+            <div class="mx-8">
+                <v-row align="center" justify="start" class="mt-12">
+                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32" variant="outlined"
+                        color="#29B6F6">
+                        <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
+                    </v-btn>
+
+                    <p class="license-text ma-0">
+                        Может отвечать тем, кто пишет <br />
+                        в личные сообщения проекту <br />
+                    </p>
+                </v-row>
+            </div>
+            <div class="mx-8">
+                <v-row align="center" justify="start" class="mt-12">
+                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32" variant="outlined"
+                        color="#29B6F6">
+                        <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
+                    </v-btn>
+
+                    <p class="license-text ma-0">
+                        Может отвечать тем, кто пишет <br />
+                        в личные сообщения проекту <br />
+                    </p>
+                </v-row>
+            </div>
+            <div class="mx-8">
+                <v-row align="center" justify="start" class="mt-12">
+                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32" variant="outlined"
+                        color="#29B6F6">
+                        <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
+                    </v-btn>
+
+                    <p class="license-text ma-0">
+                        Может отвечать тем, кто пишет <br />
+                        в личные сообщения проекту <br />
+                    </p>
+                </v-row>
+            </div>
+            <div class="mx-8">
+                <v-row align="center" justify="start" class="mt-12">
+                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32" variant="outlined"
+                        color="#29B6F6">
+                        <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
+                    </v-btn>
+
+                    <p class="license-text ma-0">
+                        Может отвечать тем, кто пишет <br />
+                        в личные сообщения проекту <br />
+                    </p>
+                </v-row>
             </div>
         </vue-bottom-sheet>
-
-        <vue-bottom-sheet full-screen ref="searchTeammateModal">
-            <div class="searchTeammateModal modal">
+        <vue-bottom-sheet full-screen ref="joinTeam">
+            <div class="searchTeammateModal px-4 modal">
                 <p class="mb-2 p-4">К команде iTalent хотят присоединиться пользователи:</p>
-                <div class="searchTeammateModal__item " v-for="users in teamMembers">
-                    <v-expansion-panels>
-                        <v-expansion-panel class="feedPanel">
-                            <v-expansion-panel-title class="feedPanel__head">
-                                <template v-slot:actions="{ expanded }">
-                                    <div class="">
-                                        <UiButton class="w-[80px] p-5 mr-24" v-if="!expanded" isxSmall
-                                            @click="modalState.open()" bg-color="def">Чат</UiButton>
-                                    </div>
+                <div v-for="(user, index) in userss" :key="user.id" class="user-item"
+                    :class="{ 'expanded': expandedIndex === index }">
+                    <div class="user-header" @click="toggleExpand(index)">
+                        <img :src="user.avatar" class="user-avatar" alt="User avatar">
+                        <div class="user-info">
+                            <div class="user-name">{{ user.name }} </div>
+                            <div class="user-status">{{ user.status }}</div>
+                        </div>
+                        <div class="user-actions txt-cap2">
+                            <button @click="$router.push('/' + `messenger/chat/39`)" class="btn-chat">Чат</button>
+                        </div>
+                        <div class="icon-bg">
+                            <v-icon color="#1769AA"
+                                :icon="expandedIndex === index ? 'mdi-chevron-up' : ' mdi-chevron-down'"></v-icon>
+                        </div>
+                    </div>
+                    <!-- <transition name="expand"> -->
+                    <div v-if="expandedIndex === index" class="user-expanded">
+                        <div class="user-message">{{ user.message }}</div>
+                        <div class="user-actions txt-cap2">
+                            <button class="btn-decline">Отклонить</button>
+                            <button @click="$router.push('/' + `messenger/chat/39`)" class="btn-chat">Чат</button>
+                            <button class="btn-approve">Одобрить</button>
+                        </div>
+                    </div>
+                    <!-- </transition> -->
 
-                                    <v-icon :class="expanded ? 'px-6 py-3 rounded-xl' : ''"
-                                        class="bg-[#e1f5fe] px-6 mt-[18px] py-3 rounded-xl" color="#1769AA"
-                                        :icon="expanded ? 'mdi-chevron-up' : ' mdi-chevron-down'"></v-icon>
-                                </template>
-                                <img width="30" height="30" class="mr-3" src="../../assets/demo/ava-small-header.svg"
-                                    alt="" />
-
-                                <div>
-                                    <div class="feedPanel__card__title align-center d-flex">
-                                        <p class="txt-body3">{{ users.user.login }}</p>
-                                        <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
-                                        <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feedPanels.time') }}</span>
-                                    </div>
-                                    <p class="color-gray txt-body2">Team mood</p>
-                                </div>
-                                <v-spacer></v-spacer>
-
-                                <v-spacer></v-spacer>
-                                <div class="back-messages-after"></div>
-                            </v-expansion-panel-title>
-
-                            <v-expansion-panel-text v-if="!props.readOnly" v-for="(info, id) in demoInfo" :key="id">
-                                <div class="feedPanel__card d-flex align-center">
-                                    <div class="ui-vacancyPanel__head mb-2">
-                                        Здравствуйте! Кажется я тот, кого вы ищете!
-                                    </div>
-
-                                    <v-spacer />
-                                </div>
-                                <div class="flex flex-row gap-8">
-                                    <UiButton isSmall bg-color="def" @click="react(Answer.No)">Отклонить</UiButton>
-                                    <UiButton isxSmall bg-color="def">Чат</UiButton>
-                                    <UiButton isSmall @click="react(Answer.Yes)" bg-color="smBlue">Одобрить
-                                    </UiButton>
-                                </div>
-                            </v-expansion-panel-text>
-                        </v-expansion-panel>
-                    </v-expansion-panels>
                 </div>
             </div>
 
         </vue-bottom-sheet>
         <vue-bottom-sheet ref="searchTeammateModal">
-            <div class="searchTeammateModal modal">
+            <div class="searchTeammateModal px-4 modal">
                 <p class="mb-2">Поиск человека для добавления в проект</p>
                 <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
                 <div class="searchTeammateModal__items">
                     <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center">
-                        <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
+                        <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
                         <div>
                             <div class="d-flex align-center">
                                 <p class="txt-body3">{{ user.id }}</p>
+                                <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
+                                <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p>
                             </div>
-                            <!-- <p class="searchUserCard__head__subtitle txt-cap1">г. Санкт-Петербург</p> -->
-                            <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p>
-                        </div>
+                            <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
 
+                        </div>
                     </div>
                 </div>
-
             </div>
         </vue-bottom-sheet>
         <v-dialog v-model="authority" width="100%">
-            <v-card class="ui-skills__search">
+            <v-card class="ui-skills__search p-4">
                 <p>
                     <span>Изменение фонового изображения</span>
                 </p>
                 <div class="ui-skills__search__actions">
                     <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
                     <UiButton bgColor="smOutlined" isSmall>Заменить</UiButton>
+                </div>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="deleteMember" width="100%">
+            <v-card class="ui-skills__search p-4 text-left">
+                <p>Пожалуйста, подойдите к этому ответственно.</p>
+                <p class="text-[#FF3D00]"> Вы дейстительно хотите исключить Анну Краснову из проекта? </p>
+
+                <div class="ui-skills__search__actions">
+                    <UiButton bgColor="smDefault" isSmall>Оставить</UiButton>
+                    <UiButton bgColor="smError" isSmall>Исключить</UiButton>
                 </div>
             </v-card>
         </v-dialog>
@@ -241,11 +286,37 @@ import { reactToProposition } from '~/API/ways/notifications.ts';
 import { getUserSearch } from '~/API/ways/user.ts';
 import { getProjectPropositions, getUserProjectPropositions } from "~/API/ways/notifications.ts"
 import { useRoute } from 'vue-router'
+import ava from '../../assets/demo/ava-small-header.svg'
+const state = ref(false)
+
+function togleState() {
+    state.value = !state.value
+}
+const userss = ref([
+    { id: 1, name: 'Feofan', status: 'Team mood', avatar: ava, message: '' },
+    { id: 2, name: 'Евгений Анисимов', status: 'Database ninja', avatar: ava, message: 'Здравствуйте! Кажется я тот, кого вы ищете!' }
+]);
+
+const expandedIndex = ref(null);
+
+const toggleExpand = (index) => {
+    expandedIndex.value = expandedIndex.value === index ? null : index;
+};
 const route = useRoute()
 let authority = ref(false)
+let deleteMember = ref(false)
+
+const delDialog = () => {
+    if (modalState.value) {
+        modalState.value.close()
+    }
+    deleteMember.value = true
+}
 const authorityModal = () => {
+    if (modalState.value) {
+        modalState.value.close()
+    }
     authority.value = true
-    modalState.close()
 }
 interface User {
     id: number;
@@ -327,6 +398,7 @@ const react = async (propositionAnswer: Answer) => {
 };
 
 // 
+const teamRoles = ref(false)
 const modalState = ref(null)
 const searchTeammateModal = ref(null)
 let joinTeam = ref(false)
@@ -420,6 +492,10 @@ onMounted(fetchUsers);
 }
 
 .searchTeammateModal {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+
     &__items {
         display: flex;
         flex-direction: column;
@@ -442,5 +518,148 @@ onMounted(fetchUsers);
 
 .modalList {
     padding: 0 20px;
+}
+
+.feedPanel :deep() {
+    .v-expansion-panels {
+        border: 1px solid blue !important;
+        border-radius: 12px 12px 2px 2px !important;
+    }
+
+    .v-expansion-panel__shadow {
+        display: none;
+    }
+
+    .v-expansion-panel-title__overlay {
+        border-radius: 12px 12px 2px 2px;
+        opacity: 0;
+    }
+
+    .v-expansion-panel-text__wrapper {
+        padding: 16px 14px;
+        // border-top: 1px solid #e0e0e0;
+    }
+}
+
+.user-item {
+    padding: 0px 10px;
+    border-top: 1px solid #e0e0e0;
+    overflow: hidden;
+    background-color: #fff;
+
+    &:last-child {
+        border-bottom: 1px solid #e0e0e0;
+    }
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info {
+    flex-grow: 1;
+}
+
+.icon-bg {
+    background-color: #E1F5FE;
+    padding: 0px 10px;
+    border-radius: 8px;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.user-status {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.expand-icon {
+    transition: transform 0.3s ease;
+}
+
+.expand-enter-active,
+.expand-leave-active {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+    max-height: 0;
+    opacity: 0;
+}
+
+.user-expanded {
+    overflow: hidden;
+    padding: 12px;
+}
+
+.user-message {
+    margin-bottom: 10px;
+}
+
+.user-actions {
+    display: flex;
+    justify-content: start;
+}
+
+.user-actions button {
+    padding: 9px 16px;
+    // border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 16px;
+}
+
+.btn-decline {
+    border: 1px solid #E0E0E0;
+    background-color: #fff;
+}
+
+.btn-chat {
+    border: 1px solid #E0E0E0;
+    background-color: #fff;
+}
+
+.btn-approve {
+    background-color: #3498db;
+    color: white;
+}
+
+.ui-skills {
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+
+    &__search {
+        padding: 40px 30px 30px 30px;
+        border-radius: 20px !important;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05) !important;
+
+        p {
+            font-weight: 400;
+            // margin-bottom: 24px;
+            text-align: left;
+        }
+
+        &__actions {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
 }
 </style>

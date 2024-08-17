@@ -1,5 +1,5 @@
 <template>
-    <div class="feedCard mb-4">
+    <div v-if="props.blogData" class="feedCard mb-4">
         <!-- head -->
         <div v-if="props.withoutBg" class="feedCard__head-empty">
             <div class="d-flex align-center">
@@ -7,7 +7,7 @@
                     <div class="d-flex align-center">
                         <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                     </div>
-                    <p class="txt-body3 text-black mb-2">Save and Brave</p>
+                    <p class="txt-body3 text-black mb-2"> post id: {{ props.blogData.id }}</p>
                 </div>
             </div>
             <button @click="modalState.open()">
@@ -21,7 +21,7 @@
                     <div class="d-flex align-center">
                         <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                     </div>
-                    <p class="txt-body3 mb-2">Save and Brave</p>
+                    <p class="txt-body3 text-black mb-2">id: {{ props.blogData.id }}</p>
                 </div>
             </div>
             <button @click="modalState.open()">
@@ -34,13 +34,13 @@
             <!-- Новый этап проекта -->
             <div v-if="props.feedCardType === 'newProjectStage'">
                 <p class="txt-cap1">
-                    {{ $t('feed.feedBack') }}
+                    {{ props.blogData.descriptionHeader }}
                 </p>
                 <p class="txt-cap1 mt-4">
-                    192.168.0.1:27015
+                     {{ props.blogData.description }}
                 </p>
                 <p class="txt-cap1 mt-1">
-                    Заходи, будет весело!
+              
                 </p>
             </div>
 
@@ -48,10 +48,7 @@
             <!-- Слайдер -->
             <div v-if="props.feedCardType === 'newProjectPhotos'">
                 <p class="txt-cap1">
-                    {{ $t('feed.feedBack') }}
-                </p>
-                <p class="txt-cap1 my-4">
-                    192.168.0.1:27015
+                    {{ props.blogData.descriptionHeader }}
                 </p>
                 <div class="feedCard__body__slider">
                     <img width="135" v-for="i in 5" height="204" src="../../assets/demo/demo-rec1.png" />
@@ -75,7 +72,7 @@
                     style="padding: 10px 13px 9px 14px" onlyIcon />
 
                 <!-- <Fire :id="props.blogID" /> -->
-                <Fire :id="1" />
+                <Fire :prjType="false" :id="props.blogData.id" />
             </div>
         </div>
     </div>
@@ -85,7 +82,7 @@
             <div class="modal__list">
                 <div class="modal__list__item">
                     <img src="../../assets/icons/warning-red.svg" alt="" />
-                    <p class="txt-body1 text-[#FF3D00]">
+                    <p @click="complaint" class="txt-body1 text-[#FF3D00]">
                         <!-- {{ item.name }} -->
                         Сообщить об нарушении
                     </p>
@@ -112,7 +109,7 @@
 
 <script lang="ts" setup>
 import share from "~/assets/icons/share-black.svg"
-import chat from "~/assets/icons/chat-black.svg"
+// import chat from "~/assets/icons/chat-black.svg"
 import bgImage from "~/assets/Frame221.png"
 import trash from "~/assets/trash_blue.svg"
 import edit_icon from "~/assets/edit_icon.svg"
@@ -122,7 +119,7 @@ import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import UiButton from '../ui-kit/UiButton.vue'
 import { computed, ref } from 'vue'
-
+import {addComplaint} from "../../API/ways/post"
 const props = defineProps({
     feedCardType: {
         type: String,
@@ -132,15 +129,19 @@ const props = defineProps({
         type: String,
         default: '',
     },
-    blogID: {
-        type: Number,
+    blogData: {
+        type: Object,
     },
     withoutBg: {
         type: Boolean,
     }
 })
+let complaintData = ref()
+const complaint = async()=>{
+    const data = addComplaint(Number(props.blogData.id),Number(localStorage.getItem('userId')), '123')
+    complaintData.value = data;
 
-
+}
 const modalState = ref(null)
 
 const me: modalActionsList[] = [
@@ -158,7 +159,7 @@ const shareBlog = () => {
         navigator.share({
             title: 'ITNT',
             text: 'Откройте для себя ITNT.',
-            url: 'http://62.113.105.220/post/' + 'post',
+            url: 'http://62.113.105.220/post/' + `${props.blogData.id}`,
         })
     } catch (error) {
         console.log('error :' + error)
@@ -175,14 +176,6 @@ const imageHeight = computed(() => {
 })
 const Color = computed(() => {
     return hasImage.value ? 'black' : 'white;'
-})
-
-const userModalType = computed(() => {
-    if (props.userType === 'me') {
-        return me
-    } else if (props.userType === 'user') {
-        return userModal
-    }
 })
 
 const feedCardSubtitle = computed(() => {

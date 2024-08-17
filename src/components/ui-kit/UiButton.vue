@@ -5,21 +5,17 @@ export default {
 </script>
 
 <template>
-    <button
-        class="ui-button text-none"
-        :disabled="props.isDisabled"
-        :class="[
-            `ui-button--${props.bgColor}`,
-            `ui-button--${props.onlyIcon ? 'onlyIcon' : ''}`,
-            props.isDisabled && 'ui-button--disabled',
-            props.isNormal && 'ui-button__normal',
-            props.isSmall && 'ui-button__small',
-            props.isxSmall && 'ui-button__xSmall',
-            `ui-button__small--${props.bgColor}`,
-            props.fit && 'ui-button--fit',
-            props.plus && 'ui-button--plus',
-        ]"
-    >
+    <button class="ui-button text-none" :disabled="props.isDisabled" :class="[
+        `ui-button--${props.bgColor}`,
+        `ui-button--${props.onlyIcon ? 'onlyIcon' : ''}`,
+        props.isDisabled && 'ui-button--disabled',
+        props.isNormal && 'ui-button__normal',
+        props.isSmall && 'ui-button__small',
+        props.isxSmall && 'ui-button__xSmall',
+        `ui-button__small--${props.bgColor}`,
+        props.fit && 'ui-button--fit',
+        props.plus && 'ui-button--plus',
+    ]">
         <img v-if="props.imgSrc" :src="props.imgSrc" />
         <p v-if="props.plus">+</p>
         <slot />
@@ -48,15 +44,15 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    isNormal:{
-        type:Boolean,
-        default:false,
+    isNormal: {
+        type: Boolean,
+        default: false,
     },
     isSmall: {
         type: Boolean,
         default: false,
     },
-    isxSmall:{
+    isxSmall: {
         type: Boolean,
         default: false,
     },
@@ -117,6 +113,7 @@ const props = defineProps({
         box-shadow: 0 22px 22px -17px rgb(145 18 222 / 51%);
         color: $def-white;
     }
+
     &--gray {
         border-radius: 12px;
         border: 1px solid #3a4757;
@@ -131,6 +128,7 @@ const props = defineProps({
         box-shadow: 0 22px 22px -17px $primary;
         color: $def-white;
     }
+
     &--disabled {
         border-radius: 12px;
         border: 1px solid #9e9e9e;
@@ -151,25 +149,41 @@ const props = defineProps({
             border: 1px solid $primary;
             box-shadow: none;
         }
+
         &--smBlue {
             background: $primary;
             color: $def-white;
             border: none;
             box-shadow: none;
         }
+
+        &--smDefault {
+            color: #000;
+            border: 1px solid #000;
+            box-shadow: none;
+        }
+
+        &--smError {
+            color: #FF3D00;
+            border: 1px solid #FF3D00;
+            box-shadow: none;
+
+        }
     }
-    &__normal{
+
+    &__normal {
         max-width: 240px;
         width: 100%;
         padding: 0;
         border-radius: 12px;
         height: 36px;
-        
+
         &--smOutlined {
             color: $primary;
             border: 1px solid $primary;
             box-shadow: none;
         }
+
         &--smBlue {
             background: $primary;
             color: $def-white;
@@ -177,6 +191,7 @@ const props = defineProps({
             box-shadow: none;
         }
     }
+
     &__xSmall {
         max-width: 80px;
         width: 100%;
@@ -189,6 +204,7 @@ const props = defineProps({
             border: 1px solid $primary;
             box-shadow: none;
         }
+
         &--smBlue {
             background: $primary;
             color: $def-white;

@@ -5,7 +5,20 @@ export default {
 </script>
 
 <template>
-    <button @click="handleLike" class="fire">
+     <button v-if="props.prjType" @click="handleLike" class="fire">
+        <transition name="fade">
+            <img v-if="status === 'default'" :src="flame" alt="Default" />
+        </transition>
+        <transition name="fade">
+            <!-- <img v-if="status === 'loading'" src="../assets/icons/chat-black.svg" alt="Loading" /> -->
+            <v-progress-circular v-if="status === 'loading'" width="2" class="loading m-0 p-0 text-center" color="white"
+                indeterminate></v-progress-circular>
+        </transition>
+        <transition class="m-0 p-0" name="fade">
+            <img width="28" v-if="status === 'success'" :src="sucess" alt="Success" />
+        </transition>
+    </button>
+    <button v-else @click="handleLikePost" class="fire">
         <transition name="fade">
             <img v-if="status === 'default'" :src="flame" alt="Default" />
         </transition>
@@ -25,11 +38,16 @@ import sucess from '~/assets/LoadingIcon.svg'
 import flame from '~/assets/icons/fire/flame.svg'
 import { nextTick } from 'vue'
 import { addLike, delLike } from '~/API/ways/project'
+import { addLikes, delLikes } from '~/API/ways/post'
 import { ref } from 'vue'
 const props = defineProps({
     id: {
         type: Number,
     },
+    prjType:{
+        type:Boolean,
+        default:true
+    }
 })
 
 const status = ref("default") // Используйте ref для создания реактивного состояния
@@ -62,14 +80,47 @@ async function handleLike() {
 
     await nextTick()
 }
-async function funDelLike() {
-    await delLike(props.id).then((repsonse) => {
-        console.log(repsonse)
-    })
+// async function funDelLike() {
+//     await delLike(props.id).then((repsonse) => {
+//         console.log(repsonse)
+//     })
+
+//     await nextTick()
+// }
+async function handleLikePost() {
+    console.log('clicked')
+    status.value = 'loading'
+
+    try {
+        let response
+        if (isLiked.value) {
+            response = await delLikes(props.id)
+        } else {
+            response = await addLikes(props.id)
+        }
+        console.log(response)
+        setTimeout(() => {
+            if (isLiked.value) {
+                status.value = 'default'
+            } else {
+                status.value = 'success'
+            }
+            isLiked.value = !isLiked.value 
+        }, 500);
+    } catch (error) {
+        console.error(error)
+        status.value = 'error'
+    }
 
     await nextTick()
 }
+// async function funDelLikePost() {
+//     await delLike(props.id).then((repsonse) => {
+//         console.log(repsonse)
+//     })
 
+//     await nextTick()
+// }
 </script>
 
 <style lang="scss" scoped>

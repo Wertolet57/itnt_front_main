@@ -11,18 +11,20 @@ const getProjectByID = (id: any) => {
 const getAllProjects = () => {
     return API.get(`${prefix}/search`)
 }
-export const getNewProjects = (newProjects:Boolean) => {
+export const getNewProjects = (newProjects: Boolean) => {
     return API.get(`${prefix}/search?${newProjects}`)
 }
 const getProjectsByValue = (prjValue: any) => {
     return API.get(`${prefix}/search?searchString=${prjValue}`)
 }
+export const searcgProjects = (params: any) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`${prefix}?${queryParams}`);
+}
 const getProjectComments = (projectID: number) => {
     return API.get(`${prefix}/projectComments?projectId=${projectID}`)
 
 }
-
-
 const postProject = (prjInfo: Object) => {
     return API.post(`${prefix}/`, prjInfo)
 }

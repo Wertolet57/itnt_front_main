@@ -1,390 +1,212 @@
-<script lang="ts">
-export default {
-    name: 'ProjectStage',
-}
-</script>
-
 <template>
-    <div class="projectStage">
-        <div class="projectStage__head mb-5">
-            <div v-for="(icon, index) in icons" :key="index" class="icons"
-                @click="setContent(icon.Class, icon.title, icon.content)">
-                <img :src="icon.src" />
+    <div v-if="readOnly"  class="stepper">
+        <div class="stepper-header">
+            <div v-for="(step, index) in steps" :key="index" class="step-icon" :class="{
+                'active': currentStep === index + 1,
+                'completed': currentStep > index + 1
+            }">
+                <img v-if="currentStep > index + 1" :src="NULL" alt="">
+
+                <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
+                <span class="not-active" v-else></span>
             </div>
-            <v-icon v-if="!props.readOnly" @click="modalState.open()" icon="mdi-dots-vertical" />
+            <v-icon icon="mdi-dots-vertical" />
         </div>
-
-        <div :class="currentClass" class="projectStage__stage we-linear-blue txt-cap mb-2">
-            <v-card-title class="pa-0 pl-3">{{ title }}</v-card-title>
+        <div class="stepper-content">
+            <div class="flex flex-row">
+                <span :class="currentStepContent.spanClass" class="mr-2"></span>
+                <h2>{{ currentStepContent.title }}</h2>
+            </div>
+            <div class="flex flex-col" v-html="currentStepContent.content"></div>
         </div>
+        <!-- <div class="stepper-actions">
+            <UiButton :fit="false" :class="currentStepContent.colorClass" @click="selectStep" v-if="currentStep !== 2">
+                Выбрать этот этап
+            </UiButton>
+            <UiButton bg-color="def" class="text-black" v-if="currentStep === 2">
+                Вы сейчас на этой стадии
+            </UiButton>
+        </div> -->
+    </div>
+    <div v-else  class="stepper">
+        <div class="stepper-header">
+            <div v-for="(step, index) in steps" :key="index" class="step-icon" :class="{
+                'active': currentStep === index + 1,
+                'completed': currentStep > index + 1
+            }" @click="setStep(index + 1)">
+                <img v-if="currentStep > index + 1" :src="NULL" alt="">
 
-        <p v-html="content" class="mb-5 txt-cap1"></p>
-
-        <div v-if="!props.readOnly" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
+                <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
+                <span class="not-active" v-else></span>
+            </div>
+            <v-icon icon="mdi-dots-vertical" />
+        </div>
+        <div class="stepper-content">
+            <div class="flex flex-row">
+                <span :class="currentStepContent.spanClass" class="mr-2"></span>
+                <h2>{{ currentStepContent.title }}</h2>
+            </div>
+            <div class="flex flex-col" v-html="currentStepContent.content"></div>
+        </div>
+        <div class="stepper-actions">
+            <UiButton :fit="false" :class="currentStepContent.colorClass" @click="selectStep" v-if="currentStep !== 2">
+                Выбрать этот этап
+            </UiButton>
+            <UiButton bg-color="def" class="text-black" v-if="currentStep === 2">
+                Вы сейчас на этой стадии
+            </UiButton>
         </div>
     </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/A.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-
-        <div class="projectStage__stage we-linear-blue txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Сид раунд (Seed-раунд)</v-card-title>
-        </div>
-
-        <p class="mb-5 txt-cap1">
-            На этой стадии привлекают от 25 тыс до
-            1 млн $.
-            Деньги нужны для того, чтобы завершить разработку прототипа или довести его до требований рынка.
-
-            Главный продукт - программа, итогом сид раунда должен стать финальный релиз программы.
-
-            Основная сложность - показать инвесторам перспективы проекта и правильно оценить необходимый объем
-            финансирования.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <!-- <UiButton bg-color="blue">Выбрать этот этап</UiButton> -->
-            <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton>
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/B.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-        <div class="projectStage__stage we-linear-green txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Ангельский раунд</v-card-title>
-        </div>
-
-        <p class="mb-5 txt-cap1">
-            Главная особенность ангельского раунда в том, что стартапы привлекают скорее не инвесторов, а менторов.
-            Помощь бизнес-ангелов в организации всех процессов бывает настолько существенной, что финансы часто уходят
-            на второй план. Ангельский раунд можно назвать и разновидностью seed раунда. Главная сложность здесь -
-            вовремя понять, что вашему стартапу нужны не только деньги, но и организационная поддержка. И, конечно,
-            бывает непросто найти инвестора и ментора в одном лице.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
-            <!-- <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton> -->
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/B.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-        <div class="projectStage__stage we-linear-green txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Раунд А (Stage A)</v-card-title>
-        </div>
-
-        <p class="mb-5 txt-cap1">
-            Эта стадия наступает если стартап успешно прошел сид-раунд. Стартапы привлекают суммы от 500 тысяч долларов.
-
-            Основные задачи:
-
-            организовать серийное производство (постоянную работу сервиса);
-            нанять полноценную команду.
-
-            Раунд А может быть первым для компании, если предыдущие задачи основатели стартапа решили собственными
-            ресурсами.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
-            <!-- <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton> -->
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/NULL.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-        <div class="projectStage__stage we-linear-purple txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Раунд B (Stage B)</v-card-title>
-        </div>
-
-        <p class="mb-5 txt-cap1">
-            На этой стадии происходит масштабирование компаний. Раунд B начинается когда стартап достигает финансовых
-            показателей, оговоренных с инвесторами на стадии А.
-
-            Среди задач этого этапа:
-
-            рост прибыли;
-            завоевание новых рынков сбыта продукции;
-            расширение охвата в занятой нише.
-
-            Возможные риски:
-
-            неэффективная работа команды;
-            непонимание того, как достичь задач;
-            неправильные решения при масштабировании.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
-            <!-- <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton> -->
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/D.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-        <div class="projectStage__stage we-linear-purple txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Раунд C (Stage C) </v-card-title>
-        </div>
-
-
-        <p class="mb-5 txt-cap1">
-            Перед компанией и ее создателями стоит задача - достичь самоокупаемости. Стартап становится прибыльным
-            только на стадии раунда C. После этого раунда компания способна существовать самостоятельно.
-
-            Главная сложность в том, чтобы наконец превратить смелый эксперимент в стабильный и прогнозируемый
-            бизнес-проект. До этой стадии доходят далеко не все стартапы. Очень многие не достигают успеха из-за
-            недостатка знаний и опыта, неспособности мыслить как бизнесмен, а не просто креативить.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
-            <!-- <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton> -->
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <div class="projectStage hidden">
-        <div class="projectStage__head mb-5">
-            <div>
-                <img src="../../assets/icons/projectStages/C.svg" />
-            </div>
-
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" />
-        </div>
-
-        <div class="projectStage__stage we-linear-orange txt-cap mb-2">
-            <v-card-title class="pa-0  pl-3">Раунд D (Stage D)</v-card-title>
-        </div>
-
-
-        <p class="mb-5 txt-cap1">
-            Это финансирование перед продажей стратегическому инвестору или выходом на IPO
-
-            Основная сложность для компаний - привлечь стратегического инвестора, показать покупателям свою ценность.
-        </p>
-
-        <div v-if="props.readOnly === false" class="projectStage__footer">
-            <UiButton bg-color="blue">Выбрать этот этап</UiButton>
-            <!-- <UiButton bg-color="def">Вы сейчас на этой стадии</UiButton> -->
-        </div>
-        <!-- <v-card-text v-show="check === false">
-                <v-btn @click="check_btn" block x-large class="text-capitalize font-weight-regular button-blue">
-                    Выбрать <span class="text-lowercase">этот</span><span class="text-lowercase">этап</span>
-                </v-btn>
-            </v-card-text>
-            <v-card-text class="pt-0" v-show="check === true">
-                <v-btn block x-large class="this_stage text-capitalize font-weight-regular">
-                    Вы <span class="text-lowercase">сейчас</span><span class="text-lowercase">на</span
-                    ><span class="text-lowercase">этом</span><span class="text-lowercase">этапе</span>
-                </v-btn>
-            </v-card-text> -->
-    </div>
-    <vue-bottom-sheet max-height="115px" full-screen ref="modalState">
-        <div>213</div>
-    </vue-bottom-sheet>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import A from '../../assets/icons/projectStages/A.svg'
 import B from '../../assets/icons/projectStages/B.svg'
 import C from '../../assets/icons/projectStages/C.svg'
 import D from '../../assets/icons/projectStages/D.svg'
-// import NULL from '../../assets/icons/projectStages/NULL.svg'
 
-import { ref } from 'vue'
+import NULL from '../../assets/icons/projectStages/NULL.svg'
 import UiButton from '../ui-kit/UiButton.vue'
-import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
-const modalState = ref(false)
-// const stages = ['PRE-SEED', 'SEED', 'A-1', 'A-2', 'B-1', 'C', 'D']
-const currentClass = ref('');
-const title = ref('Пре-сид раунд (Pre-seed) - первые шаги проекта');
-const content = ref('На этой стадии создатели инвестируют собственные средства. О временных рамках и лимитах финансирования говорить не приходится. Стартаперы стремятся привлечь максимум денег как можно быстрее')
-
-const icons = [
-    { src: A, Class: 'we-linear-blue ', title: 'Пре-сид раунд (Pre-seed) - первые шаги проекта', content: "На этой стадии создатели <br> инвестируют собственные средства. О временных рамках и лимитах финансирования говорить не приходится. Стартаперы стремятся привлечь максимум денег как можно быстрее" },
-    { src: A, Class: 'we-linear-blue ', title: 'Сид раунд (Seed-раунд)', content: ' На этой стадии привлекают от 25 тыс до 1 млн $. Деньги нужны для того, чтобы завершить разработку прототипа или довести его до требований рынка. Главный продукт - программа, итогом сид раунда должен стать финальный релиз программы. Основная сложность - показать инвесторам перспективы проекта и правильно оценить необходимый объемфинансирования.' },
-    { src: B, Class: 'we-linear-green ', title: 'Ангельский раунд', content: 'Главная особенность ангельского раунда в том, что стартапы привлекают скорее не инвесторов, а менторов. Помощь бизнес-ангелов в организации всех процессов бывает настолько существенной, что финансы часто уходят на второй план. Ангельский раунд можно назвать и разновидностью seed раунда. Главная сложность здесь - вовремя понять, что вашему стартапу нужны не только деньги, но и организационная поддержка. И, конечно, бывает непросто найти инвестора и ментора в одном лице.' },
-    {
-        src: B, Class: 'we-linear-green ', title: 'Раунд А (Stage A)', content: `   Эта стадия наступает если стартап успешно прошел сид-раунд. Стартапы привлекают суммы от 500 тысяч долларов.
-
-            Основные задачи:
-
-            организовать серийное производство (постоянную работу сервиса);
-            нанять полноценную команду.
-
-            Раунд А может быть первым для компании, если предыдущие задачи основатели стартапа решили собственными
-            ресурсами.` },
-    {
-        src: D, Class: 'we-linear-purple ', title: 'Раунд B (Stage B)', content: `  На этой стадии происходит масштабирование компаний. Раунд B начинается когда стартап достигает финансовых
-            показателей, оговоренных с инвесторами на стадии А.
-
-            Среди задач этого этапа:
-
-            рост прибыли;
-            завоевание новых рынков сбыта продукции;
-            расширение охвата в занятой нише.
-
-            Возможные риски:
-
-            неэффективная работа команды;
-            непонимание того, как достичь задач;
-            неправильные решения при масштабировании.` },
-    {
-        src: D, Class: 'we-linear-purple ', title: 'Раунд C (Stage C) ', content: `  Перед компанией и ее создателями стоит задача - достичь самоокупаемости. Стартап становится прибыльным
-            только на стадии раунда C. После этого раунда компания способна существовать самостоятельно.
-
-            Главная сложность в том, чтобы наконец превратить смелый эксперимент в стабильный и прогнозируемый
-            бизнес-проект. До этой стадии доходят далеко не все стартапы. Очень многие не достигают успеха из-за
-            недостатка знаний и опыта, неспособности мыслить как бизнесмен, а не просто креативить.` },
-    {
-        src: C, Class: 'we-linear-orange ', title: 'Раунд D (Stage D)', content: ` Это финансирование перед продажей стратегическому инвестору или выходом на IPO <br>
-
-            Основная сложность для компаний - привлечь стратегического инвестора, показать покупателям свою ценность.` },
-];
-
-function setContent(Class, newTitle, newContent) {
-    currentClass.value = Class;
-    title.value = newTitle;
-    content.value = newContent;
-}
+import { ref, computed } from 'vue'
 const props = defineProps({
-    readOnly: {
-        type: Boolean,
-        default: false,
-    },
-    projectStage: {
-        type: String,
-        default: 'A-1',
-    },
+    readOnly:{
+        type:Boolean,
+        default:false,
+    }
 })
+const steps = [
+    {
+        title: 'Заказ', activeIcon: A, title: 'Пре-сид раунд (Pre-seed) - первые шаги проекта',spanClass:'pr-1 we-linear-blue', colorClass: 'button-blue',
+
+        content: `<p class="text-[14px] font-[500] pt-2">На этой стадии создатели инвестируют собственные средства. О временных рамках и лимитах финансирования говорить не приходится. Стартаперы стремятся привлечь максимум денег как можно быстрее</p>`
+    },
+    {
+        title: 'Доставка', activeIcon: A, title: 'Сид раунд (Seed-раунд)',spanClass:'we-linear-blue', colorClass: 'button-blue',
+
+        content: `<span class="text-[14px] font-[500] pt-2">На этой стадии привлекают от 25 тыс до 1 млн $. Деньги нужны для того, чтобы завершить разработку прототипа или довести его до требований рынка.</span>
+    <span class="text-[14px] font-[500] pt-3 m-0">Главный продукт - программа, итогом сид раунда должен стать финальный релиз программы.</span>
+    <span class="text-[14px] font-[500] pt-3 m-0">Основная сложность - показать инвесторам перспективы проекта и правильно оценить необходимый объем финансирования.</span>
+    `},
+    {
+        title: 'Подтверждение', activeIcon: B, title: 'Ангельский раунд',spanClass:'we-linear-green', colorClass: 'button-green',
+
+        content: `<p class="text-[14px] font-[500]">Главная особенность ангельского раунда в том, что стартапы привлекают скорее не инвесторов, а менторов. Помощь бизнес-ангелов в организации всех процессов бывает настолько существенной, что финансы часто уходят на второй план.
+        </p>
+       <p class="text-[14px] font-[500] pt-3">Ангельский раунд можно назвать и разновидностью seed раунда. Главная сложность здесь - вовремя понять, что вашему стартапу нужны не только деньги, но и организационная поддержка. И, конечно, бывает непросто найти инвестора и ментора в одном лице.</p> ` },
+    {
+        title: 'Заказ', activeIcon: B, title: 'Раунд А (Stage A)', spanClass:'we-linear-green',colorClass: 'button-green',
+
+        content: `<p class="text-[14px] font-[500] pt-2">Эта стадия наступает если стартап успешно прошел сид-раунд. Стартапы привлекают суммы от 500 тысяч долларов.</p>
+    <p class="text-[14px] font-[500] pt-3">Основные задачи: </p>
+        <ul class="py-3 text-[14px] font-[500]">
+            <li  class="list-disc list-inside p-0 ml-4">организовать серийное производство (постоянную работу сервиса);</li>
+            <li  class="list-disc list-inside p-0 ml-4">нанять полноценную команду.</li>
+        </ul>
+<p class="text-[14px] font-[500]">Раунд А может быть первым для компании, если предыдущие задачи основатели стартапа решили собственными ресурсами.</p>` },
+    {
+        title: 'Доставка', activeIcon: D, title: 'Раунд B (Stage B)',spanClass:'we-linear-purple', colorClass: 'button-purple',
+
+        content: `<p class="text-[14px] font-[500] pt-2">На этой стадии происходит масштабирование компаний. Раунд B начинается когда стартап достигает финансовых показателей, оговоренных с инвесторами на стадии А.</p>
+       <p class="text-[14px] font-[500] pt-3"> Среди задач этого этапа:</p>
+        <ul class="py-3 text-[14px] font-[500]">
+            <li class="list-disc list-inside p-0 ml-4">рост прибыли;</li>
+            <li  class="list-disc list-inside p-0 ml-4">завоевание новых рынков сбыта продукции;</li>
+            <li  class="list-disc list-inside p-0 ml-4">расширение охвата в занятой нише.</li>
+        </ul>
+        <p class="text-[14px] font-[500]"> Возможные риски:
+</p>
+        <ul class="py-3 text-[14px] font-[500]">
+            <li  class="list-disc list-inside p-0 ml-4">неэффективная работа команды;</li>
+            <li  class="list-disc list-inside p-0 ml-4">непонимание того, как достичь задач;</li>
+            <li  class="list-disc list-inside p-0 ml-4">неправильные решения при масштабировании.</li>
+        </ul>`  },
+    {
+        title: 'Подтверждение', activeIcon: D, title: 'Раунд C (Stage C)', spanClass:'we-linear-purple',colorClass: 'button-purple',
+
+        content: `<p class="text-[14px] font-[500] pt-2">Перед компанией и ее создателями стоит задача - достичь самоокупаемости. Стартап становится прибыльным только на стадии раунда C. После этого раунда компания способна существовать самостоятельно.
+        </p>
+        <p class="text-[14px] font-[500] pt-3">Главная сложность в том, чтобы наконец превратить смелый эксперимент в стабильный и прогнозируемый бизнес-проект. До этой стадии доходят далеко не все стартапы. Очень многие не достигают успеха из-за недостатка знаний и опыта, неспособности мыслить как бизнесмен, а не просто креативить.</p>` },
+    {
+        title: 'Подтверждение', activeIcon: C, title: 'Раунд D (Stage D)',spanClass:'we-linear-orange', colorClass: 'button-orange',
+
+        content: `<p class="text-[14px] font-[500] pt-2"> Это финансирование перед продажей стратегическому инвестору или выходом на IPO
+        </p>
+        <p class="text-[14px] font-[500] pt-3">Основная сложность для компаний - привлечь стратегического инвестора, показать покупателям свою ценность.</p>` }
+]
+
+const total = computed(() => {
+    return subtotal.value + shippingCost.value
+})
+const currentStep = ref(1)
+
+const currentStepContent = computed(() => {
+    return steps[currentStep.value - 1]
+})
+
+const setStep = (step) => {
+    currentStep.value = step
+}
+
+const nextStep = () => {
+    if (currentStep.value < steps.length) {
+        currentStep.value++
+    }
+}
+
+const prevStep = () => {
+    if (currentStep.value > 1) {
+        currentStep.value--
+    }
+}
+const selectStep = () => {
+  if (currentStep.value < steps.length) {
+    currentStep.value++
+  }
+}
 </script>
 
-<style lang="scss" scoped>
-.icons {
-    display: flex;
-    width: 100%;
-    max-width: 365px;
-    justify-content: space-between;
-    // gap:10px;
+<style scoped lang="scss">
+p {
+    margin: 0;
+    padding: 0
 }
 
-.projectStage {
+.button-blue {
+    color: #fff;
+    max-width: 100%;
+    background: linear-gradient(96.78deg, #13d5ff -0.02%, #12a1de 94.31%);
+    border: 1px solid #12b7ec;
+    box-sizing: border-box;
+    box-shadow: 0 22px 22px -17px #29b6f6;
     border-radius: 12px;
-    padding: 20px 10px 30px 20px;
-    background: $def-white;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
-
-    &__head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    &__stage {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        // border-left: 5px solid #29b6f6;
-        // padding-left: 10px;
-    }
 }
 
-.card {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05) !important;
-    border-radius: 12px !important;
+.button-green {
+    color: #000;
+    max-width: 100%;
+    border: 0px;
+    background: linear-gradient(96.78deg, #0efe51 -0.02%, #12dea1 94.31%);
+    box-shadow: 0 22px 22px -17px #29f67b;
+    border-radius: 12px;
 }
 
-// .we-linear {
-//     width: 5px;
-//     height: 28px;
-//     background-color: #29b6f6;
-//     border-radius: 8px;
-// }
+.button-purple {
+    color: #fff;
+    max-width: 100%;
+    border: 0px;
+    background: linear-gradient(96.78deg, #ce0efe -0.02%, #9012de 94.31%);
+    box-shadow: 0 22px 22px -17px #9c29f6;
+    border-radius: 12px;
+}
+
+.button-orange {
+    color: #fff;
+    border: 0px;
+    max-width: 100%;
+    background: linear-gradient(96.78deg, #ffaf13 -0.02%, #ff7313 94.31%);
+    box-shadow: 0 22px 22px -17px #f68b29;
+    border-radius: 12px;
+}
 .we-linear-blue {
     width: 5px;
     height: 28px;
@@ -413,73 +235,81 @@ const props = defineProps({
     border-radius: 8px;
 }
 
-.button-blue {
-    color: #fff;
-    max-width: 152px;
-    background: linear-gradient(96.78deg, #13d5ff -0.02%, #12a1de 94.31%);
-    border: 1px solid #12b7ec;
-    box-sizing: border-box;
-    box-shadow: 0 22px 22px -17px #29b6f6;
+.stepper {
+    background-color: white;
     border-radius: 12px;
+    /* max-width: 600px; */
+    margin-top:48px;
+    padding: 12px;
 }
 
-.button-green {
-    color: #000;
-    max-width: 152px;
-    background: linear-gradient(96.78deg, #0efe51 -0.02%, #12dea1 94.31%);
-    box-shadow: 0 22px 22px -17px #29f67b;
-    border-radius: 12px;
+.stepper-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.button-purple {
-    color: #fff;
-    max-width: 152px;
-    background: linear-gradient(96.78deg, #ce0efe -0.02%, #9012de 94.31%);
-    box-shadow: 0 22px 22px -17px #9c29f6;
-    border-radius: 12px;
+.step-icon {
+    // width: 30px;
+    // height: 30px;
+    border-radius: 50%;
+    background-color: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    img {
+        max-width: 28px;
+        max-height: 28px;
+    }
 }
 
-.button-orange {
-    color: #fff;
-    max-width: 152px;
-    background: linear-gradient(96.78deg, #ffaf13 -0.02%, #ff7313 94.31%);
-    box-shadow: 0 22px 22px -17px #f68b29;
-    border-radius: 12px;
+.not-active {
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
 }
 
-.title-stage {
-    // font-size: 15px;
-    // line-height: 14px;
-    // max-width: 270px;
+.step-icon.active {
+    /* background-color: #4CAF50; */
+    color: white;
 }
 
-.card-text {
-    font-size: 13px;
-    line-height: 14px;
-    letter-spacing: 0.01em;
+.stepper-content {
+    margin-bottom: 20px;
 }
 
-.bottom-sheet-card-linear {
-    margin: auto;
-    background: #e0e0e0;
-    border-radius: 5px;
-    width: 32px;
-    height: 3px;
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.this_stage {
-    background: #ffffff !important;
-    border: 1px solid rgba(158, 158, 158, 0.2) !important;
-    box-shadow: 0 23px 10px -23px rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
-    border-radius: 12px;
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-// @media screen and (max-width: 360px) {
-//     .img-stage {
-//         width: 234px !important;
-//     }
+.stepper-actions {
+    display: flex;
+    width: 100%;
+    // justify-content: space-between;
+    flex-direction: column;
+}
 
-//     .title-stage {
-//         max-width: 260px !important;
-//     }
-// }</style>
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+</style>

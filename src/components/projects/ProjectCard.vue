@@ -51,10 +51,12 @@
 
                 <div>
                     <!-- TODO: сделатб хелпер под правила -->
-                    <UiTextArea :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']" counter
+                    <UiTextArea :class="descriptionClass" :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']" counter
                         label="Описание проекта*" v-model="prjObject.description" />
-
-                    <UiPrompt>Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных
+                        
+                    <UiPrompt :projectCard="true">
+                        
+                        Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных
                         местах
                         приложения, где пространство ограничено. А полное описание будет отображаться на странице вашего
                         проекта.
@@ -90,7 +92,9 @@ const props = defineProps({
         type: String,
     },
 })
-
+const descriptionClass=()=> {
+      return this.prjObject.description.length < 300 ? 'green' : '';
+    }
 // function addAvatar() {
 //     blobPic.value = URL.createObjectURL(user.pictureUrl[0])
 // }
