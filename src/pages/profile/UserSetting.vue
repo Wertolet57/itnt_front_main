@@ -87,13 +87,12 @@ const updateUser = async () => {
 const items = [
     { src: vallet, title: 'Кошелёк', route: '/me/vallet', addClass: 'list__class' },
     { src: mail, title: 'Приглашения в iTalent', route: '/me/invite' },
-    { src: notification, title: 'Уведомления', route: '/me/notification' },
+    // { src: notification, title: 'Уведомления', route: '/me/notification' },
     { src: lock, title: 'Безопасность', route: '/me/safety' },
     { src: face, title: 'Приватность', route: '/me/privacy' },
     { src: eye, title: 'Внешний вид', route: '/me/looking' },
     { src: support, title: 'Связаться с разработчиками', route: '/me/support' },
     { src: confident, title: 'Политика конфеденциальности', route: '/me/privacy-policy' },
-
 ]
 
 </script>

@@ -144,7 +144,6 @@ const pushComment = async () => {
             let deep = parentId == "" ?  0 : parentComment.deep + 1
             let insertDate =  new Date().toISOString()
             let message = commentText.value
-            // const response = await addComment(message, getUserByID(Number(localStorage.getItem("userId"))), [], parentId);
 
             const newComment = {
                 id: id,
@@ -187,6 +186,9 @@ const pushComment = async () => {
             replyToComment.value = "";
             parentId = ""
 
+            let user =  await getUserByID(Number(localStorage.getItem("userId")))
+            user = user.data.object
+            const response = await addComment(message, user, 1, 1);
 
         } catch (error) {
             console.error('Failed to add comment:', error);
@@ -247,7 +249,6 @@ onMounted(async () => {
 
         comments.value = response
         visibleComments.value = comments.value
-    console.log(response);
     
   } catch (e) {
     console.error('Error:', e);

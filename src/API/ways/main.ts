@@ -8,14 +8,13 @@ const getPostComments = ( pageNumber: number, pageSize: number, postId: number) 
 
 }
 
-const addComment = (message: string, user, parentNode, parentId) => {
-    
+const addComment = (message: string, user: object, parentNode: any, parentId: number | string) => {
 
     return API.post(`${prefix}/post/addComment`, {
-        'post': parentId,
+        
         'message': message,
         'user': user,
-        'parentNode': parentNode
+        'parentNode': parentNode,
     });
 };
 
