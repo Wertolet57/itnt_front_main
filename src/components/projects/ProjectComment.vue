@@ -147,7 +147,7 @@ const pushComment = async () => {
 
             const newComment = {
                 id: id,
-                message:  message,
+                message: message,
                 parentId: parentId,
                 insertDate: insertDate,
                 userId: localStorage.getItem('userId'),
@@ -188,7 +188,15 @@ const pushComment = async () => {
 
             let user =  await getUserByID(Number(localStorage.getItem("userId")))
             user = user.data.object
-            const response = await addComment(message, user, 1, 1);
+            let postComment = {
+                'childNodes': [],
+                'deep': 0,
+                'id': 0,
+                "insertDate": "2024-08-23T06:43:23.624Z",
+                'message': message,
+                'user': user
+            }
+            const response = await addComment(postComment);
 
         } catch (error) {
             console.error('Failed to add comment:', error);

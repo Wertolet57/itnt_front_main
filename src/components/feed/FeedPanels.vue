@@ -21,7 +21,7 @@ export default {
                     </div>
 
                     <p class="feedPanel__card__subtitle txt-cap1">
-                        {{ $t('feedPanels.addToProject') }} {{ demoInfo.length }} {{ $t('feedPanels.specialist') }}
+                        Вас пригласили в проект
                     </p>
                 </div>
 
@@ -42,7 +42,7 @@ export default {
                             P.S. У нас есть шляпы с полями и Томпсоны 🙄
                         </p>
                         <div class="w-full  flex flex-row mt-3">
-                            <UiButton bgColor="def" class="mr-3" style="padding: 10px 13px 9px 14px">Открыть диалог
+                            <UiButton @click="$router.push(`/messenger/chat/1`)" bgColor="def" class="mr-3" style="padding: 10px 13px 9px 14px">Открыть диалог
                             </UiButton>
                             <UiButton @click="openModal" bgColor="smBlue" class="mr-3"
                                 style="padding: 10px 13px 9px 14px">
@@ -62,7 +62,7 @@ export default {
                             </div>
                             <div>
                                 <v-row class="mb-[20px]" align="center" justify="center">
-                                    <v-btn @click="togleState" class="pa-0 mr-7" min-width="32" min-href="32"
+                                    <v-btn @click="state = !state" class="pa-0 mr-7" min-width="32" min-href="32"
                                         variant="outlined" color="#29B6F6">
                                         <v-icon icon="mdi-check" :color="state ? '#29B6F6' : '#E0E0E0'" />
                                     </v-btn>
@@ -73,8 +73,8 @@ export default {
                                     </p>
                                 </v-row>
                             </div>
-                            <UiButton class="mb-[13px]" x-large bgColor="blue">Присоединиться</UiButton>
-                            <UiButton block x-large bgColor="def">Отправить отказ</UiButton>
+                            <UiButton @click="searchModalState = false" class="mb-[13px]" x-large bgColor="blue">Присоединиться</UiButton>
+                            <UiButton @click="searchModalState = false" block x-large bgColor="def">Отправить отказ</UiButton>
                         </v-card>
                     </v-dialog>
                     <v-spacer />
@@ -100,7 +100,7 @@ export default {
                     </div>
 
                     <p class="feedPanel__card__subtitle txt-cap1">
-                        {{ $t('feedPanels.addToProject') }} {{ demoInfo.length }} {{ $t('feedPanels.specialist') }}
+                       Вам ответили в комментариях
                     </p>
                 </div>
 
@@ -268,7 +268,9 @@ export default {
 import left from '../../assets/left_arrrow-white.svg';
 import UiButton from '../../components/ui-kit/UiButton.vue';
 import { defineProps, ref } from 'vue';
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
+let state = ref(false)
 const props = defineProps({
     notification: {
         type: Boolean,
@@ -282,6 +284,7 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+
     default: {
         type: Boolean,
         default: false
@@ -303,6 +306,7 @@ const demoInfo = [
         time: '3ч',
         spec: 'Младший Шеф-Повар',
     },
+
 ]
 </script>
 

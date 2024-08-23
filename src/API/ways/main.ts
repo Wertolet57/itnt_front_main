@@ -8,28 +8,10 @@ const getPostComments = ( pageNumber: number, pageSize: number, postId: number) 
 
 }
 
-const addComment = (message: string, user: object, parentNode: any, parentId: number | string) => {
-
-    return API.post(`${prefix}/post/addComment`, {
-        
-        'message': message,
-        'user': user,
-        'parentNode': parentNode,
-    });
+const addComment = (postComment: object) => {
+    console.log(postComment);
+    return API.post(`${prefix}/post/addComment`, postComment);
 };
 
-// const addComment = (childNodes: [any], deep: number, id: number, userID: number, message: string) => {
-    
 
-//     return API.post(`${prefix}/post/addComment`, {
-//         childNodes: childNodes,
-//         deep: deep,
-//         id: id,
-
-//         user: {
-//             id: userID
-//         },
-//         "message": message
-//     });
-// };
 export { addComment, getPostComments}
