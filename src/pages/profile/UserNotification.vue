@@ -4,9 +4,14 @@
         <div class="flex justify-center m">
             <div class="date mb-4 rounded-xl d-inline-block ">{{ $t('feed.today') }}</div>
         </div>
-        <FeedPanels :notification="true" />
+        <!-- <FeedPanels :notification="true" />
         <FeedPanels :reply="true" />
         <FeedPanels :default="true" />
+        <FeedPanels :default="true" /> -->
+
+        <FeedPanels v-for="message in messages" :key="message.id" :messageObject="message" /> 
+
+    
     </div>
 
     <Footer />
@@ -19,17 +24,91 @@ import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 
 import { onMounted, ref } from 'vue'
-import { getUserNotifications } from '~/API/ways/notifications'
-onMounted(async () => {
-    //есть 6 ответов в id 1
-    await getUserNotifications(1).then((response) => {
-        try {
-            console.log('response', response)
-        } catch (e) {
-            console.error('text error:', e)
-        }
-    })
-})
+import { getUserNotifications, getProjectPropositions,getUserProjectPropositions, getUserPropositions } from '~/API/ways/notifications'
+
+
+interface Message {
+  userId: number;
+  id: number;
+  date: string;
+  type: string;
+}
+
+interface ReplyMessage extends Message {
+  messages: { userId: number; date: string; message: string; }[];
+}
+
+interface NewCommentsMessage extends Message {
+  comments: { userId: number; date: string; message: string; }[];
+}
+
+interface InvitationToProjectMessage extends Message {
+  message: string;
+}
+
+interface WantJoinTeamMessage extends Message {
+  potentialParticipants: { userId: number; date: string; message: string; }[];
+}
+
+type MessageItem = ReplyMessage | NewCommentsMessage | InvitationToProjectMessage | WantJoinTeamMessage;
+
+// const messages = ref([])
+const messages = ref<MessageItem[]>([
+  {
+    userId: 1,
+    id: 1,
+    date: "2024-05-27T09:32:23",
+    type: 'reply',
+    messages: [
+      {userId: 1, date: "2024-05-27T09:32:23", message: "@realthomashardy, Проверь личку, скинул тебе ссылку, отпишись ;)   А то иногда ссылка почему то не доходит 🤔" }
+    ]
+  },
+  {
+    userId: 2,
+    id: 2,
+    date: "2024-05-27T09:32:23",
+    type: 'newComments',
+    messages: [
+      {userId: 1, date: "2024-05-27T09:32:23", message: "Друзья, очень органично смотрятся иконки, но цвет, как..." },
+      {userId: 2, date: "2024-05-27T09:32:23", message: "На ближайшем Synergy общался с Тарантино, нереально крутой чу..." }
+    ]
+  },
+  {
+    userId: 3,
+    id: 3,
+    date: "2024-05-27T09:32:23",
+    type: 'invitationToProject',
+
+    message: "Здравствуйте, Том! Нам кажется, вы то самое, недостающее звено в нашей команде. Мы сосредоточены на самых крупных проектах Англии и нам очень импонируют ваши методы работы.  Будем рады видеть в наших рядах! P.S. У нас есть шляпы с полями и Томпсоны 🙄"
+  },
+  {
+    userId: 4,
+    id: 4,
+    date: "2024-05-27T09:32:23",
+    type: 'wantJoinTeam',
+    messages: [
+      {userId: 1, date: "2024-05-27T09:32:23", message: "Здравствуйте! Кажется я тот, кого вы ищете!" },
+      {userId: 2, date: "2024-05-27T09:32:23", message: "На ближайшем Synergy общался с Тарантино, нереально крутой чу..." }
+    ]
+  },
+]);
+const userNotifications = ref([])
+
+// onMounted(async () => {
+//     //есть 6 ответов в id 1
+//     await getUserNotifications(1).then((response) => {
+//         try {
+//             let data = response.data.object
+//             userNotifications.value = data
+//             console.log(data);
+            
+//         } catch (e) {
+//             console.error('text error:', e)
+//         }
+//     })
+//     // console.log('response', userNotifications._rawValue)
+
+// })
 </script>
 <style scoped lang="scss">
 .searchProjectCard {
