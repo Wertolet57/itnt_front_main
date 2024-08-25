@@ -189,10 +189,8 @@ const pushComment = async () => {
             let user =  await getUserByID(Number(localStorage.getItem("userId")))
             user = user.data.object
             let postComment = {
-                'childNodes': [],
-                'deep': 0,
+
                 'id': 0,
-                "insertDate": "2024-08-23T06:43:23.624Z",
                 'message': message,
                 'user': user
             }
