@@ -138,7 +138,6 @@ const pushComment = async () => {
 
     if (commentText.value) {
         try {
-            // const response = await addComment(Number(route.params.ID), Number(localStorage.getItem("userId")), commentText.value);
             let id = new Date().toISOString()
             let parentComment = findCommentById(parentId)
             let deep = parentId == "" ?  0 : parentComment.deep + 1
@@ -163,21 +162,17 @@ const pushComment = async () => {
             if (parentId == "") {
                 comments.value.push(newComment)
             } else {
-
                 let curDepth = newComment.deep
-
                 let i = indexParent + 1
                 for (; i < comments.value.length; i++) {
                     if (curDepth > comments.value[i].deep) {
                         break
                     }
-                    
                 }
                 
                 comments.value.splice(i , 0, newComment);
             }
 
-            // comments.value[getIndexCommentById(id)-1]
 
             if (comments.value.length <= commentIndex.value) {
                 visibleComments.value = comments.value
@@ -216,16 +211,7 @@ interface Comment {
     childrenCount: number
 }
 
-function calculateDepth(comments: Comment[], parentId: string | null = null): number {
-    return comments.reduce((acc, comment) => {
-        if (comment.parentId === parentId) {
-            comment.deep = acc + 1;
-        } else {
-            comment.deep = acc;
-        }
-        return acc + 1;
-    }, 0);
-}
+
 function getIndexCommentById(id: string): number {
     return comments.value.findIndex(comment => comment.id === id);
 }
@@ -234,17 +220,6 @@ function findCommentById(id: string): Comment | undefined {
 }
 
 
-// let showAllComments = ref(false);
-
-// const showMoreComments = () => {
-//     displayedComments.value = prjComments.value;
-//     allCommentsShown.value = true;
-//     showAllComments.value = true;
-
-// };
-// const allCommentsShown = ref(false);
-// const displayedComments = ref([]);
-// const prjComments = ref([])
 
 onMounted(async () => {
   try {
