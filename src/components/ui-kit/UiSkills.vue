@@ -6,6 +6,7 @@ export default {
 
 <template>
     <v-card v-if="props.skillsType != 'Project'" class="ui-skills shadow-sm p-4">
+        <button @click="patchSkills" class="p-8 bg-black">patch</button>
         <div class="ui-skills__head" v-if="props.readOnly === false">
             <p class="txt-cap2">{{ $t('me.skills') }} </p>
             <div v-if="deleteMode === false" @click="showSheet = true" class="ui-skills__btn">
@@ -19,8 +20,12 @@ export default {
                 class="ui-skills__trash">
                 <img src="../../assets/icons/trash.svg" alt="" />
             </div>
+            {{ props.skill }}
         </div>
         <div class="ui-skills__list">
+            <div class="flex w-full text-black">
+                {{ props.skillList }}
+            </div>
             <div v-for="(skill, id) in chosenSkills" :key="id">
                 <div @click="toggleSkillSelection(id)"
                     :class="{ 'ui-skills__skill': true, 'selected border-[1.5px] border-red-500': deleteMode && selectedSkills.includes(id) }">
@@ -28,7 +33,8 @@ export default {
                 </div>
             </div>
         </div>
-        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white" rounded="lg">
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
+            rounded="lg">
             <div class="flex flex-row justify-between items-center">
                 Навык удален
             </div>
@@ -103,6 +109,9 @@ const props = defineProps({
     skillsType: {
         type: String,
     },
+    skillList: {
+        type: String,
+    }
 })
 const categories = ref([]);
 const searchTerm = ref('');
@@ -171,13 +180,21 @@ const goToSearchPage = () => {
 };
 const patchSkills = async () => {
     const data = {
-        "id": localStorage.getItem("userId"),
-        "interests": [
-            {
-                name: chosenSkills.value
-            }
-        ]
-    };
+    id: 5,
+    interests: [
+        {
+            favourite: false,
+            id: 1,
+            interestGroup: {
+                id: 2,
+                color: "blue",
+                name: "Backend Developer"
+            },
+            name: "IT"
+        }
+    ],
+}
+
     try {
         const response = await patchUser(data);
         console.log(response); // Выводим ответ для проверки
@@ -185,7 +202,6 @@ const patchSkills = async () => {
         console.error('Error patching user:', error); // Обработка ошибки
     }
 }
-
 </script>
 
 <style lang="scss">

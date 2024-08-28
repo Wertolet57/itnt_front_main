@@ -53,7 +53,7 @@
                 </template>
               </v-dialog>
             </UiButton>
-            <UiButton @click="signInWithGitHub" :disabled="loading" onlyIcon>GIT</UiButton>
+            <UiButton @click="signInWithGitHub" onlyIcon>GIT</UiButton>
             <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             <!-- <vue-apple-login
                             type="sign in"
@@ -67,6 +67,8 @@
           </v-row>
         </v-col>
       </div>
+      <teleg />
+      <vk />
     </v-col>
   </v-row>
 
@@ -107,6 +109,8 @@
 </template>
 
 <script setup lang="ts">
+import vk from "./vklogin.vue"
+import teleg from "./telegramlogin.vue"
 import googleIcon from "~/assets/icons/companies/google.svg"
 import appleIcon from "~/assets/icons/companies/apple.svg"
 import facebookIcon from "~/assets/icons/companies/facebook.svg"
@@ -231,10 +235,6 @@ const signInWithApple = async () => {
 const loading = ref(false);
 const errorMessage = ref('');
 const signInWithGitHub = async () => {
-  if (loading.value) return;
-
-  loading.value = true;
-  errorMessage.value = '';
   try {
     const auth = getAuth();
     const provider = new GithubAuthProvider();

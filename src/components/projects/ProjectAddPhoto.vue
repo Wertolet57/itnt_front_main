@@ -1,79 +1,88 @@
 <template>
     <div>
-        <!-- Счетчик загруженных фотографий -->
         <div class="m-2">
-            <p>Презентация {{ countUploadedPhotos() }} / 8</p>
+            <p>Презентация {{ countUploadedPhotos() }} / 10</p>
         </div>
-
-        <!-- Форма загрузки фотографий -->
-        <div class="photo-upload flex w-full flex-wrap">
-            <div v-for="(inputId, index) in inputIds" :key="index" class="upload-wrapper">
+        <div class="photo-upload grid grid-cols-4">
+            <div v-for="(inputId, index) in visibleFields" :key="index" class="upload-wrapper">
                 <label :for="inputId"
                     :class="['file-upload-label', { 'with-image': imageUrls[index], 'active': index === activeIndex }]"
-                    :style="{ backgroundImage: 'url(' + imageUrls[index] + ')' }">
+                    :style="{ backgroundImage: 'url(' + imageUrls[index] + ')' }" @click="openDialog(index)">
                     <input :id="inputId" type="file" @change="handleFileChange($event, index)" accept="image/*"
                         :disabled="index !== activeIndex" />
                     <span class="icon" v-show="!imageUrls[index]">
                         <v-icon icon="mdi-plus" />
                     </span>
-                    <div class="">
-                        <!-- Отображение иконки, если файл не является изображением и был добавлен -->
-                        <span class="file-icon flex justify-center"
-                            v-show="fileNames[index] && !isImageType(fileTypes[index])">
-                            <img :src="file" alt="">
-                        </span>
-                        <!-- Отображение имени файла внутри блока фотографии, если файл не является изображением -->
-                        <p class="text-center" v-show="fileNames[index] && !isImageType(fileTypes[index])">{{
-                truncateFileName(fileNames[index])
-                            }}</p>
-                    </div>
                 </label>
             </div>
-            <button @click="addFile">access</button>
         </div>
+
+        <!-- Диалоговое окно для отображения изображения -->
+        <v-dialog v-model="dialog" width="90%" class="">
+            <v-row class="pa-2 pt-0 pb-2 ma-0 " justify="end">
+                <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
+            </v-row>
+            <!-- <v-carousel class="slider elevation-1" :show-arrows="false">
+                <v-carousel-item :src="selectedImageUrl" reverse-transition="fade-transition"
+                    transition="fade-transition"></v-carousel-item>
+                <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
+                    transition="fade-transition"></v-carousel-item>
+            </v-carousel> -->
+            <div class="flex justify-center">
+                <v-img :src="selectedImageUrl" class="border" style="max-height: 80vh; max-width: 70vw;" cover
+                    aspect-ratio="1"></v-img>
+            </div>
+        </v-dialog>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import file from "~/assets/icons/media/ppt-blue.svg"
-import { addProjectFile } from "~/API/ways/project"
+import { ref, computed } from 'vue';
+import { addProjectSlide } from "~/API/ways/project"
 import { useRoute } from 'vue-router';
-const route = useRoute()
-const inputIds = Array.from({ length: 8 }, (_, i) => `file-upload-${i}`);
-const imageUrls = ref(Array(8).fill(null));
+
+const route = useRoute();
+const maxFields = 10;
+const inputIds = Array.from({ length: maxFields }, (_, i) => `file-upload-${i}`);
+const imageUrls = ref(Array(maxFields).fill(null));
 const activeIndex = ref(0);
-const fileTypes = ref(Array(8).fill(null));
-const fileTypeText = ref('');
-const fileNames = ref(Array(8).fill(null));
-const addFile = async ()  => {
-    const formData = new FormData();
-    formData.append('file', fileNames.value[activeIndex.value]);
-    const response = await addProjectFile(formData, route.params.ID)
-    console.log(response)
-}
-const handleFileChange = (event: Event, index: number) => {
+const fileNames = ref(Array(maxFields).fill(null));
+const dialog = ref(false);
+const selectedImageUrl = ref<string | null>(null);
+
+const handleFileChange = async (event: Event, index: number) => {
     const file = (event.target as HTMLInputElement).files[0];
     if (file) {
-        if (!file.type.startsWith('image/')) {
-            console.log('Имя файла: ', file.name);
-            fileNames.value[index] = file.name;
-        } else {
-            fileNames.value[index] = null;
-        }
-        console.log('Тип файла: ', file.type);
-        fileTypes.value[index] = file.type;
-        fileTypeText.value = file.type;
         fileNames.value[index] = file.name;
 
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
             if (reader.result) {
                 imageUrls.value[index] = reader.result.toString();
+                await uploadFile(file, index);
                 setNextActive(index);
             }
         };
         reader.readAsDataURL(file);
+    }
+};
+
+const uploadFile = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await addProjectSlide(formData, route.params.ID);
+        console.log(`Файл ${fileNames.value[index]} успешно загружен на сервер:`, response);
+    } catch (error) {
+        console.error(`Ошибка при загрузке файла ${fileNames.value[index]}:`, error);
+    }
+};
+
+const openDialog = (index: number) => {
+    if (imageUrls.value[index]) {
+        selectedImageUrl.value = imageUrls.value[index];
+        dialog.value = true;
     }
 };
 
@@ -85,35 +94,51 @@ const setNextActive = (index: number) => {
     }
 };
 
-// Функция для укорачивания имени файла
-const truncateFileName = (fileName: string): string => {
-    if (fileName && fileName.length > 7) {
-        return fileName.substring(0, 7) + '...';
-    }
-    return fileName;
-};
+// Количество видимых полей
+const visibleFields = computed(() => {
+    return inputIds.slice(0, countUploadedPhotos() + 1);
+});
 
 // Функция для подсчета загруженных фотографий
 const countUploadedPhotos = () => {
     return imageUrls.value.filter(url => url !== null).length;
 };
-
-// Функция для проверки типа файла на изображение
-const isImageType = (type: string | null): boolean => {
-    return type ? type.startsWith('image/') : false;
-};
 </script>
+
+
+
+
 
 <style scoped>
 .photo-upload {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 колонки */
+    grid-template-rows: repeat(2, 1fr);
+    /* 2 ряда */
+    gap: 10px;
+    /* Зазор между элементами */
+}
+
+.close-button {
+    width: 34px;
+    height: 34px;
+    background: #ffffff;
+    border-radius: 6px;
 }
 
 .upload-wrapper {
     flex-basis: calc(25% - 12px);
+}
+
+.border {
+    border-radius: 16px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .file-upload-label {

@@ -1,6 +1,6 @@
 <template>
     <Header search />
-
+    <!-- <button @click="addCommentApi" class="p-4 bg-black m-8">sdsdsdsdsd</button> -->
     <v-container style="padding: 0 20px">
         <!-- {{ ProjectSearch() }} -->
         <UiSwitch @changeValue="searchPageSwitchState = $event" :items="['Проекты', 'Люди']" />
@@ -84,6 +84,7 @@ import { ref, computed, onMounted } from 'vue';
 import { getAllProjects } from '~/API/ways/project'
 import { getUserSearch, searcgUsers } from '~/API/ways/user'
 import { useRoute } from 'vue-router';
+import { addComment } from '~/API/ways/post'
 import ava from '../assets/Coop.svg'
 const route = useRoute();
 onMounted(() => {
@@ -152,6 +153,24 @@ const searchUsersByTegs = async () => {
         console.error('Error fetching users:', error)
     }
 }
+// const comment = ref()
+// const addCommentApi = async () => {
+//     const postComment = {
+//         childNodes: [null],
+//         deep: 1,
+//         id: 1,
+//         message: 'string',
+//         user: {
+//             id: 1,
+//         }
+//     }
+//     try {
+//         const response = await addComment(postComment)
+//         comment.value = response.data.object;
+//     } catch (error) {
+
+//     }
+// }
 const fetchUsers = async () => {
     try {
         const response = await getUserSearch();

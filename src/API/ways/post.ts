@@ -54,6 +54,9 @@ export const addComplaint = (postId: number, userId: number, complaint: String) 
         }
     });
 };
+export const addComment = (postComment: object,) => {
+    return API.post(`${prefix}/post/addComment`, postComment);
+};
 export const getProjectWeek = () => {
     return API.get(`${prefix}/project/week`)
 }
@@ -62,4 +65,7 @@ export const getProjectMonth = () => {
 }
 export const getProjectYear = () => {
     return API.get(`${prefix}/project/year`)
+}
+export const getProjectFresh = () => {
+    return API.get(`${prefix}/project/fresh`)
 }

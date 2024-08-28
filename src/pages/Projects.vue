@@ -11,27 +11,28 @@
             :items="['Неделя', 'Месяц', 'Год']" />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
-                {{ projectByWeek }} by week
+                <!-- {{ projectByWeek }} by week -->
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 1" class="">
-                {{ projectByMonth }} by month
+                <!-- {{ projectByMonth }} by month -->
                 <div v-for="(project, id) in projectByMonth" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 2" class="">
-                {{ projectByYear }} by year
+                <!-- {{ projectByYear }} by year -->
                 <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
         </div>
-
-
-
+        <!-- projectByFresh -->
+        <div v-if="projectsType === 0" v-for="(project, id) in projectByFresh" :key="id" class="mt-6">
+            <RatingProjectCard :listID="++id" :projectInfoSet="project" />
+        </div>
         <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div>
@@ -50,7 +51,7 @@ import RatingProjectCard from '~/components/projects/RatingProjectCard.vue'
 
 import { ref, onMounted } from 'vue'
 import { getAllProjects } from '~/API/ways/project'
-import { getProjectWeek, getProjectMonth, getProjectYear } from '~/API/ways/post'
+import { getProjectWeek, getProjectMonth, getProjectYear,getProjectFresh } from '~/API/ways/post'
 let projectsInfo = ref({})
 
 onMounted(async () => {
@@ -91,6 +92,17 @@ onMounted(async () => {
     await getProjectYear().then((response) => {
         try {
             projectByYear.value = response.data.object
+        } catch (e) {
+            console.error('text error:', e)
+        }
+    })
+})
+let projectByFresh = ref()
+
+onMounted(async () => {
+    await getProjectFresh().then((response) => {
+        try {
+            console.log(response)
         } catch (e) {
             console.error('text error:', e)
         }

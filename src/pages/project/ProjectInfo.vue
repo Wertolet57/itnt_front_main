@@ -5,10 +5,7 @@
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
         <ProjectTeam :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys class="mt-12" readOnly />
-        <!-- <ProjectMedia class="mt-12"  readOnly :link="data.projectFiles[3]" :adress="data.projectFiles[3].pictureUrl" /> -->
-        <!-- {{ data.projectFiles[3].pictureUrl }} -->
-        <!-- <ProjectMedia class="mt-12" :files="data.projectFiles" readOnly /> -->
-        <!-- <img :src="data.projectFiles[1].pictureUrl" alt="1"> -->
+        <ProjectMedia class="mt-12"  readOnly />
         <ProjectStage :stage="data.projectStage" readOnly />
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">

@@ -124,11 +124,9 @@ const props = defineProps({
     },
     country: {
         type: String,
-        default: 'Страна',
     },
     city: {
         type: String,
-        default: 'Город',
     },
     proposition: {
         type: Boolean,

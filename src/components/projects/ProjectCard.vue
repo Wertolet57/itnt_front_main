@@ -2,14 +2,18 @@
     <div class="projectCard ">
         <!-- READONLY -->
         <div v-if="props.readOnly">
-            <div class="projectCard__slider">
-                <v-carousel class="slider elevation-0" cycle :show-arrows="false">
-                    <v-carousel-item :eager="true" :src="slide"></v-carousel-item>
-                    <v-carousel-item :eager="true" :src="slide"></v-carousel-item>
-                    <v-carousel-item :eager="true" :src="slide"></v-carousel-item>
-                    <v-carousel-item :eager="true" :src="slide"></v-carousel-item>
+            <!-- <div class="projectCard__slider"> -->
+                <v-carousel  class="elevation-1" :show-arrows="false">
+                    <v-carousel-item v-for="(file, index) in data.projectFiles" :key="file.id"
+                        :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
+                        transition="fade-transition">
+                        <template #default>
+                            <!-- Вы можете добавить дополнительные элементы здесь, если нужно -->
+                            <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="d-block w-100" />
+                        </template>
+                    </v-carousel-item>
                 </v-carousel>
-            </div>
+            <!-- </div> -->
             <div class="projectCard__tags">
                 <div class="projectCard__tags--tag txt-body2">Инвестиции</div>
                 <div class="projectCard__tags--tag txt-body2">Стартапы</div>
@@ -51,11 +55,11 @@
 
                 <div>
                     <!-- TODO: сделатб хелпер под правила -->
-                    <UiTextArea :class="descriptionClass" :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']" counter
-                        label="Описание проекта*" v-model="prjObject.description" />
-                        
+                    <UiTextArea :class="descriptionClass" :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']"
+                        counter label="Описание проекта*" v-model="prjObject.description" />
+
                     <UiPrompt :projectCard="true">
-                        
+
                         Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных
                         местах
                         приложения, где пространство ограничено. А полное описание будет отображаться на странице вашего
@@ -73,13 +77,24 @@ import UiPrompt from '../ui-kit/UiPrompt.vue'
 import UiInput from '../ui-kit/UiInput.vue'
 import UiTextArea from '../ui-kit/UiTextArea.vue'
 import ProjectAddPhoto from './ProjectAddPhoto.vue';
-// import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '~/store/projectStore'
 import UiSkills from '../ui-kit/UiSkills.vue'
-
+import { getProjectByID } from '~/API/ways/project'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
-
+let data = ref({})
+onMounted(async () => {
+    await getProjectByID(route.params.ID).then((response) => {
+        try {
+            data.value = response.data.object
+        } catch (e) {
+            console.error('error:', e)
+        }
+    })
+})
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -92,22 +107,19 @@ const props = defineProps({
         type: String,
     },
 })
-const descriptionClass=()=> {
-      return this.prjObject.description.length < 300 ? 'green' : '';
-    }
-// function addAvatar() {
-//     blobPic.value = URL.createObjectURL(user.pictureUrl[0])
-// }
+const baseURL = 'http://62.217.181.172/files/';
 
-// watch(
-//     user,
-//     () => {
-//         if (user.pictureUrl) {
-//             addAvatar()
-//         }
-//     },
-//     { deep: true }
-// )
+const isExternalUrl = (url: string) => {
+    return url.startsWith('http');
+};
+
+const getFileUrl = (url: string) => {
+    return `${baseURL}${url}`;
+};
+
+const descriptionClass = () => {
+    return prjObject.value.description.length < 300 ? 'green' : '';
+}
 </script>
 
 <style lang="scss" scoped>

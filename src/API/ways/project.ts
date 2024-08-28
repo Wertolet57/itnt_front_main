@@ -93,8 +93,11 @@ const addProjectAvatar = (avatarUrl: FormData, projectID: number) => {
 }
 
 
-const addProjectFile = (file: FormData, projectID: number, link: String) => {
-    return API.post(`${prefix}/addProjectFile?projectId=${projectID}`, link, file, {
+const addProjectFile = (link: String, projectID: number) => {
+    return API.post(`${prefix}/addProjectFile?link=${link}&projectId=${projectID}`, );
+};
+export const addProjectSlide = (file: FormData, projectID: number) => {
+    return API.post(`${prefix}/addProjectFile?projectId=${projectID}`, file, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

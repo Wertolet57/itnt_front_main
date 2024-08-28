@@ -3768,11 +3768,6 @@ is-typed-array@^1.1.13:
   dependencies:
     which-typed-array "^1.1.14"
 
-is-unicode-supported@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/is-unicode-supported/-/is-unicode-supported-1.3.0.tgz#d824984b616c292a2e198207d4a609983842f714"
-  integrity sha512-43r2mRvz+8JRIKnWJ+3j8JtjRKZ6GmjzfaE/qiBJnikNnYv/6bagRJ1kUhNk8R5EX/GkobD+r+sfxCPJsiKBLQ==
-
 is-weakref@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-weakref/-/is-weakref-1.0.2.tgz#9529f383a9338205e89765e0392efc2f100f06f2"
@@ -5363,6 +5358,11 @@ vue-tel-input@^9.1.4:
   dependencies:
     libphonenumber-js "^1.10.51"
     vue "^3.4.21"
+
+vue-telegram-login@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vue-telegram-login/-/vue-telegram-login-2.1.0.tgz#a3b80acb88ab031ef46503975c1415fcc5d26c5f"
+  integrity sha512-d8ZdNQpWk9SDtGjMSjXv9yHJZePVtclPbacyBdyJjBLqhStEkfjivpyNz+1w/EJt5AozdZvYNgkHLOJo00zaTA==
 
 vue-template-compiler@^2.7.14:
   version "2.7.16"

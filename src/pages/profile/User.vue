@@ -3,11 +3,10 @@
     <ProfileHeader :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
-            :user-name="userInfo.firstName" :user-surname="userInfo.lastName" :read-only="true" />
-        <UiSkills />
-
+            :user-name="userInfo.firstName" :city="userInfo.city" :country="userInfo.country" :user-surname="userInfo.lastName" :read-only="true" />
+        <UiSkills :skillList="userInfo.lastName"/>
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
-
+        <!-- {{ userInfo }} -->
 
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
@@ -28,6 +27,7 @@
                 <FeedPost :post="object" :id="object.id" />
             </div>
         </div> -->
+        <button @click="addComments">addComments</button>
         <div v-if="posts && posts.object" v-for="(post, index) in posts" :key="index">
             <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
         </div>
@@ -51,12 +51,26 @@ import ProfileHeader from '~/components/profile/ProfileHeader.vue'
 import { getUserByID } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { onMounted, ref, computed } from 'vue';
-import { getPostByUser } from '~/API/ways/post';
+import { getPostByUser, addComment } from '~/API/ways/post';
 // import FeedPost from '~/components/feed/FeedPost.vue';
 let posts = ref();
 const closeModal = () => {
     if (modalState.value) {
         modalState.value.close();
+    }
+};
+const addComments = async () => {
+    const commentData = {
+        message: '123',
+        user:{
+            id:10
+        }
+    }
+    try {
+        const data = await addComment(commentData);
+        posts.value = data.data.object;
+    } catch (error) {
+        console.error(error);
     }
 };
 const getPosts = async () => {

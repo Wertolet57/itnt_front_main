@@ -29,12 +29,34 @@ export default {
             <div class="mt-5 mb-7">
                 <div class="d-flex justify-space-between">
                     <h2>{{ props.prjName }}</h2>
+                    <!-- {{ user[0] }} -->
+
                     <div v-show="props.prjType" class="projectHeader__capital txt-body1">{{ props.prjType }}</div>
                 </div>
                 <p class="txt-body1">{{ props?.prjSlogan }}</p>
             </div>
             <div class="projectHeader__controls">
                 <div class="d-flex justify-space-between mb-4">
+                    <!-- <div class="m-0 p-0" v-for="project in user">
+                        <div class=" text-white"
+                            v-if="project.project.id == `${route.params.ID}` && project.relationType == 'PROJECT_FOLLOWER'">
+                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
+                                подписан
+                            </UiButton>
+                        </div>
+                        <div class="bg-black text-white"
+                            v-if="project.project.id == `${route.params.ID}` && project.relationType == 'PROJECT_OWNER'">
+                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
+                                свой
+                            </UiButton>
+                        </div>
+                        <div class="bg-black text-white"
+                            v-if="project.project.id == `${route.params.ID}` && project.relationType !== 'PROJECT_OWNER' && project.relationType !=='PROJECT_FOLLOWER'">
+                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
+                                ttty
+                            </UiButton>
+                        </div>
+                    </div> -->
                     <UiButton bgColor="blue" @click="follow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
             'Подписаться' }}</UiButton>
                     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
@@ -43,9 +65,9 @@ export default {
                         <div class="flex flex-row justify-between items-center">
                             Подписка оформлена
                         </div>
-                        </v-snackbar>
-                        <UiButton @click="shareProject()" :imgSrc="share" onlyIcon />
-                        <Fire :id="props.prjID" />
+                    </v-snackbar>
+                    <UiButton @click="shareProject()" :imgSrc="share" onlyIcon />
+                    <Fire :id="props.prjID" />
                 </div>
                 <UiButton @click="$router.push('/project/' + props.prjID + '/comment')" bgColor="def" :imgSrc="message">
                     Обсуждение проекта</UiButton>
@@ -76,13 +98,14 @@ export default {
 <script lang="ts" setup>
 import message from "~/assets/icons/message-black.svg"
 import share from "~/assets/icons/share-black.svg"
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Fire from '../Fire.vue'
 import UiButton from '../ui-kit/UiButton.vue'
 import UiInput from '../ui-kit/UiInput.vue'
 import { addProjectAvatar, addFollow } from '~/API/ways/project.ts';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { getUserByID } from '~/API/ways/user';
 import { useProjectStore } from '~/store/projectStore'
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
@@ -151,6 +174,16 @@ async function follow() {
         console.error('Ошибка при подписке на проект:', error);
     }
 }
+let user = ref()
+onMounted(async () => {
+    try {
+        const response = await getUserByID(Number(localStorage.getItem("userId")))
+        user.value = response.data.object.projects
+        console.log(response);
+    } catch (e) {
+        console.error('error:', e);
+    }
+})
 </script>
 
 <style lang="scss" scoped>
