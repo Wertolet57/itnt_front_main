@@ -8,19 +8,20 @@ export default {
     <div class="projectHeader">
         <!-- TODO: READONLY PROJECT PICTURE -->
         <div v-if="props.readOnly || props.commentText" class="">
-            <!-- <img style="width: 100%; height:fit-content;" src="../../assets/demo/project-head.svg" /> -->
             <div class="ava">
                 <img :src="props.prjAva" class="" />
             </div>
         </div>
         <div class="back w-full" v-else>
             <div style="display: flex; align-items: start" class="rounded-circle mx-auto mt-6">
-                <v-file-input @change="uploadImage" height="200" accept="image/png, image/jpeg, image/bmp"
+                <v-file-input v-if="props.prjAva === '' || null" @change="uploadImage" height="200" accept="image/png, image/jpeg, image/bmp"
                     class="input-file">
                 </v-file-input>
-                <img v-if="!prjAva" src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle mx-auto"
+                <img v-if="props.prjAva === ''|| null" src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle mx-auto"
                     height="208" width="208" />
-                <img v-else :src="prjAva" class="rounded-circle " height="208" width="208" />
+                    <div v-else class="ava">
+                        <img  :src="props.prjAva"  height="208" width="208" />
+            </div>
             </div>
         </div>
 
@@ -209,13 +210,6 @@ onMounted(async () => {
         background: $def-white;
     }
 }
-
-.back {
-    width: 100%;
-    background-image: url('../../assets/demo/project-head.svg');
-    height: fit-content;
-}
-
 .input-file {
     min-width: 208px;
     min-height: 220px;

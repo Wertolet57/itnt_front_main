@@ -1,6 +1,6 @@
 <template>
     <Header showID showUserMinify />
-    <ProjectHeader />
+    <ProjectHeader :prjAva="fullAvatarUrl" />
     <v-container>
         <ProjectCard />
         <ProjectTeam class="mt-12" />
@@ -78,4 +78,9 @@ async function changeProject() {
         }
     })
 }
+const baseURL = 'http://62.217.181.172/';
+
+const fullAvatarUrl = computed(() => {
+    return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
+});
 </script>

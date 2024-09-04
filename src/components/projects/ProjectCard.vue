@@ -3,8 +3,7 @@
         <!-- READONLY -->
         <div v-if="props.readOnly">
             <!-- <div class="projectCard__slider"> -->
-            <v-carousel             delimiter-icon="mdi-minus"
-            interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
+            <v-carousel interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
                 <v-carousel-item class="slider__image" v-for="(file, index) in filteredProjectFiles" :key="file.id"
                     :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
                     transition="fade-transition">
@@ -31,18 +30,17 @@
         <div v-else>
             <!-- Фотографии проекта -->
             <div class="projectCard__editable__pics">
-                <div v-if="data.length > 0" class="photo-upload grid grid-cols-4">
+                <!-- <div v-if="data.length > 0" class="photo-upload grid grid-cols-4">
                     <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
                         <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
                             class="slider__image" />
                         <div v-if="delMode === true" class="absolute bottom-2 right-2 close-button">
                             <p @click="deleteSlide(file.id)">X</p>
                         </div>
-                    </div>
-        
-                </div>
-                <ProjectAddPhoto :read-only="false"/>
-                <ProjectAddPhoto :read-only="true"/>
+                    </div> 
+                </div> -->
+                <!-- <ProjectAddPhoto :read-only="false" /> -->
+                <ProjectAddPhoto :read-only="true" />
             </div>
 
             <!-- Теги проекта -->
@@ -93,7 +91,7 @@ const delMode = ref(false)
 const toggleDelete = () => {
     delMode.value = !delMode.value
     console.log(delMode.value);
-    
+
 }
 let data = ref([])
 onMounted(async () => {
@@ -105,11 +103,11 @@ onMounted(async () => {
         }
     })
 })
-const deleteSlide = async (fileId:Number)=>{
+const deleteSlide = async (fileId: Number) => {
     try {
         const response = await deleteProjectFile(fileId)
         console.log(response);
-        
+
     } catch (error) {
         console.log(error)
     }
@@ -217,17 +215,18 @@ const descriptionClass = () => {
         }
     }
 }
-.close-button{
+
+.close-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white; 
-    padding:6px 8px; 
-    border-radius: 50%; 
+    background-color: white;
+    padding: 6px 8px;
+    border-radius: 50%;
     cursor: pointer;
 }
-.close-icon {
-}
+
+.close-icon {}
 
 .photo-upload {
     display: grid;
@@ -240,17 +239,22 @@ const descriptionClass = () => {
 }
 
 .slider {
-    // width: 100%;
-    // height: 100%;
     border-radius: 16px;
+    background: no-repeat;
+    background-size: cover;
+    object-fit: fill;
+    width: auto;
+    height: auto;
+    aspect-ratio: 335 / 492;
 
     &__image {
         background: no-repeat;
-        width: 100%;
-        height: 100%;
+        background-size: cover;
+        object-fit: fill;
+        width: auto;
+        height: auto;
+        aspect-ratio: 335 / 492;
         border-radius: 16px;
-        /* Задайте высоту контейнера */
-        object-fit: cover;
     }
 }
 </style>

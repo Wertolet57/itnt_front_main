@@ -75,8 +75,7 @@ const baseURL = 'http://62.217.181.172/';
 const fullAvatarUrl = computed(() => {
     return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
 });
-console.log(data);
-console.log(fullAvatarUrl)
+
 import Footer from '~/components/Footer.vue'
 import Header from '~/components/Header.vue'
 import UiInput from '../../components/ui-kit/UiInput.vue'

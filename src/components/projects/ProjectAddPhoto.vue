@@ -35,24 +35,41 @@
 
     <div v-if="props.readOnly === true">
         <div class="m-2">
-            <p>Презентация {{ filteredProjectFiles.length }} / 10</p>
+            <p>
+                <span class="font-medium">Презентация</span>
+                <span class="text-[#9E9E9E] ml-[8px]">{{ filteredProjectFiles.length }} / 10</span>
+            </p>
         </div>
         <div v-if="filteredProjectFiles.length > 0" class="photo-upload grid grid-cols-4">
-            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
+            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images last relative">
                 <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
                     class="slider__image" />
-                <div v-if="delMode === true" class="absolute bottom-2 right-2 close-button">
-                    <p @click="deleteSlide(file.id)">X</p>
+                <div @click="deleteSlide(file.id)" v-if="delMode === true" class="close">
+                    <span class="close__button">
+                        <img :src="close" alt="">
+                    </span>
                 </div>
             </div>
+            <div v-if="filteredProjectFiles.length < 10" class="upload-wrapper">
+                <label for="new-upload" class="file-upload-label" @click="openDialog(filteredProjectFiles.length)">
+                    <input id="new-upload" type="file" @change="handleFileChange($event, filteredProjectFiles.length)"
+                        accept="image/*" />
+                    <span class="icon">
+                        <v-icon icon="mdi-plus" />
+                    </span>
+                </label>
+            </div>
         </div>
+
     </div>
 
 
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import close from "../../assets/icons.svg"
+
+import { ref, computed, onMounted, onUpdated } from 'vue';
 import { addProjectSlide } from "~/API/ways/project"
 import { useRoute } from 'vue-router';
 import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
@@ -149,6 +166,23 @@ const visibleFields = computed(() => {
 const countUploadedPhotos = () => {
     return imageUrls.value.filter(url => url !== null).length;
 };
+function setLastCloseClass() {
+    const closeElements = document.querySelectorAll('.close');
+    closeElements.forEach((el, index) => {
+        if (index === closeElements.length - 1) {
+            el.classList.add('last-close');
+        } else {
+            el.classList.remove('last-close');
+        }
+    });
+}
+onMounted(() => {
+    setLastCloseClass();
+});
+
+onUpdated(() => {
+    setLastCloseClass();
+});
 const baseURL = 'http://62.217.181.172/files/';
 
 const isExternalUrl = (url: string | null) => {
@@ -167,7 +201,7 @@ const filteredProjectFiles = computed(() =>
 
 
 
-<style scoped>
+<style scoped lang="scss">
 .photo-upload {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -178,11 +212,70 @@ const filteredProjectFiles = computed(() =>
     /* Зазор между элементами */
 }
 
-.close-button {
-    width: 34px;
-    height: 34px;
-    background: #ffffff;
-    border-radius: 6px;
+.close {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: -5px;
+    bottom: -5px;
+    padding: 2px;
+    background-color: white;
+    border-radius: 50%;
+
+    &__button {
+        padding: 0;
+        width: 100%;
+        height: 100%;
+
+        img {
+            padding: 0px;
+            background-color: #FFEBEE;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    @media (min-width: 768px) {
+        right: -8px;
+        bottom: -8px;
+        width: 20%;
+        height: auto;
+
+        &__button {
+            padding: 0;
+            width: 150%;
+            height: 150%;
+
+            img {
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    @media (min-width: 1024px) {
+        right: -8px;
+        bottom: -8px;
+        width: 20%;
+        height: auto;
+        &__button {
+            padding: 0;
+            width: 200%;
+            height: 200%;
+
+            img {
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+}
+
+.last-close {
+    bottom: 2px;
 }
 
 .upload-wrapper {
@@ -201,15 +294,16 @@ const filteredProjectFiles = computed(() =>
 
 .file-upload-label {
     display: flex;
-    min-width: 100%;
-    min-height: 220px;
+    width: auto;
+    aspect-ratio: 73 / 106;
+    height: auto;
     background-color: white;
     cursor: pointer;
     padding: 10px;
     align-items: center;
     justify-content: center;
     border: 1.5px solid #E0E0E0;
-    border-radius: 12px;
+    border-radius: 16px;
     margin-bottom: 10px;
     background-size: cover;
     cursor: default;
@@ -218,46 +312,13 @@ const filteredProjectFiles = computed(() =>
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 576px) {
-    .file-upload-label {
-        min-height: 110px;
-    }
-}
-
-@media (max-width: 440px) {
-    .file-upload-label {
-        min-height: 110px;
-    }
-}
-
-@media (max-width: 380px) {
-    .file-upload-label {
-        min-height: 100px;
-    }
-}
-
 
 .file-upload-label.with-image {
-    min-height: 220px;
-    min-width: 100%;
-}
+    width: auto;
+    aspect-ratio: 73 / 106;
+    height: auto;
+    border: 1.5px solid #E0E0E0;
 
-@media (max-width: 576px) {
-    .file-upload-label.with-image {
-        min-height: 110px;
-    }
-}
-
-@media (max-width: 440px) {
-    .file-upload-label.with-image {
-        min-height: 110px;
-    }
-}
-
-@media (max-width: 380px) {
-    .file-upload-label.with-image {
-        min-height: 100px;
-    }
 }
 
 .file-upload-label.active {
@@ -273,5 +334,22 @@ input[type="file"] {
     justify-content: center;
     align-items: center;
     font-size: 24px;
+}
+
+.slider {
+    border-radius: 16px;
+
+    &__image {
+        border: 1.5px solid #E0E0E0;
+        background: no-repeat;
+        background-size: cover;
+        object-fit: cover;
+        width: auto;
+        height: auto;
+        aspect-ratio: 73 / 106;
+        border-radius: 16px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+    }
+
 }
 </style>
