@@ -40,10 +40,29 @@ export default {
             </div>
         </div>
 
+        <!-- {{followed.users}} -->
+        <div v-if="followed && followed.users" class="" v-for="user in followed.users">
+            <div v-show="user.user.id === userId" class="">
+                {{ user }}
+                <div
+                    v-if="user.user.id === userId && user.relationType === 'PROJECT_OWNER' && user.relationType === 'PROJECT_FOLLOWER'">
+                    own follow
+                </div>
+                <div class="" v-if="user.user.id == userId && user.relationType == 'PROJECT_FOLLOWER'">
+                    подписан
+                </div>
+                <div class="" v-else>
+                    подписаться
+                </div>
+            </div>
+        </div>
         <div class="card__main">
-            <img @click="dialog = true" src="../../assets/demo/projectSmallCard.svg" alt="" />
+            <img v-if="filteredProjectFiles.length == 0" src="../../assets/demo/projectSmallCard.svg" alt="" />
+            <div @click="dialog = true" class="max-w-[89px] max-h-[135px]" v-if="filteredProjectFiles.length > 0"
+                :key="filteredProjectFiles[0].id">
+                <img class="image" :src="getFileUrl(filteredProjectFiles[0].pictureUrl)" alt="Project Image" />
+            </div>
 
-            <!-- <div>{{ card.info }}</div> -->
             <div>
                 <p class="card__main__text txt-cap1">
                     {{ props.projectInfoSet.descriptionHeader }}
@@ -92,12 +111,20 @@ export default {
         <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
             <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
         </v-row>
-        <v-carousel class="slider elevation-1" :show-arrows="false">
-            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
-                transition="fade-transition"></v-carousel-item>
-            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
-                transition="fade-transition"></v-carousel-item>
+        <v-carousel class="elevation-1 slider" :show-arrows="false">
+            <v-carousel-item class="max-w-1/2 rounded-[16px]" v-for="(file, index) in filteredProjectFiles"
+                :key="file.id" reverse-transition="fade-transition" transition="fade-transition">
+                <template #default>
+                    <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="max-w-1/2 rounded-[16px]" />
+                </template>
+            </v-carousel-item>
         </v-carousel>
+        <!-- <v-carousel class="slider elevation-1" :show-arrows="false">
+            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
+                transition="fade-transition"></v-carousel-item>
+            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
+                transition="fade-transition"></v-carousel-item>
+        </v-carousel> -->
         <div @click="$router.push('/project/' + props.projectInfoSet.id)" class="slider-card text-center pt-4">
             <p class="slider-button ma-0">Открыть проект<v-icon icon="mdi-arrow-right" size="x-small" /></p>
         </div>
@@ -113,16 +140,30 @@ import defAva from "~/assets/demo/projectsmallphoto.svg"
 import UiTextArea from "~/components/ui-kit/UiTextArea.vue"
 import UiButton from "~/components/ui-kit/UiButton.vue"
 import follow from "~/assets/modal_icon/follow.svg"
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { modalActionsList } from '~/helpers/types'
-import { addFollow, addComplaint } from "~/API/ways/project"
+import { addFollow, addComplaint, getProjectByID } from "~/API/ways/project"
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const complainState = ref(false)
 const modalState = ref(false)
 const dialog = ref(false)
+const userId = ref(localStorage.getItem('userId'))
+
+let data = ref([])
+const followed = ref()
+onMounted(async () => {
+    await getProjectByID(props.projectInfoSet.id).then((response) => {
+        try {
+            followed.value = response.data.object
+            data.value = response.data.object.projectFiles
+        } catch (e) {
+            console.error('error:', e)
+        }
+    })
+})
 const props = defineProps({
     projectInfoSet: {
         type: Object || Array,
@@ -180,6 +221,16 @@ const modalItems: modalActionsList[] = [
 ]
 const baseURL = 'http://62.217.181.172/';
 
+const isExternalUrl = (url: string | null) => {
+    return url?.startsWith('http') || url?.startsWith(',');
+};
+
+const getFileUrl = (url: string) => {
+    return `${baseURL}files/${url}`;
+};
+const filteredProjectFiles = computed(() =>
+    data.value.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
+);
 const fullAvatarUrl = computed(() => {
     return props.projectInfoSet.avatarUrl ? `${baseURL}files/${props.projectInfoSet.avatarUrl}` : `${defAva}`;
 });
@@ -261,6 +312,15 @@ const fullAvatarUrl = computed(() => {
 .slider {
     filter: drop-shadow(0px 0px 12px rgba(0, 0, 0, 0.1));
     border-radius: 12px 12px 0 0;
+}
+
+.image {
+    border-radius: 16px;
+    background: no-repeat;
+    width: 100%;
+    height: 100%;
+    /* Задайте высоту контейнера */
+    object-fit: cover;
 }
 
 .slider-card {

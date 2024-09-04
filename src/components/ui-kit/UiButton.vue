@@ -99,6 +99,15 @@ const props = defineProps({
         box-shadow: 0px 23px 10px -23px #00000026;
     }
 
+    &--orange {
+        color:white;
+        border: 1px solid #9e9e9e33;
+        background: linear-gradient(96.78deg, #ffaf13 -0.02%, #ff7313 94.31%);
+
+        box-shadow: 0px -1px 0px 0px #00000033 inset;
+        box-shadow: 0px 23px 10px -23px #00000026;
+    }
+
     &--onlyIcon {
         padding: 12px 28px;
         width: fit-content;

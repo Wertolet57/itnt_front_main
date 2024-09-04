@@ -1,46 +1,92 @@
 <template>
-    <div>
+    <div v-if="props.readOnly === false">
         <div class="m-2">
-            <p>Презентация {{ countUploadedPhotos() }} / 10</p>
+            <p>Презентация {{ filteredProjectFiles.length }} / 10</p>
         </div>
         <div class="photo-upload grid grid-cols-4">
-            <div v-for="(inputId, index) in visibleFields" :key="index" class="upload-wrapper">
-                <label :for="inputId"
-                    :class="['file-upload-label', { 'with-image': imageUrls[index], 'active': index === activeIndex }]"
-                    :style="{ backgroundImage: 'url(' + imageUrls[index] + ')' }" @click="openDialog(index)">
-                    <input :id="inputId" type="file" @change="handleFileChange($event, index)" accept="image/*"
-                        :disabled="index !== activeIndex" />
-                    <span class="icon" v-show="!imageUrls[index]">
+            <!-- Отображаем загруженные изображения -->
+            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
+                <img @click="openDialog(index)" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
+                    class="slider__image" />
+            </div>
+
+            <!-- Отображаем поле для загрузки, если изображений меньше 10 -->
+            <div v-if="filteredProjectFiles.length < 10" class="upload-wrapper">
+                <label for="new-upload" class="file-upload-label" @click="openDialog(filteredProjectFiles.length)">
+                    <input id="new-upload" type="file" @change="handleFileChange($event, filteredProjectFiles.length)"
+                        accept="image/*" />
+                    <span class="icon">
                         <v-icon icon="mdi-plus" />
                     </span>
                 </label>
             </div>
         </div>
 
-        <!-- Диалоговое окно для отображения изображения -->
         <v-dialog v-model="dialog" width="90%" class="">
             <v-row class="pa-2 pt-0 pb-2 ma-0 " justify="end">
                 <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
             </v-row>
-            <!-- <v-carousel class="slider elevation-1" :show-arrows="false">
-                <v-carousel-item :src="selectedImageUrl" reverse-transition="fade-transition"
-                    transition="fade-transition"></v-carousel-item>
-                <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
-                    transition="fade-transition"></v-carousel-item>
-            </v-carousel> -->
             <div class="flex justify-center">
                 <v-img :src="selectedImageUrl" class="border" style="max-height: 80vh; max-width: 70vw;" cover
                     aspect-ratio="1"></v-img>
             </div>
         </v-dialog>
     </div>
+
+    <div v-if="props.readOnly === true">
+        <div class="m-2">
+            <p>Презентация {{ filteredProjectFiles.length }} / 10</p>
+        </div>
+        <div v-if="filteredProjectFiles.length > 0" class="photo-upload grid grid-cols-4">
+            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
+                <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
+                    class="slider__image" />
+                <div v-if="delMode === true" class="absolute bottom-2 right-2 close-button">
+                    <p @click="deleteSlide(file.id)">X</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { addProjectSlide } from "~/API/ways/project"
 import { useRoute } from 'vue-router';
+import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
+const delMode = ref(false)
+const toggleDelete = () => {
+    delMode.value = !delMode.value
+    console.log(delMode.value);
 
+}
+let data = ref([])
+onMounted(async () => {
+    await getProjectByID(route.params.ID).then((response) => {
+        try {
+            data.value = response.data.object.projectFiles
+        } catch (e) {
+            console.error('error:', e)
+        }
+    })
+})
+const deleteSlide = async (fileId: Number) => {
+    try {
+        const response = await deleteProjectFile(fileId)
+        console.log(response);
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+const props = defineProps({
+    readOnly: {
+        type: Boolean,
+        default: false
+    }
+})
 const route = useRoute();
 const maxFields = 10;
 const inputIds = Array.from({ length: maxFields }, (_, i) => `file-upload-${i}`);
@@ -103,6 +149,18 @@ const visibleFields = computed(() => {
 const countUploadedPhotos = () => {
     return imageUrls.value.filter(url => url !== null).length;
 };
+const baseURL = 'http://62.217.181.172/files/';
+
+const isExternalUrl = (url: string | null) => {
+    return url?.startsWith('http') || url?.startsWith(',');
+};
+
+const getFileUrl = (url: string) => {
+    return `${baseURL}${url}`;
+};
+const filteredProjectFiles = computed(() =>
+    data.value.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
+);
 </script>
 
 

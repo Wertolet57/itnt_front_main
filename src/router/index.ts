@@ -14,6 +14,7 @@ import UserVallet from '~/pages/profile/UserVallet.vue'
 import ProjectInfo from '~/pages/project/ProjectInfo.vue'
 import ProjectEdit from '~/pages/project/ProjectEdit.vue'
 import ProjectNew from '~/pages/project/ProjectNew.vue'
+import ProjectVisited from '~/pages/project/ProjectVisited.vue'
 import ProjectComment from '~/components/projects/ProjectComment.vue'
 import BlogPage from '~/components/projects/BlogPage.vue'
 
@@ -114,6 +115,11 @@ const routes: Array<routes> = [
     {
         path: '/project/new',
         component: ProjectNew,
+    },
+    
+    {
+        path: '/projectVisited/:ID',
+        component: ProjectVisited,
     },
     {
         path: '/project/:ID/edit',

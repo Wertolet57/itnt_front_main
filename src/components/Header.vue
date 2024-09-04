@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-    <v-app-bar class="px-4" :elevation="0" height="46" color="white">
+    <v-app-bar class="px-4 z-1 relative" :elevation="0" height="46" color="white">
         <v-icon class="mr-3" @click="$router.back()" icon="mdi-arrow-left" />
 
         <img v-show="props.showLogo" :src="user.pictureUrl" />

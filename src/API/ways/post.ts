@@ -54,7 +54,7 @@ export const addComplaint = (postId: number, userId: number, complaint: String) 
         }
     });
 };
-export const addComment = (postComment: object,) => {
+export const addComment = (postComment: any,) => {
     return API.post(`${prefix}/post/addComment`, postComment);
 };
 export const getProjectWeek = () => {

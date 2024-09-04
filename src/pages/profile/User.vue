@@ -3,8 +3,9 @@
     <ProfileHeader :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
-            :user-name="userInfo.firstName" :city="userInfo.city" :country="userInfo.country" :user-surname="userInfo.lastName" :read-only="true" />
-        <UiSkills :skillList="userInfo.lastName"/>
+            :user-name="userInfo.firstName" :city="userInfo.city" :country="userInfo.country"
+            :user-surname="userInfo.lastName" :read-only="true" />
+        <UiSkills :skillList="userInfo.lastName" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
         <!-- {{ userInfo }} -->
 
@@ -13,7 +14,7 @@
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
                         v-model:description="postData.description" :author-project="postData.authorProject"
-                        @postSuccess="closeModal"  :author-user="postData.authorUser" card />
+                        @postSuccess="closeModal" :author-user="postData.authorUser" card />
                 </div>
             </div>
         </vue-bottom-sheet>
@@ -60,19 +61,23 @@ const closeModal = () => {
     }
 };
 const addComments = async () => {
-    const commentData = {
-        message: '123',
-        user:{
-            id:10
-        }
-    }
+    const postComment = {
+        post: {
+            id: 5
+        },
+        user: {
+            id: 5
+        },
+        message: 'sdsdsdsdsd',
+    };
     try {
-        const data = await addComment(commentData);
-        posts.value = data.data.object;
+        const data = await addComment(postComment);
+        posts.value = data?.data?.object
     } catch (error) {
-        console.error(error);
+        console.error('Error adding comment:', error);
     }
 };
+
 const getPosts = async () => {
     try {
         const data = await getPostByUser(Number(localStorage.getItem('userId')));

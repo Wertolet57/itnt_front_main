@@ -5,8 +5,8 @@
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
         <ProjectTeam :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys class="mt-12" readOnly />
-        <ProjectMedia class="mt-12"  readOnly />
         <ProjectStage :stage="data.projectStage" readOnly />
+        <ProjectMedia class="mt-12"  readOnly />
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">

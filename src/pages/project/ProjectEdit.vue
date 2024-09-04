@@ -6,8 +6,8 @@
         <ProjectTeam class="mt-12" />
         <!-- <ProjectInvesting /> -->
         <ProjectVacancys class="mt-12" />
-        <ProjectMedia :read-only="false" class="mt-12 mb-12" />
         <ProjectStage />
+        <ProjectMedia :read-only="false" class="mt-12 mb-12" />
 
         <div>
             <!-- <div v-for="(file, index) in data.projectFiles" :key="file.id">
@@ -20,7 +20,7 @@
                     <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" />
                 </div>
             </div> -->
-        </div>
+        </div> 
         <UiButton @click="changeProject" bgColor="blue" class="mt-12">Опубликовать проект</UiButton>
     </v-container>
     <Footer />

@@ -3,16 +3,16 @@
         <!-- READONLY -->
         <div v-if="props.readOnly">
             <!-- <div class="projectCard__slider"> -->
-                <v-carousel  class="elevation-1" :show-arrows="false">
-                    <v-carousel-item v-for="(file, index) in data.projectFiles" :key="file.id"
-                        :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
-                        transition="fade-transition">
-                        <template #default>
-                            <!-- Вы можете добавить дополнительные элементы здесь, если нужно -->
-                            <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="d-block w-100" />
-                        </template>
-                    </v-carousel-item>
-                </v-carousel>
+            <v-carousel             delimiter-icon="mdi-minus"
+            interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
+                <v-carousel-item class="slider__image" v-for="(file, index) in filteredProjectFiles" :key="file.id"
+                    :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
+                    transition="fade-transition">
+                    <template #default>
+                        <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="slider__image" />
+                    </template>
+                </v-carousel-item>
+            </v-carousel>
             <!-- </div> -->
             <div class="projectCard__tags">
                 <div class="projectCard__tags--tag txt-body2">Инвестиции</div>
@@ -31,13 +31,18 @@
         <div v-else>
             <!-- Фотографии проекта -->
             <div class="projectCard__editable__pics">
-                <ProjectAddPhoto />
-                <!-- <div class="projectCard__editable__pics__grid">
-                    <img v-for="i in 7" width="73" height="106" src="@/assets/demo/projectSmallCard.svg" />
-                    <div @click="addProjectPhoto" class="projectCard__editable__pics__adder">
-                        <v-icon icon="mdi-plus" />
+                <div v-if="data.length > 0" class="photo-upload grid grid-cols-4">
+                    <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
+                        <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
+                            class="slider__image" />
+                        <div v-if="delMode === true" class="absolute bottom-2 right-2 close-button">
+                            <p @click="deleteSlide(file.id)">X</p>
+                        </div>
                     </div>
-                </div> -->
+        
+                </div>
+                <ProjectAddPhoto :read-only="false"/>
+                <ProjectAddPhoto :read-only="true"/>
             </div>
 
             <!-- Теги проекта -->
@@ -72,29 +77,43 @@
 </template>
 
 <script setup lang="ts">
-import slide from '../../assets/demo/projectSmallCard.svg'
 import UiPrompt from '../ui-kit/UiPrompt.vue'
 import UiInput from '../ui-kit/UiInput.vue'
 import UiTextArea from '../ui-kit/UiTextArea.vue'
 import ProjectAddPhoto from './ProjectAddPhoto.vue';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '~/store/projectStore'
 import UiSkills from '../ui-kit/UiSkills.vue'
-import { getProjectByID } from '~/API/ways/project'
+import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
-let data = ref({})
+const delMode = ref(false)
+const toggleDelete = () => {
+    delMode.value = !delMode.value
+    console.log(delMode.value);
+    
+}
+let data = ref([])
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
-            data.value = response.data.object
+            data.value = response.data.object.projectFiles
         } catch (e) {
             console.error('error:', e)
         }
     })
 })
+const deleteSlide = async (fileId:Number)=>{
+    try {
+        const response = await deleteProjectFile(fileId)
+        console.log(response);
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -109,14 +128,16 @@ const props = defineProps({
 })
 const baseURL = 'http://62.217.181.172/files/';
 
-const isExternalUrl = (url: string) => {
-    return url.startsWith('http');
+const isExternalUrl = (url: string | null) => {
+    return url?.startsWith('http') || url?.startsWith(',');
 };
 
 const getFileUrl = (url: string) => {
     return `${baseURL}${url}`;
 };
-
+const filteredProjectFiles = computed(() =>
+    data.value.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
+);
 const descriptionClass = () => {
     return prjObject.value.description.length < 300 ? 'green' : '';
 }
@@ -194,6 +215,42 @@ const descriptionClass = () => {
             flex-direction: column;
             gap: 16px;
         }
+    }
+}
+.close-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white; 
+    padding:6px 8px; 
+    border-radius: 50%; 
+    cursor: pointer;
+}
+.close-icon {
+}
+
+.photo-upload {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 колонки */
+    grid-template-rows: repeat(2, 1fr);
+    /* 2 ряда */
+    gap: 10px;
+    /* Зазор между элементами */
+}
+
+.slider {
+    // width: 100%;
+    // height: 100%;
+    border-radius: 16px;
+
+    &__image {
+        background: no-repeat;
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        /* Задайте высоту контейнера */
+        object-fit: cover;
     }
 }
 </style>

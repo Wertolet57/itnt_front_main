@@ -103,6 +103,9 @@ export const addProjectSlide = (file: FormData, projectID: number) => {
         }
     });
 };
+export const deleteProjectFile =( id:Number) =>{
+    return API.delete(`${prefix}/delProjectFile?id=${id}`)
+}
 export const addVacancy = (
     projectId: number,
     params: {

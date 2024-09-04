@@ -2,41 +2,33 @@
     <Header showLogo />
     <v-col class="pa-0">
         <v-row class="container pa-0 ma-0" justify="center" align="center">
-            <!-- phone -->
-
+            
             <div v-if="pageStep === 1" class="button-container">
-                <v-form @submit.prevent>
-                    <div>
-                        <!-- {{ results }} -->
-                        <!-- {{ phone }} -->
-                    </div>
-                    <MazPhoneNumberInput class="w-[100%] my-4" v-model="phone" v-model:country-code="countryCode"
-                        show-code-on-list :preferred-countries="['RU', 'US', 'AE', 'CN', 'GB']"
-                        :ignored-countries="['AC']" @update="results = $event" />
+                <MazPhoneNumberInput class="w-[100%] my-4" v-model="phone" v-model:country-code="countryCode"
+                    show-code-on-list :preferred-countries="['RU', 'US', 'AE', 'CN', 'GB']" :ignored-countries="['AC']"
+                    @update="results = $event" />
 
-                    <!-- <UiInput placeholder="+7 (---) --- -- --" clearable label="Ваш телефон" :mask="phoneOptions"
+                <!-- <UiInput placeholder="+7 (---) --- -- --" clearable label="Ваш телефон" :mask="phoneOptions"
                         v-model="phone" style="margin-bottom: 28px" /> -->
 
-                    <!-- Проверка на длину грязного телефона, 18 символов -->
-                    <UiButton v-if="results && results.isValid === false">
-                        <v-icon icon="mdi-arrow-up" />
-                        Введите номер
-                    </UiButton>
+                <UiButton v-if="results && results.isValid === false">
+                    <v-icon icon="mdi-arrow-up" />
+                    Введите номер
+                </UiButton>
 
-                    <div v-else>
-                        <UiButton @click="sendPhoneInfo" bgColor="blue"> Продолжить </UiButton>
-                        <p class="txt-cap1 color-gray" style="margin-top: 18px">
-                            Нажимая на кнопку вы даёте согласие на обработку данных
-                        </p>
-                    </div>
+                <div v-else>
+                    <UiButton @click="sendPhoneInfo" bgColor="blue"> Продолжить </UiButton>
+                    <p class="txt-cap1 color-gray" style="margin-top: 18px">
+                        Нажимая на кнопку вы даёте согласие на обработку данных
+                    </p>
+                </div>
 
-                    <v-col v-if="your_phone" class="mt-4">
-                        <v-row justify="center">
-                            <p class="your-phone-text ma-0 mr-5">Это ваш номер?</p>
-                            <router-link class="your-phone-href" to="/auth">Войти, используя его</router-link>
-                        </v-row>
-                    </v-col>
-                </v-form>
+                <v-col v-if="your_phone" class="mt-4">
+                    <v-row justify="center">
+                        <p class="your-phone-text ma-0 mr-5">Это ваш номер?</p>
+                        <router-link class="your-phone-href" to="/auth">Войти, используя его</router-link>
+                    </v-row>
+                </v-col>
             </div>
             <div v-if="pageStep === 2" class="button-container text-center">
                 <p class="code-title text-left ma-0 pl-4">Введите код из смс сообщения:</p>
@@ -216,9 +208,10 @@ const formattedTime = computed(() => {
 </script>
 
 <style lang="scss">
-.nohover:hover{
+.nohover:hover {
     background-color: white;
 }
+
 .blue-bottom-border input {
     border-bottom-color: #29b6f6 !important;
     /* устанавливаем синюю границу */
