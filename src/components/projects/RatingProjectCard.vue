@@ -11,6 +11,15 @@ export default {
             <!-- {{ ++id }} -->
             <div class="card__head__main">
                 <h2>{{ listID }}</h2>
+                <!-- <ul v-if="filterUsers.length > 0">
+                    <li v-for="user in filterUsers" :key="user.user.id">
+                        <p>User ID: {{ user.user.id }}</p>
+                        <p>First Name: {{ user.user.firstName || 'No name provided' }}</p>
+                        <p>Last Name: {{ user.user.lastName || 'No surname provided' }}</p>
+                        <p>Relation Type: {{ user.relationType }}</p>
+                    </li>
+                </ul>
+                <p v-else>No matching users found</p> -->
                 <img @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
                     :class="{ 'cursor-pointer w-[37px] rounded-[100%]': fullAvatarUrl, 'w-[0px]': !fullAvatarUrl }" />
                 <div>
@@ -31,34 +40,37 @@ export default {
             </div>
             <div class="card__stats--chip">
                 <img width="14" height="14" src="@/assets/icons/search-black.svg" alt="" />
-                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.usersCount }}
+                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.vacancyCount }}
                 </p>
             </div>
 
-            <div class="card__stats--chip">
-                <p class="txt-cap1">St: Поик инвестора</p>
+            <div class="card__stats--chip" v-if="allData && allData.projectStage">
+                <p v-if="allData.projectStage === 'CUST_DEV'" class="txt-cap1">St: Пре-сид раунд </p>
+                <p v-if="allData.projectStage === 'IDEA'" class="txt-cap1">St: Сид раунд </p>
+                <p v-if="allData.projectStage === 'TEAM_GATHERING'" class="txt-cap1">St: Ангельский раунд </p>
+                <p v-if="allData.projectStage === 'FIRST_CLIENT'" class="txt-cap1">St: Раунд А </p>
+                <p v-if="allData.projectStage === 'FIRST_PAYING_CLIENT'" class="txt-cap1">St: Раунд B </p>
+                <p v-if="allData.projectStage === 'SECOND_STAGE'" class="txt-cap1">St: Раунд D </p>
+
             </div>
         </div>
 
         <!-- {{followed.users}} -->
-        <div v-if="followed && followed.users" class="" v-for="user in followed.users">
-            <div v-show="user.user.id === userId" class="">
-                {{ user }}
-                <div
-                    v-if="user.user.id === userId && user.relationType === 'PROJECT_OWNER' && user.relationType === 'PROJECT_FOLLOWER'">
-                    own follow
-                </div>
-                <div class="" v-if="user.user.id == userId && user.relationType == 'PROJECT_FOLLOWER'">
-                    подписан
-                </div>
-                <div class="" v-else>
-                    подписаться
-                </div>
+        <div v-if="followed && followed.users" class=" text-black" v-for="user in followed.users">
+            <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
+                подписан
             </div>
+            <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
+                <!-- <div class="" v-if=""></div> -->
+                подписаться
+            </div>
+            <!-- <div class="" v-else>
+                подписаться
+            </div> -->
         </div>
         <div class="card__main">
             <img v-if="filteredProjectFiles.length == 0" src="../../assets/demo/projectSmallCard.svg" alt="" />
-            <div @click="dialog = true" class="max-w-[89px] max-h-[135px]" v-if="filteredProjectFiles.length > 0"
+            <div @click="dialog = true" class="images" v-if="filteredProjectFiles.length > 0"
                 :key="filteredProjectFiles[0].id">
                 <img class="image" :src="getFileUrl(filteredProjectFiles[0].pictureUrl)" alt="Project Image" />
             </div>
@@ -111,20 +123,8 @@ export default {
         <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
             <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
         </v-row>
-        <v-carousel class="elevation-1 slider" :show-arrows="false">
-            <v-carousel-item class="max-w-1/2 rounded-[16px]" v-for="(file, index) in filteredProjectFiles"
-                :key="file.id" reverse-transition="fade-transition" transition="fade-transition">
-                <template #default>
-                    <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="max-w-1/2 rounded-[16px]" />
-                </template>
-            </v-carousel-item>
-        </v-carousel>
-        <!-- <v-carousel class="slider elevation-1" :show-arrows="false">
-            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
-                transition="fade-transition"></v-carousel-item>
-            <v-carousel-item src="./src/assets/demo/projectSmallCard.svg" reverse-transition="fade-transition"
-                transition="fade-transition"></v-carousel-item>
-        </v-carousel> -->
+        <Swiper :id="props.projectInfoSet.id" />
+
         <div @click="$router.push('/project/' + props.projectInfoSet.id)" class="slider-card text-center pt-4">
             <p class="slider-button ma-0">Открыть проект<v-icon icon="mdi-arrow-right" size="x-small" /></p>
         </div>
@@ -132,6 +132,8 @@ export default {
 </template>
 
 <script setup lang="ts">
+import Swiper from '../projects/Swiper.vue'
+
 import project from "~/assets/project_modal/project.svg"
 import share from "~/assets/icons/share-blue.svg"
 import warning from "~/assets/icons/warning-red.svg"
@@ -151,14 +153,35 @@ const complainState = ref(false)
 const modalState = ref(false)
 const dialog = ref(false)
 const userId = ref(localStorage.getItem('userId'))
-
+let allData = ref()
+const filterUsers = ref([]);
 let data = ref([])
-const followed = ref()
+const followed = ref([])
 onMounted(async () => {
     await getProjectByID(props.projectInfoSet.id).then((response) => {
         try {
-            followed.value = response.data.object
+            allData.value = response.data.object
+            followed.value = response.data.object.users
             data.value = response.data.object.projectFiles
+            if (Array.isArray(followed.value)) {
+                // Фильтруем пользователей
+                filterUsers.value = followed.value.filter(user => user.user.id === userId);
+
+                console.log('Filtered users:', filterUsers.value);
+
+                // Проверяем наличие PROJECT_OWNER и PROJECT_FOLLOWER
+                const hasProjectOwner = filterUsers.value.some(user => user.relationType === 'PROJECT_OWNER');
+                const hasProjectFollower = filterUsers.value.some(user => user.relationType === 'PROJECT_FOLLOWER');
+
+                // Если оба значения присутствуют, логируем их
+                if (hasProjectOwner && hasProjectFollower) {
+                    console.log('User has both relation types:', filterUsers.value);
+                } else {
+                    console.log('No match for both relation types');
+                }
+            } else {
+                console.error('followed.value is not an array');
+            }
         } catch (e) {
             console.error('error:', e)
         }
@@ -234,7 +257,7 @@ const filteredProjectFiles = computed(() =>
 const fullAvatarUrl = computed(() => {
     return props.projectInfoSet.avatarUrl ? `${baseURL}files/${props.projectInfoSet.avatarUrl}` : `${defAva}`;
 });
-// console.log(props.projectInfoSet)
+
 </script>
 
 <style lang="scss" scoped>
@@ -317,8 +340,10 @@ const fullAvatarUrl = computed(() => {
 .image {
     border-radius: 16px;
     background: no-repeat;
-    width: 100%;
-    height: 100%;
+    min-width: 89px;
+    max-width: 89px;
+    min-height: 135px;
+    max-height: 135px;
     /* Задайте высоту контейнера */
     object-fit: cover;
 }

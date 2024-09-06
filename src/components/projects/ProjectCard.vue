@@ -2,17 +2,22 @@
     <div class="projectCard ">
         <!-- READONLY -->
         <div v-if="props.readOnly">
-            <!-- <div class="projectCard__slider"> -->
-            <v-carousel interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
+            <Swiper @click="dialog = true" :id="route.params.ID" />
+            <v-dialog class="elevation-0" v-model="dialog" width="90%">
+                <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
+                    <v-icon class="close-icon" @click="dialog = false" icon="mdi-close" />
+                </v-row>
+                <Swiper :id="route.params.ID" />
+            </v-dialog>
+            <!-- <v-carousel interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
                 <v-carousel-item class="slider__image" v-for="(file, index) in filteredProjectFiles" :key="file.id"
                     :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
                     transition="fade-transition">
                     <template #default>
                         <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="slider__image" />
                     </template>
-                </v-carousel-item>
-            </v-carousel>
-            <!-- </div> -->
+</v-carousel-item>
+</v-carousel> -->
             <div class="projectCard__tags">
                 <div class="projectCard__tags--tag txt-body2">Инвестиции</div>
                 <div class="projectCard__tags--tag txt-body2">Стартапы</div>
@@ -30,16 +35,6 @@
         <div v-else>
             <!-- Фотографии проекта -->
             <div class="projectCard__editable__pics">
-                <!-- <div v-if="data.length > 0" class="photo-upload grid grid-cols-4">
-                    <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
-                        <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
-                            class="slider__image" />
-                        <div v-if="delMode === true" class="absolute bottom-2 right-2 close-button">
-                            <p @click="deleteSlide(file.id)">X</p>
-                        </div>
-                    </div> 
-                </div> -->
-                <!-- <ProjectAddPhoto :read-only="false" /> -->
                 <ProjectAddPhoto :read-only="true" />
             </div>
 
@@ -75,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import Swiper from "./Swiper.vue"
 import UiPrompt from '../ui-kit/UiPrompt.vue'
 import UiInput from '../ui-kit/UiInput.vue'
 import UiTextArea from '../ui-kit/UiTextArea.vue'
@@ -87,12 +83,6 @@ import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
-const delMode = ref(false)
-const toggleDelete = () => {
-    delMode.value = !delMode.value
-    console.log(delMode.value);
-
-}
 let data = ref([])
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
@@ -103,15 +93,8 @@ onMounted(async () => {
         }
     })
 })
-const deleteSlide = async (fileId: Number) => {
-    try {
-        const response = await deleteProjectFile(fileId)
-        console.log(response);
+const dialog = ref(false)
 
-    } catch (error) {
-        console.log(error)
-    }
-}
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -226,7 +209,12 @@ const descriptionClass = () => {
     cursor: pointer;
 }
 
-.close-icon {}
+.close-icon {
+    width: 34px;
+    height: 34px;
+    background: #ffffff;
+    border-radius: 6px;
+}
 
 .photo-upload {
     display: grid;

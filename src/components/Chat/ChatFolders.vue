@@ -6,7 +6,7 @@
 
         <button class="bg-marine  rounded-[12px] px-1" @click="openModal"><img :src="plus" alt=""></button>
         <v-dialog v-model="searchModalState" width="100%">
-            <v-card class="ui-skills__search">
+            <v-card class="ui-skills__search p-4">
                 <p>
                     <span>Введите название для папки</span>
                 </p>

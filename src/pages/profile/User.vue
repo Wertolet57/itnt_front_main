@@ -3,8 +3,9 @@
     <ProfileHeader :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
-            :user-name="userInfo.firstName" :city="userInfo.city" :country="userInfo.country"
-            :user-surname="userInfo.lastName" :read-only="true" />
+            :user-name="userInfo.firstName" :city="userInfo.city ? userInfo.city.name : ''"
+            :country="userInfo.country ? userInfo.country.name : ''" :user-surname="userInfo.lastName"
+            :read-only="true" />
         <UiSkills :skillList="userInfo.lastName" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
         <!-- {{ userInfo }} -->
@@ -32,6 +33,51 @@
         <div v-if="posts && posts.object" v-for="(post, index) in posts" :key="index">
             <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
         </div>
+        <!-- {{ prjProp }} -->
+        <!-- {{ userPrjProp }} -->
+        <!-- {{ userNot }} -->
+        <div class="" v-for="not in userNot" :key="not.id">
+            <p class="hidden">
+                <!-- ОТПРАВИТЕЛЬ -->
+                {{ not.fromUser }}
+            </p>
+            <p class="hidden">
+                <!-- ПОЛУЧАТЕЛЬ -->
+                {{ not.toUser }}
+            </p>
+            <!-- <p class="bg-black">
+                {{ not }}
+            </p> -->
+            <p>
+                {{ not.proposition }}
+            </p>
+            <p>
+                {{ not.message }}
+            </p>
+            <p v-if="not.answer === null">
+                {{ not.answer }}
+                null
+            </p>
+        </div>
+        <!-- {{ userProp }} -->
+        <div class="" v-for="prope in userProp" :key="prope.id">
+            <p>
+                {{ prope.id }}
+            </p>
+            <p>
+                {{ prope.project }}
+            </p>
+            <p class="bg-black">
+                {{ prope.user }}
+            </p>
+            <p>
+                {{ prope.message }}
+            </p>
+            <p v-if="prope.answer === null">
+                {{ prope.answer }}
+                null
+            </p>
+        </div>
     </v-container>
     <Footer />
 </template>
@@ -53,7 +99,46 @@ import { getUserByID } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { onMounted, ref, computed } from 'vue';
 import { getPostByUser, addComment } from '~/API/ways/post';
+import { getProjectPropositions, getUserNotifications, getUserProjectPropositions, getUserPropositions } from "../../API/ways/notifications"
 // import FeedPost from '~/components/feed/FeedPost.vue';
+const prjProp = ref()
+const userPrjProp = ref()
+const userNot = ref()
+const userProp = ref()
+onMounted(async () => {
+    await getProjectPropositions(Number(10)).then((response) => {
+        try {
+            prjProp.value = response.data.object;
+            console.log(userInfo.value)
+        } catch (e) {
+            console.error('text error:', e);
+        }
+    })
+    await getUserNotifications(Number(localStorage.getItem("userId"))).then((response) => {
+        try {
+            userNot.value = response.data.object;
+            console.log(userInfo.value)
+        } catch (e) {
+            console.error('text error:', e);
+        }
+    })
+    await getUserPropositions(Number(localStorage.getItem("userId"))).then((response) => {
+        try {
+            userProp.value = response.data.object;
+            console.log(userInfo.value)
+        } catch (e) {
+            console.error('text error:', e);
+        }
+    })
+    await getUserProjectPropositions(Number(localStorage.getItem("userId")), 10).then((response) => {
+        try {
+            userPrjProp.value = response.data.object;
+            console.log(userInfo.value)
+        } catch (e) {
+            console.error('text error:', e);
+        }
+    })
+})
 let posts = ref();
 const closeModal = () => {
     if (modalState.value) {
@@ -66,7 +151,7 @@ const addComments = async () => {
             id: 5
         },
         user: {
-            id: 5
+            id: localStorage.getItem("userId")
         },
         message: 'sdsdsdsdsd',
     };

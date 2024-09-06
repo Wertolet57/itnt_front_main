@@ -34,6 +34,7 @@
     </div>
 
     <div v-if="props.readOnly === true">
+    
         <div class="m-2">
             <p>
                 <span class="font-medium">Презентация</span>
@@ -68,7 +69,6 @@
 
 <script setup lang="ts">
 import close from "../../assets/icons.svg"
-
 import { ref, computed, onMounted, onUpdated } from 'vue';
 import { addProjectSlide } from "~/API/ways/project"
 import { useRoute } from 'vue-router';

@@ -4,7 +4,7 @@
             <p v-show="props.readOnly" style="color: #263238" class="txt-cap2">Наша команда:</p>
             <p v-show="!props.readOnly" style="color: #263238" class="txt-cap2">Участники проекта:</p>
 
-            <UiButton @click="searchTeammateModal.open()" fit style="height: 36px; padding: 11px 16px" bgColor="smBlue"
+            <UiButton v-if=" checkOrders && checkOrders.id && checkOrders.id == userID" @click="joinTeam.open()" fit style="height: 36px; padding: 11px 16px" bgColor="smBlue"
                 isSmall>
                 <p class="txt-cap2">Заявки</p>
             </UiButton>
@@ -77,10 +77,13 @@
 
             <div class="d-flex mt-2 justify-space-between align-center">
                 Пригласить участника
-                <UiButton @click="joinTeam.open()" plus />
+                <UiButton @click="searchTeammateModal.open()" plus />
             </div>
         </div>
-
+        <!-- {{teamMembers}} -->
+        <div class="" v-for="member in teamMembers">
+            {{ member.id }}
+        </div>
         <vue-bottom-sheet ref="modalState">
             <div class="modal">
                 <div class="modal__list">
@@ -190,7 +193,7 @@
             </div>
         </vue-bottom-sheet>
         <vue-bottom-sheet full-screen ref="joinTeam">
-            <div class="searchTeammateModal px-4 modal">
+            <div class="searchTeammateModal modal">
                 <p class="mb-2 p-4">К команде iTalent хотят присоединиться пользователи:</p>
                 <div v-for="(user, index) in userss" :key="user.id" class="user-item"
                     :class="{ 'expanded': expandedIndex === index }">
@@ -286,9 +289,15 @@ import { reactToProposition } from '~/API/ways/notifications.ts';
 import { getUserSearch } from '~/API/ways/user.ts';
 import { getProjectPropositions, getUserProjectPropositions } from "~/API/ways/notifications.ts"
 import { useRoute } from 'vue-router'
+import {getProjectByID} from "../../API/ways/project"
 import ava from '../../assets/demo/ava-small-header.svg'
 const state = ref(false)
-
+const checkOrders = ref()
+const userID = localStorage.getItem("userId")
+onMounted(async () => {
+    const response = await getProjectByID(Number(route.params.ID));
+    checkOrders.value = response.data.object.owner;
+})
 function togleState() {
     state.value = !state.value
 }

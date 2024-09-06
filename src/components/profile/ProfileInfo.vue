@@ -93,7 +93,7 @@ const snackbarVisible = ref(false)
 const FollowUser = async () => {
     try {
         snackbarVisible.value = true
-        const response = await addFollow(11)
+        const response = await addFollow(5)
         console.log(response)
     } catch (error) {
         console.log(error);

@@ -2,39 +2,30 @@
     <Header showUserMinify showID />
     <ProfileHeader :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container>
-        <select v-model="user.country" @change="fetchCities(user.country)">
-            <option disabled>Страна</option>
-            <option v-for="country in countries" :key="country.id" :value="country">
-                {{ country.name }}
-            </option>
-        </select>
-        {{ user.country }}
-        <select class="mt-4" v-model="user.city">
-            <option disabled>Город</option>
-            <option  v-for="city in filteredCities" :key="city.id" :value="city">
-                {{ city.name }}
-            </option>
-        </select>
-        {{ user.city }}
-        <!-- <div class="bg-red-600" v-for="country in countries" :key="country">
-            <div @click="fetchCities(country.id)" class="">
-                {{ country.name }}
-            </div>
-        </div> -->
-        <!-- <v-select v-for="country in countries" menu-icon="mdi-chevron-down" v-model="user.country" variant="outlined"
-            label="Страна" rounded="lg" class="mb-2" color="active" :items="[country.name]" hide-details></v-select>
-        <div v-for="city in filteredCities">
-            {{ city.name }}
-            {{ city.country.id }}
-        </div> -->
         <div class="userEdit my-4">
             <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" />
             <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" />
-            <v-select menu-icon="mdi-chevron-down" v-model="user.country" variant="outlined" label="Страна" rounded="lg"
+            <!-- <v-select menu-icon="mdi-chevron-down" v-model="user.country" variant="outlined" label="Страна" rounded="lg"
                 class="mb-2" color="active" :items="Object.keys(list)" hide-details></v-select>
             <v-select menu-icon="mdi-chevron-down" v-model="user.city" :disabled="user.country ? false : true"
                 variant="outlined" color="active" label="Выберите город" rounded="lg"
-                :items="(list as any)[user.country]"></v-select>
+                :items="(list as any)[user.country]"></v-select> -->
+                <div class="custom-select">
+            <select  v-model="user.country" @change="onCountryChange">
+                <option disabled>Выберите страну</option>
+                <option v-for="country in countries" :key="country.id" :value="country">
+                    {{ country.name }}
+                </option>
+            </select>
+        </div>
+        <div class="custom-select">
+            <select class="mt-4" v-model="user.city">
+                <option disabled>Выберите город</option>
+                <option v-for="city in filteredCities" :key="city.id" :value="city">
+                    {{ city.name }}
+                </option>
+            </select>
+        </div>
 
             <div class="props mb-12">
                 <div class="props__inner" :class="{ 'props__inner--selected': user.openedForProposition === false }">
@@ -58,7 +49,7 @@
             </div>
             <div class="userEdit__components">
                 <UiSkills :skillList="user.name" />
-                <ProjectsList showAdder class="mt-12" :projects="user.projects" />
+                <ProjectsList showAdder class="mt-12 mb-8" :projects="user.projects" />
             </div>
             <!-- {{ user.interests }} -->
             <UiAgree @click="changeUser" />
@@ -68,110 +59,117 @@
 </template>
 
 <script setup lang="ts">
-import Header from '~/components/Header.vue'
-import ProfileHeader from '~/components/profile/ProfileHeader.vue'
-import ProjectsList from '~/components/profile/ProjectsList.vue'
-import UiSkills from '~/components/ui-kit/UiSkills.vue'
-import UiAgree from '~/components/ui-kit/UiAgree.vue'
-import UiTextArea from '~/components/ui-kit/UiTextArea.vue'
-// import star from "~/assets/modal_icon/star-filled.svg"
-// import follow from "~/assets/modal_icon/follow.svg"
-import Arr from '~/helpers/set'
-import UiInput from "~/components/ui-kit/UiInput.vue";
+import Header from '~/components/Header.vue';
+import ProfileHeader from '~/components/profile/ProfileHeader.vue';
+import ProjectsList from '~/components/profile/ProjectsList.vue';
+import UiSkills from '~/components/ui-kit/UiSkills.vue';
+import UiAgree from '~/components/ui-kit/UiAgree.vue';
+import UiTextArea from '~/components/ui-kit/UiTextArea.vue';
+import UiInput from '~/components/ui-kit/UiInput.vue';
 import { ref, onMounted, computed } from 'vue';
 import { patchUser, getUserByID } from '~/API/ways/user';
 import { getPostByUser } from '~/API/ways/post';
 import { useRouter } from 'vue-router';
-import { getCountryList, getCityList } from '../../API/ways/dictionary'
-const list = ref(Arr)
-const router = useRouter()
+import { getCountryList, getCityList } from '../../API/ways/dictionary';
+
+const router = useRouter();
+
 const user = ref({
     id: localStorage.getItem('userId'),
     city: '',
     country: '',
     firstName: '',
-    lastName: "",
-    nickName: "",
+    lastName: '',
+    nickName: '',
     fullDescription: '',
     pictureUrl: '',
     projects: [],
     backgroundPictureUrl: ''
-    // openedForProposition: false,
 });
 
-onMounted(async () => {
-    try {
-        const response = await getUserByID(Number(localStorage.getItem('userId')));
-        user.value = {
-            ...user.value,
-            ...response.data.object
-        };
-        console.log(response);
-    } catch (e) {
-        console.error('error: ss', e);
-    }
-});
-let posts = ref()
+const posts = ref();
+const cities = ref([]);
+const countries = ref([]);
+const selectedCountryId = ref<number | null>(null);
+
+// Загружаем посты пользователя
 onMounted(async () => {
     try {
         const response = await getPostByUser(Number(localStorage.getItem('userId')));
-        posts.value = response
-        console.log(response);
+        posts.value = response;
     } catch (e) {
-        console.error('error:', e);
+        console.error('Error fetching posts:', e);
     }
 });
-const selectedCountryId = ref<number | null>(null);
 
-const fetchCities = async (countryId: any) => {
+// Функция для загрузки городов по стране
+const fetchCities = async (countryId: number) => {
     try {
-        const response = await getCityList(countryId.id, 0);
-        selectedCountryId.value = countryId.id;
+        const response = await getCityList(countryId, 0);
         cities.value = response.data.object;
-        console.log(countryId)
     } catch (error) {
         console.error('Error fetching cities:', error);
     }
 };
 
-const cities = ref<any[]>([]);
-const countries = ref<any[]>([]);
+// Загружаем страны и информацию о пользователе
 onMounted(async () => {
     try {
-        const cityResp = await getCityList(0, 0);
+        // Загружаем страны
         const countryResp = await getCountryList();
-        cities.value = cityResp.data.object
-        countries.value = countryResp.data.object
+        countries.value = countryResp.data.object;
+
+        // Загружаем данные пользователя
+        const response = await getUserByID(Number(localStorage.getItem('userId')));
+        user.value = {
+            ...user.value,
+            ...response.data.object
+        };
+
+        // Если у пользователя уже выбрана страна, загружаем соответствующие города
+        if (user.value.country) {
+            selectedCountryId.value = user.value.country.id;
+            await fetchCities(user.value.country.id);
+        }
+
     } catch (e) {
-        console.error('error:', e);
+        console.error('Error fetching user data or countries:', e);
     }
 });
-const changeUser = async () => {
-    console.log('click');
-    await patchUser(user.value).then(() => {
-        try {
-            router.push('/me')
-        } catch (e) {
-            console.error('12221 error :', e);
-        }
-    });
-};
+
+// Фильтр городов по выбранной стране
 const filteredCities = computed(() => {
-    if (selectedCountryId.value === null) {
-        return [];
-    }
     return cities.value.filter(city => city.country && city.country.id === selectedCountryId.value);
 });
+
+// Обработка изменения страны
+const onCountryChange = async () => {
+    if (user.value.country) {
+        selectedCountryId.value = user.value.country.id;
+        await fetchCities(user.value.country.id);
+    }
+};
+
+// Сохранение изменений пользователя
+const changeUser = async () => {
+    try {
+        await patchUser(user.value);
+        router.push('/me');
+    } catch (e) {
+        console.error('Error updating user:', e);
+    }
+};
+
 const baseURL = 'http://62.217.181.172/';
 
 const fullAvatarUrl = computed(() => {
     return user.value.pictureUrl ? `${baseURL}files/${user.value.pictureUrl}` : '';
 });
+
 const fullBannerUrl = computed(() => {
     return user.value.backgroundPictureUrl ? `${baseURL}files/${user.value.backgroundPictureUrl}` : '';
 });
 </script>
-
 <style lang="scss" scoped>
 .userInfo {
     display: flex;
@@ -219,6 +217,17 @@ const fullBannerUrl = computed(() => {
     right: 10px;
 }
 
+.custom-select select {
+  appearance: none;
+  width: 100%;
+  font-size: 1.15rem;
+  padding: 0.675em 0px 0.675em 1em;
+  background-color: none;
+  border: 1px solid #caced1;
+  border-radius: 8px;
+  color: #000;
+  cursor: pointer;
+}
 .props {
     display: flex;
     flex-direction: row;
