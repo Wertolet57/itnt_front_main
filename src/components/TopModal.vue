@@ -29,6 +29,7 @@ import account from "~/assets/icons/account-blue.svg";
 import subscribe from "~/assets/icons/subscribe-blue.svg";
 import share from "~/assets/icons/share-blue.svg";
 import warning from "~/assets/icons/warning-red.svg";
+import notification from '~/assets/setting/notification.svg'
 
 import { modalActionsList } from '~/helpers/types'
 import { useRouter } from 'vue-router'
@@ -70,6 +71,11 @@ const modalItems: modalActionsList[] = [
         name: 'Поделиться',
         icon: share,
         route: '/me/edit',
+    },
+    {
+        name: 'уведомления',
+        icon: notification,
+        route: '/me/notification',
     },
     {
         name: 'Выйти из аккаунта',

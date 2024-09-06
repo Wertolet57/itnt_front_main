@@ -94,21 +94,21 @@ const messages = ref<MessageItem[]>([
 ]);
 const userNotifications = ref([])
 
-// onMounted(async () => {
-//     //есть 6 ответов в id 1
-//     await getUserNotifications(1).then((response) => {
-//         try {
-//             let data = response.data.object
-//             userNotifications.value = data
-//             console.log(data);
+onMounted(async () => {
+    //есть 6 ответов в id 1
+    await getUserNotifications(1).then((response) => {
+        try {
+            let data = response.data.object
+            userNotifications.value = data
+            console.log(data);
             
-//         } catch (e) {
-//             console.error('text error:', e)
-//         }
-//     })
-//     // console.log('response', userNotifications._rawValue)
+        } catch (e) {
+            console.error('text error:', e)
+        }
+    })
+    // console.log('response', userNotifications._rawValue)
 
-// })
+})
 </script>
 <style scoped lang="scss">
 .searchProjectCard {

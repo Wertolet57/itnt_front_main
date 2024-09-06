@@ -58,7 +58,7 @@ const props = defineProps({
 
 const typeMessage = props.messageObject.type
 
-const countMessage = typeMessage == 'invitationToProject' ? 1 : props.messageObject.messages.length
+const countMessage = typeMessage == 'invitationToProject' ? 1 : 3
 
 
 let text = ""
