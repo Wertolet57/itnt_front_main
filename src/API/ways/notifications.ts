@@ -26,6 +26,7 @@ const reactToProposition = (propositionAnswer: Answer, propositionId: number) =>
     );
 }
 const getUserNotifications = (userId: number) => {
+    
     return API.get(`${prefix}/userNotifications`, {
         params: {
             userId
