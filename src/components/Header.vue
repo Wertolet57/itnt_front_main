@@ -7,8 +7,8 @@ export default {
 <template>
     <v-app-bar class="px-4 z-1 relative" :elevation="0" height="46" color="white">
         <v-icon class="mr-3" @click="$router.back()" icon="mdi-arrow-left" />
-
-        <img v-show="props.showLogo" :src="user.pictureUrl" />
+        <img v-if="user.pictureUrl === null || user.pictureUrl=== ''" class="" :src="ava">
+        <img v-if="user.pictureUrl !== null || user.pictureUrl !== ''"  v-show="props.showLogo" :src="user.pictureUrl" />
 
         <h2 @click="copyID" v-show="props.showID">{{ chosenId }}</h2>
 

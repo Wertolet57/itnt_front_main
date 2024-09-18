@@ -5,28 +5,20 @@ export default {
 </script>
 
 <template>
-    <!-- v-for="(card, id) in projectInfoSet"  :key="id"-->
     <v-card class="card">
         <div class="card__head">
-            <!-- {{ ++id }} -->
-            <div class="card__head__main">
+            <div v-if="allData && allData.avatarUrl" class="card__head__main">
                 <h2>{{ listID }}</h2>
-                <!-- <ul v-if="filterUsers.length > 0">
-                    <li v-for="user in filterUsers" :key="user.user.id">
-                        <p>User ID: {{ user.user.id }}</p>
-                        <p>First Name: {{ user.user.firstName || 'No name provided' }}</p>
-                        <p>Last Name: {{ user.user.lastName || 'No surname provided' }}</p>
-                        <p>Relation Type: {{ user.relationType }}</p>
-                    </li>
-                </ul>
-                <p v-else>No matching users found</p> -->
-                <img @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
-                    :class="{ 'cursor-pointer w-[37px] rounded-[100%]': fullAvatarUrl, 'w-[0px]': !fullAvatarUrl }" />
+
+                <img v-if="allData.avatarUrl === null || allData.avatarUrl == 'string'"
+                    @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="defAva"
+                    class="cursor-pointer w-[37px] rounded-[100%]" />
+                <img v-else @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
+                    class="cursor-pointer w-[37px] h-[37px] rounded-[100%]" />
                 <div>
                     <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body3 cursor-pointer">{{
-                    props.projectInfoSet.name }}</p>
+                props.projectInfoSet.name }}</p>
                     <p style="color: #9e9e9e" class="txt-cap1">Здоровье, стартапы, приложение</p>
-                    <!-- {{ props.projectInfoSet.id }} -->
                 </div>
             </div>
             <v-icon @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="font-weight-bold" />
@@ -40,7 +32,7 @@ export default {
             </div>
             <div class="card__stats--chip">
                 <img width="14" height="14" src="@/assets/icons/search-black.svg" alt="" />
-                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.vacancyCount }}
+                <p v-if="allData" class="txt-cap1"><span>&#183;</span> {{ allData.vacancyCount }}
                 </p>
             </div>
 
@@ -54,19 +46,14 @@ export default {
 
             </div>
         </div>
-
-        <!-- {{followed.users}} -->
         <div v-if="followed && followed.users" class=" text-black" v-for="user in followed.users">
             <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
                 подписан
             </div>
             <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
-                <!-- <div class="" v-if=""></div> -->
                 подписаться
             </div>
-            <!-- <div class="" v-else>
-                подписаться
-            </div> -->
+
         </div>
         <div class="card__main">
             <img v-if="filteredProjectFiles.length == 0" src="../../assets/demo/projectSmallCard.svg" alt="" />

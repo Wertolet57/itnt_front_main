@@ -9,7 +9,7 @@
         <UiSkills :skillList="userInfo.lastName" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
         <!-- {{ userInfo }} -->
-
+        
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
@@ -24,59 +24,8 @@
             <h1>Что у меня нового:</h1>
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
-        <!-- <div v-for="(post, id) in posts" :key="id" class="mt-6">
-            <div class="" v-for="(object, id) in post.object" :key="id">
-                <FeedPost :post="object" :id="object.id" />
-            </div>
-        </div> -->
-        <button @click="addComments">addComments</button>
         <div v-if="posts && posts.object" v-for="(post, index) in posts" :key="index">
             <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
-        </div>
-        <!-- {{ prjProp }} -->
-        <!-- {{ userPrjProp }} -->
-        <!-- {{ userNot }} -->
-        <div class="" v-for="not in userNot" :key="not.id">
-            <p class="hidden">
-                <!-- ОТПРАВИТЕЛЬ -->
-                {{ not.fromUser }}
-            </p>
-            <p class="hidden">
-                <!-- ПОЛУЧАТЕЛЬ -->
-                {{ not.toUser }}
-            </p>
-            <!-- <p class="bg-black">
-                {{ not }}
-            </p> -->
-            <p>
-                {{ not.proposition }}
-            </p>
-            <p>
-                {{ not.message }}
-            </p>
-            <p v-if="not.answer === null">
-                {{ not.answer }}
-                null
-            </p>
-        </div>
-        <!-- {{ userProp }} -->
-        <div class="" v-for="prope in userProp" :key="prope.id">
-            <p>
-                {{ prope.id }}
-            </p>
-            <p>
-                {{ prope.project }}
-            </p>
-            <p class="bg-black">
-                {{ prope.user }}
-            </p>
-            <p>
-                {{ prope.message }}
-            </p>
-            <p v-if="prope.answer === null">
-                {{ prope.answer }}
-                null
-            </p>
         </div>
     </v-container>
     <Footer />
@@ -98,70 +47,15 @@ import ProfileHeader from '~/components/profile/ProfileHeader.vue'
 import { getUserByID } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { onMounted, ref, computed } from 'vue';
-import { getPostByUser, addComment } from '~/API/ways/post';
-import { getProjectPropositions, getUserNotifications, getUserProjectPropositions, getUserPropositions } from "../../API/ways/notifications"
-// import FeedPost from '~/components/feed/FeedPost.vue';
-const prjProp = ref()
-const userPrjProp = ref()
-const userNot = ref()
-const userProp = ref()
-onMounted(async () => {
-    await getProjectPropositions(Number(10)).then((response) => {
-        try {
-            prjProp.value = response.data.object;
-            console.log(userInfo.value)
-        } catch (e) {
-            console.error('text error:', e);
-        }
-    })
-    await getUserNotifications(Number(localStorage.getItem("userId"))).then((response) => {
-        try {
-            userNot.value = response.data.object;
-            console.log(userInfo.value)
-        } catch (e) {
-            console.error('text error:', e);
-        }
-    })
-    await getUserPropositions(Number(localStorage.getItem("userId"))).then((response) => {
-        try {
-            userProp.value = response.data.object;
-            console.log(userInfo.value)
-        } catch (e) {
-            console.error('text error:', e);
-        }
-    })
-    await getUserProjectPropositions(Number(localStorage.getItem("userId")), 10).then((response) => {
-        try {
-            userPrjProp.value = response.data.object;
-            console.log(userInfo.value)
-        } catch (e) {
-            console.error('text error:', e);
-        }
-    })
-})
+import { getPostByUser } from '~/API/ways/post';
+
+
 let posts = ref();
 const closeModal = () => {
     if (modalState.value) {
         modalState.value.close();
     }
-};
-const addComments = async () => {
-    const postComment = {
-        post: {
-            id: 5
-        },
-        user: {
-            id: localStorage.getItem("userId")
-        },
-        message: 'sdsdsdsdsd',
-    };
-    try {
-        const data = await addComment(postComment);
-        posts.value = data?.data?.object
-    } catch (error) {
-        console.error('Error adding comment:', error);
-    }
-};
+}
 
 const getPosts = async () => {
     try {
@@ -203,4 +97,6 @@ const fullBannerUrl = computed(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

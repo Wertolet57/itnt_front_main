@@ -1,6 +1,6 @@
 <template>
     <Header showID showUserMinify />
-    <ProjectHeader :prjAva="fullAvatarUrl" />
+    <ProjectHeader :prjAva="fullAvatarUrl" :read-only="false"  />
     <v-container>
         <ProjectCard />
         <ProjectTeam class="mt-12" />
@@ -8,19 +8,7 @@
         <ProjectVacancys class="mt-12" />
         <ProjectStage />
         <ProjectMedia :read-only="false" class="mt-12 mb-12" />
-
-        <div>
-            <!-- <div v-for="(file, index) in data.projectFiles" :key="file.id">
-                <div v-if="file.pictureUrl && isExternalUrl(file.pictureUrl)">
-                </div>
-                <div class="" v-if="file.pictureUrl == null || ''">
-
-                </div>
-                <div v-else>
-                    <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" />
-                </div>
-            </div> -->
-        </div> 
+ 
         <UiButton @click="changeProject" bgColor="blue" class="mt-12">Опубликовать проект</UiButton>
     </v-container>
     <Footer />
@@ -80,7 +68,14 @@ async function changeProject() {
 }
 const baseURL = 'http://62.217.181.172/';
 
+import defAva from "~/assets/demo/projectsmallphoto.svg"
+
 const fullAvatarUrl = computed(() => {
-    return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
+    if(data.value.avatarUrl === "string"){
+        return defAva
+    }
+    else{
+        return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
+    }
 });
 </script>

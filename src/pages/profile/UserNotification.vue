@@ -5,6 +5,7 @@
             <div class="date mb-4 rounded-xl d-inline-block ">{{ $t('feed.today') }}</div>
         </div>
         <!-- <FeedPanels :notification="true" />
+        <!-- <FeedPanels :notification="true" />
         <FeedPanels :reply="true" />
         <FeedPanels :default="true" />
         <FeedPanels :default="true" /> -->

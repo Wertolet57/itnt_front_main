@@ -6,7 +6,8 @@ export default {
 
 <template>
     <v-card v-if="props.skillsType != 'Project'" class="ui-skills shadow-sm p-4">
-        <button @click="patchSkills" class="p-8 bg-black">patch</button>
+        <!-- <button @click="patchSkills" class="p-8 bg-black">patch</button> -->
+         {{categories}}
         <div class="ui-skills__head" v-if="props.readOnly === false">
             <p class="txt-cap2">{{ $t('me.skills') }} </p>
             <div v-if="deleteMode === false" @click="showSheet = true" class="ui-skills__btn">
@@ -20,7 +21,7 @@ export default {
                 class="ui-skills__trash">
                 <img src="../../assets/icons/trash.svg" alt="" />
             </div>
-            {{ props.skill }}
+            <!-- {{ props.skill }} -->
         </div>
         <div class="ui-skills__list">
             <div class="flex w-full text-black">
@@ -63,7 +64,7 @@ export default {
         </v-card>
     </v-dialog>
     <transition name="bottom-sheet">
-        <div v-if="showSheet" style="overflow-y: auto;" class="bottom-sheet bg-white text-left"
+        <div v-if="showSheet" style="overflow-y: auto;" class="bottom-sheet min-h-[400px] bg-white text-left"
             @click="showPopup = false">
             <div class="txt-body1 mb-2 mx-4">Выбрано : {{ chosenSkills.length }}</div>
             <UiInput v-model="searchTerm" class="mx-4" label="Введите навык для поиска" />
@@ -113,12 +114,12 @@ const props = defineProps({
         type: String,
     }
 })
-const categories = ref([]);
+const categories = ref();
 const searchTerm = ref('');
 const getInterst = async () => {
     try {
-        const res = await getInterestListGrouped();
-        categories.value = res;
+        const response = await getInterestListGrouped();
+        categories.value = response.data.object;
     } catch (error) {
         console.error("Error fetching interests:", error);
     }
@@ -139,9 +140,7 @@ const addSkill = (skillName: any) => {
     }
 }
 const chosenSkills: Ref<Array<string>> = ref([])
-onMounted(() => {
-    getInterst()
-})
+onMounted(getInterst)
 const showDeleteConfirmation = ref(false);
 const selectedSkills = ref<number[]>([]);
 function toggleSkillSelection(id: number) {

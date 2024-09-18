@@ -1,3 +1,4 @@
+import UserFollowed from '~/pages/profile/UserFollowed.vue';
 import { API } from '../main'
 // import ComplaintData from "~/helpers/types"
 const prefix = '/user'
@@ -18,40 +19,24 @@ export const addPost = (description: String, descriptionHeader: String, authorPr
 export const getPost = () => {
     return API.get('/main/getPosts');
 }
-export const searcgUsers = (params: any) => {
-    const queryParams = new URLSearchParams(params).toString();
-    return API.get(`${prefix}/search?${queryParams}`);
+export const getUser = () => {
+    return API.get(`${prefix}/`);
 }
-const postUserLoginCode = (phone: String) => {
-    return API.post(`${prefix}/loginCode`, {
-        login: phone,
-    })
+export const getUserSearch = () => {
+    return API.get(`${prefix}/search`);
 }
-
-const postUserConfirm = (phone: String, token: String) => {
-    return API.post(`${prefix}/loginCodeConfirmation`, {
-        login: phone,
-        confirmToken: token,
-    })
+export const patchUser = (data: Object) => {
+    return API.patch(`${prefix}/`, data)
 }
 
-const postAddUserPicture = (file: FormData, mainPicture: boolean) => {
-    return API.post(`${prefix}/addUserPicture?mainPicture=${mainPicture}`, file, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-    });
-};
-const postAddBackgroundPicture = (file: FormData) => {
-    return API.post(`${prefix}/addBackgroundPicture`, file, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-    });
-};
-
-const postAddComplaint = (id: number, userId: number, complaint: String) => {
-
+export const getUserByID = (id: Number) => {
+    if (id) {
+        return API.get(`${prefix}/${id}`)
+    } else {
+        return API.get(`${prefix}/`)
+    }
+}
+export const postAddComplaint = (id: number, userId: number, complaint: String) => {
     return API.post(`${prefix}/${id}/addComplaint`, {
         "complaintInfo": complaint,
         "targetUser": {
@@ -62,46 +47,58 @@ const postAddComplaint = (id: number, userId: number, complaint: String) => {
         }
     });
 };
-
-const deleteUserPicture = (id: Number) => {
-    return API.delete(`${prefix}/delUserPicture?id=${id}`);
-}
 export const addFollow = (userId: Number) => {
     return API.post(`${prefix}/${userId}/addFollow`);
 }
-export const delFollow = (id: any) => {
-    return API.delete(`${prefix}/${id}/delFollow`);
+export const postAddBackgroundPicture = (file: FormData) => {
+    return API.post(`${prefix}/addBackgroundPicture`, file, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+export const postAddUserPicture = (file: FormData, mainPicture: boolean) => {
+    return API.post(`${prefix}/addUserPicture?mainPicture=${mainPicture}`, file, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+export const delFollow = (userFollowerId: number, userId: Number) => {
+    return API.delete(`${prefix}/delFollow?userFollowerId=${userFollowerId}&userId=${userId}`);
 }
-
-export const getFollowed = ()=>{
+export const deleteUserPicture = (id: Number) => {
+    return API.delete(`${prefix}/delUserPicture?id=${id}`);
+}
+export const getFollowed = () => {
     return API.get(`${prefix}/followed`)
 }
-
-const getUserByID = (id: Number) => {
-    if (id) {
-        return API.get(`${prefix}/${id}`)
-    } else {
-        return API.get(`${prefix}/`)
-    }
+export const searcgUsers = (params: any) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`${prefix}/search?${queryParams}`);
+}
+export const postUserLoginCode = (phone: String) => {
+    return API.post(`${prefix}/loginCode`, {
+        login: phone,
+    })
+}
+export const getUserProjects = (projectId: Number) => {
+    return API.get(`${prefix}/project/${projectId}`)
+}
+export const postAnonimProjects = (isAnonymous: Boolean, projectId: Number) => {
+    return API.post(`${prefix}/project/${projectId}/anonymous?isAnonymous=${isAnonymous}`)
+}
+export const postMenuProjects = (isInQuickMenu: Boolean, projectId: Number) => {
+    return API.post(`${prefix}/project/${projectId}/quick_menu?isInQuickMenu=${isInQuickMenu}`)
 }
 
-const getUserSearch = () => {
-    return API.get(`${prefix}/search`);
+export const postUserConfirm = (phone: String, token: String) => {
+    return API.post(`${prefix}/loginCodeConfirmation`, {
+        login: phone,
+        confirmToken: token,
+    })
 }
-
 // PUT
-const putUser = (user: Object) => {
+export const putUser = (user: Object) => {
     return API.put(`${prefix}/`, { user })
-}
-
-// PATCH
-const patchUser = (data: Object) => {
-    return API.patch(`${prefix}/`, data)
-}
-
-export {
-    getUserByID,
-    postAddUserPicture, postAddBackgroundPicture,
-    postUserConfirm, postUserLoginCode, putUser,
-    patchUser, postAddComplaint, deleteUserPicture, getUserSearch
 }

@@ -6,17 +6,20 @@ export default {
 
 <template>
     <div v-if="!isHidden" class="project-card">
-        <div v-if="!isAnonimus" class="">
+        <div class="">
             <v-icon @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="absolute  p-0 m-0" />
-            <div :style="props.projectInfo.isAnon === false ? 'padding-left: 52px' : ''" class="project-card__info">
-                <img v-if="props.projectInfo.isAnon" width="41" height="38" src="../../assets/icons/anonProject.svg" />
+            <div class="project-card__info">
+                <img class="" v-if="projects && projects.isAnonymous && projects.isAnonymous === true" width="41"
+                    height="38" src="../../assets/icons/anonProject.svg" />
                 <div class="text-start px-4">
-                    <p @click="router.push('/project/' + props.projectInfo.project.id)" class="project-card__info__name cursor-pointer">{{ props.projectInfo.project.name }}</p>
+                    <p @click="router.push('/project/' + props.projectInfo.project.id)"
+                        class="project-card__info__name cursor-pointer">{{ props.projectInfo.project.name }}</p>
                     <p class="project-card__info__position">{{ props.projectInfo.project.slogan }}</p>
                 </div>
             </div>
-            <img @click="router.push('/project/' + props.projectInfo.project.id)" v-if="fullAvatarUrl !== `${baseURL}files/string` && fullAvatarUrl !== `${baseURL}files/`"
-            class="project-card__img cursor-pointer" :src="fullAvatarUrl" alt=" " />
+            <img @click="router.push('/project/' + props.projectInfo.project.id)"
+                v-if="fullAvatarUrl !== `${baseURL}files/string` && fullAvatarUrl !== `${baseURL}files/`"
+                class="project-card__img cursor-pointer" :src="fullAvatarUrl" alt=" " />
         </div>
     </div>
     <div v-else class="">
@@ -31,16 +34,32 @@ export default {
             <img class="" :src="anonimus" alt="" />
         </div>
     </div>
-    <vue-bottom-sheet ref="modalState">
+    <vue-bottom-sheet :max-height="'90%'" ref="modalState">
         <div class="modal">
             <div class="modal__list">
+                <div class="modal__list__item">
+                    <img :src="anonimus" alt="">
+                    <p v-if="projects" @click="Anonim(!projects.isAnonymous)">
+                        {{ projects.isAnonymous ? 'Отключить анонимное участие' : 'Включить анонимное участие' }}
+                    </p>
+                    <p class="" v-else> Включить анонимное участие </p>
+                </div>
                 <div v-for="(item, id) in modalItems" @click="item?.func" :key="id" class="modal__list__item">
                     <img :src="item.icon" alt="" />
                     <p :class="item.name === 'Пожаловаться' && 'error-txt'" class="txt-body1">{{ item.name }}</p>
                 </div>
+                <button @click="quickMenu(!projects.isInQuickMenu)" v-if="projects" class="btn">
+                    <img :src="projects.isInQuickMenu ? minus : plus" alt="">
+                    {{ projects.isInQuickMenu ? 'Убрать проект из быстрого меню' : 'Добавить проект в быстрое меню' }}
+                </button>
+                <button @click="quickMenu(!projects.isInQuickMenu)" v-else class="btn">
+                    <img :src="plus" alt="">
+                    {{ 'Добавить проект в быстрое меню' }}
+                </button>
             </div>
         </div>
     </vue-bottom-sheet>
+    <!-- {{ projects }} -->
 </template>
 
 <script setup lang="ts">
@@ -50,10 +69,11 @@ import anonimus from "~/assets/project_modal/annonimus.svg"
 import hide from "~/assets/project_modal/hide.svg"
 import project from "~/assets/project_modal/project.svg"
 import share from "~/assets/project_modal/share.svg"
-// import plus from "~/assets/project_modal/plus.svg"
-
+import plus from "~/assets/project_modal/plus.svg"
+import minus from "~/assets/project_modal/minus.svg"
+import { getUserProjects, postAnonimProjects, postMenuProjects } from '~/API/ways/user.ts'
 import { useRouter } from 'vue-router';
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { modalActionsList } from '~/helpers/types'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 
@@ -68,28 +88,42 @@ const props = defineProps({
 })
 
 const router = useRouter();
+const projects = ref()
+const getProjects = async () => {
+    try {
+        const data = await getUserProjects(props.projectInfo.project.id);
+        projects.value = data.data.object;
+    } catch (error) {
+        console.error(error);
+    }
+};
+onMounted(getProjects);
+const Anonim = async (anonim: Boolean) => {
+    try {
+        const response = await postAnonimProjects(anonim, props.projectInfo.project.id);
+        console.log(response);
+        await getProjects();
+    } catch (error) {
+        console.error(error);
+    }
+};
+const quickMenu = async (quick: Boolean) => {
+    try {
+        const response = await postMenuProjects(quick, props.projectInfo.project.id);
+        console.log(response);
+        await getProjects();
 
-const isHidden = ref(false)
-
-const hideContent = () => {
-    isHidden.value = !isHidden.value
+    } catch (error) {
+        console.error(error);
+    }
 }
-const isAnonimus = ref(false)
 
-const anonimeContent = () => {
-    isAnonimus.value = !isAnonimus.value
-}
 const modalState = ref(false)
 
 const modalItems: modalActionsList[] = [
     {
         name: 'Не показывать проект в профиле',
         icon: hide,
-
-    },
-    {
-        name: 'Включить анонимное участие',
-        icon: anonimus,
 
     },
     {
@@ -127,11 +161,12 @@ const fullAvatarUrl = computed(() => {
 .btn {
     display: flex;
     flex-direction: row;
+    // justify-content:center;
     text-align: center;
-    border: 2px solid #29B6F6;
-    gap: 5%;
+    border: 1px solid #29B6F6;
+    gap: 12px;
     border-radius: 12px;
-    padding: 10px 13px;
+    padding: 10px 13px 10px 10px;
 }
 
 .project-card {
@@ -151,6 +186,10 @@ const fullAvatarUrl = computed(() => {
         align-items: center;
         gap: 11px;
         padding: 28px 0;
+
+        img {
+            border-radius: 0px 12px 12px 0px !important;
+        }
 
         &__name {
             color: $primary;
@@ -199,63 +238,21 @@ const fullAvatarUrl = computed(() => {
     }
 }
 
-.project-anonim {
-    min-height: 94px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    width: 100%;
-    background-color: rgb(250, 250, 250);
-    margin-bottom: 2px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+.modal {
+    padding: 0 25px;
+    padding-bottom: 40px;
 
-
-    &__info {
+    &__list {
         display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 28px 0;
+        flex-direction: column;
+        gap: 20px;
 
-        &__name {
-            color: black;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        &__position {
-            color: black;
-            opacity: 0.5;
-            font-size: 15px;
-            font-weight: 400;
+        &__item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
     }
-
-    &__img {
-        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
-        // position: absolute;
-    }
-
-    &__anominus {
-        padding: 12px;
-        align-items: start;
-        position: absolute;
-        top: 30%;
-    }
-
-    
-    &:last-child {
-        border-bottom-right-radius: 8px;
-        border-bottom-right-radius: 8px;
-    }
-
-}
-
-.img {
-    position: absolute;
-    right: 12px;
 }
 
 .project-card:not(.project-card ~ .project-card) {

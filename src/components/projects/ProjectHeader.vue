@@ -12,16 +12,19 @@ export default {
                 <img :src="props.prjAva" class="" />
             </div>
         </div>
+
         <div class="back w-full" v-else>
             <div style="display: flex; align-items: start" class="rounded-circle mx-auto mt-6">
-                <v-file-input v-if="props.prjAva === '' || null" @change="uploadImage" height="200" accept="image/png, image/jpeg, image/bmp"
-                    class="input-file">
-                </v-file-input>
-                <img v-if="props.prjAva === ''|| null" src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle mx-auto"
-                    height="208" width="208" />
-                    <div v-else class="ava">
-                        <img  :src="props.prjAva"  height="208" width="208" />
-            </div>
+                <div v-if="props.prjAva === '' || null || 'string'" class="mx-auto cursor-pointer">
+                    <v-file-input @change="uploadImage" height="200" accept="image/png, image/jpeg, image/bmp"
+                        class="input-file bg-black">
+                    </v-file-input>
+                    <img src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle  mx-auto cursor-pointer"
+                        height="208" width="208" />
+                </div>
+                <div v-else class="ava">
+                    <img :src="props.prjAva" height="208" width="208" />
+                </div>
             </div>
         </div>
 
@@ -58,7 +61,7 @@ export default {
                             </UiButton>
                         </div>
                     </div> -->
-                    <UiButton bgColor="blue" @click="follow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
+                    <UiButton bgColor="blue" @click="deleteFollow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
             'Подписаться' }}</UiButton>
                     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
                         color="white " rounded="lg">
@@ -103,12 +106,22 @@ import { ref, onMounted } from 'vue'
 import Fire from '../Fire.vue'
 import UiButton from '../ui-kit/UiButton.vue'
 import UiInput from '../ui-kit/UiInput.vue'
-import { addProjectAvatar, addFollow } from '~/API/ways/project.ts';
+import { addProjectAvatar, addFollow, delFollow } from '~/API/ways/project.ts';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { getInterestList } from "~/API/ways/dictionary"
 import { getUserByID } from '~/API/ways/user';
 import { useProjectStore } from '~/store/projectStore'
 const route = useRoute()
+const deleteFollow = async () => {
+    try {
+        const response = delFollow(10, 5)
+        console.log(response)
+    } catch (error) {
+        console.log(error);
+
+    }
+}
 const { prjObject } = storeToRefs(useProjectStore())
 const props = defineProps({
     readOnly: {
@@ -210,10 +223,14 @@ onMounted(async () => {
         background: $def-white;
     }
 }
+
 .input-file {
-    min-width: 208px;
-    min-height: 220px;
+    min-width: 228px;
+    min-height: 320px;
     left: 50%;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
     z-index: 1;
     transform: translate(-50%, -12%);
     position: absolute;
@@ -226,8 +243,9 @@ onMounted(async () => {
     justify-content: start;
 
     img {
-        width: 20%;
-        height: 20%;
+        aspect-ratio: 110 / 106;
+        max-width: 10%;
+        height: auto;
         border-radius: 100%;
     }
 }

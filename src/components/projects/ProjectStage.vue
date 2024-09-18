@@ -10,7 +10,7 @@
                 <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
                 <span class="not-active" v-else></span>
             </div>
-            <v-icon icon="mdi-dots-vertical" />
+            <v-icon class="opacity-0"  icon="mdi-dots-vertical" />
         </div>
         <div class="stepper-content">
             <div class="flex flex-row">
@@ -30,7 +30,7 @@
                 <img v-else-if="currentStep === index + 1" :src="step.activeIcon" alt="Active">
                 <span v-else class="not-active"></span>
             </div>
-            <v-icon icon="mdi-dots-vertical" />
+            <v-icon class="opacity-0"  icon="mdi-dots-vertical" />
         </div>
         <div class="stepper-content">
             <div class="flex flex-row">
@@ -150,53 +150,59 @@ const steps = [
         <p class="text-[14px] font-[500] pt-3">Основная сложность для компаний - привлечь стратегического инвестора, показать покупателям свою ценность.</p>` }
 ]
 const project = ref({
-    projectStage: '', // or any default value that makes sense for your case
+    projectStage: '', // начальное значение стадии проекта
 });
-const currentStep = ref(1)
+
+const currentStep = ref(1);
 
 const currentStepContent = computed(() => {
-    return steps[currentStep.value - 1];
+    return steps[currentStep.value - 1]; // Текущий шаг
 });
 
 const setStep = (step) => {
-    currentStep.value = step;
+    if (step >= 1 && step <= steps.length) {
+        currentStep.value = step;
+    }
 };
 
-const nextStep = () => {
+const nextStep = async () => {
     if (currentStep.value < steps.length) {
         currentStep.value++;
-        updateProjectStage();
+        await updateProjectStage();
     }
 };
 
-const prevStep = () => {
+const prevStep = async () => {
     if (currentStep.value > 1) {
         currentStep.value--;
-        updateProjectStage();
+        await updateProjectStage();
     }
 };
+
 const snackbarVisible = ref(false);
+
 const selectStep = async () => {
-    if (currentStep.value < steps.length) {
+    try {
         await updateProjectStage();
-        // currentStep.value++;
         snackbarVisible.value = true;
+    } catch (error) {
+        console.error("Ошибка при выборе стадии:", error);
     }
 };
 
 const updateProjectStage = async () => {
     const newStage = steps[currentStep.value - 1].serverStage;
+
     try {
-        project.value.projectStage = newStage;
-        const response = await patchProject(project.value);
+        const response = await patchProject({ ...project.value, projectStage: newStage });
+        project.value.projectStage = newStage; // Обновляем только после успешного ответа
         console.log('Стадия проекта обновлена:', response.data);
     } catch (e) {
         console.error('Ошибка при обновлении стадии проекта:', e);
-        // Возможно, здесь стоит вернуть предыдущее значение currentStep
     }
 };
 
-// Добавим функцию для инициализации текущего шага при загрузке проекта
+// Инициализация текущего шага при загрузке проекта
 const initializeCurrentStep = () => {
     const currentServerStage = project.value.projectStage;
     const stepIndex = steps.findIndex(step => step.serverStage === currentServerStage);
@@ -204,6 +210,12 @@ const initializeCurrentStep = () => {
         currentStep.value = stepIndex + 1;
     }
 };
+
+// Вызываем инициализацию при загрузке данных
+onMounted(() => {
+    initializeCurrentStep();
+});
+
 
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {

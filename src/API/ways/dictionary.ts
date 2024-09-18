@@ -9,7 +9,7 @@ const getCityList = ( countryId :Number,pageNumber :Number ) => {
     return API.get(`${prefix}/cityList?countryId=${countryId}&pageNumber=${pageNumber}`)
 }
 const getInterestList = () => {
-    return API.get(`${prefix}/interesList`)
+    return API.get(`${prefix}/interestList`)
 }
 const getInterestListGrouped = () => {
     return API.get(`${prefix}/interestListGrouped`)

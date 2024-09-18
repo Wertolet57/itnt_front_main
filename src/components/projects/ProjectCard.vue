@@ -50,11 +50,14 @@
                 <p>Опишите проект</p>
 
                 <UiInput label="Заголовок*" v-model="prjObject.descriptionHeader" />
-
                 <div>
                     <!-- TODO: сделатб хелпер под правила -->
                     <UiTextArea :class="descriptionClass" :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']"
-                        counter label="Описание проекта*" v-model="prjObject.description" />
+                        counter label="Описание проекта*" v-model="prjObject.description"
+                        @input="updateFormattedText" />
+                    <div class="flex w-full">
+                        <span class="text-red-500">{{ greenPart }}</span><span>{{ blackPart }}</span>
+                    </div>
 
                     <UiPrompt :projectCard="true">
 
@@ -94,7 +97,13 @@ onMounted(async () => {
     })
 })
 const dialog = ref(false)
+const greenPart = computed(() => prjObject.value.description.slice(0, 100));
+const blackPart = computed(() => prjObject.value.description.slice(100));
 
+// Эта функция вызывается при каждом изменении текста
+const updateFormattedText = () => {
+  // Логика может быть пустой, если нет дополнительной обработки
+};
 const props = defineProps({
     readOnly: {
         type: Boolean,

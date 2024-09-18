@@ -1,10 +1,12 @@
 <template>
     <div v-if="props.readOnly" class="userPics">
         <div class="userPics__bg">
-            <img v-show="props.bgPic" :src="props.bgPic" alt="User background picture">
+            <div v-if="props.bgPic === null || props.bgPic === ''" class="" ></div>
+            <img v-else  v-show="props.bgPic" :src="props.bgPic" alt="User background picture">
         </div>
         <div class="userPics__ava">
-            <img v-show="props.avaPic" :src="props.avaPic" alt="User avatar">
+            <img v-if="props.avaPic === null || props.avaPic === ''" class="" :src="ava">
+            <img v-else v-show="props.avaPic" :src="props.avaPic" alt="User avatar">
         </div>
     </div>
 
@@ -70,8 +72,9 @@
 <script setup lang="ts">
 import ava from "~/assets/Profile/Photo.svg"
 import { ref } from 'vue'
-import { postAddUserPicture, postAddBackgroundPicture, deleteUserPicture } from '~/API/ways/user';
+import { postAddUserPicture, postAddBackgroundPicture, deleteUserPicture, getUserByID } from '~/API/ways/user';
 import UiButton from '../ui-kit/UiButton.vue';
+import { onMounted } from "vue";
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -85,6 +88,7 @@ const props = defineProps({
         default: ava
     }
 })
+
 const avaModal = ref(false)
 const bgModal = ref(false)
 const snackbarVisible = ref(false)
@@ -101,18 +105,19 @@ const uploadedBgImageUrl = ref<string>('');
 const avaFleInput = ref<HTMLInputElement | null>(null);
 const uploadedAvaImageUrl = ref<string>('');
 
-const handleFileInputChange = () => {
+const handleFileInputChange = async () => {
     const files = bgFileInput.value?.files;
     if (files && files.length > 0) {
         const selectedFile = files[0];
         const reader = new FileReader();
-        reader.readAsDataURL(selectedFile); // Асинхронное чтение файла
+        reader.readAsDataURL(selectedFile);
         reader.onload = async () => {
             uploadedBgImageUrl.value = reader.result as string;
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                const response = await postAddBackgroundPicture(formData); // Используйте postAddBackgroundPicture для отправки запроса
+                const response = await postAddBackgroundPicture(formData);
+                await getUserByIDApi()
             } catch (error) {
                 console.error('error:', error);
             }
@@ -121,18 +126,19 @@ const handleFileInputChange = () => {
     bgModal.value = false
     snackbarVisible.value = true
 }
-const handleFileAva = () => {
+const handleFileAva = async() => {
     const files = avaFleInput.value?.files;
     if (files && files.length > 0) {
         const selectedFile = files[0];
         const reader = new FileReader();
-        reader.readAsDataURL(selectedFile); // Асинхронное чтение файла
+        reader.readAsDataURL(selectedFile); 
         reader.onload = async () => {
             uploadedAvaImageUrl.value = reader.result as string;
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                const response = await postAddUserPicture(formData, true); // Используйте функцию для загрузки аватара
+                const response = await postAddUserPicture(formData, true);
+                await getUserByIDApi()
             } catch (error) {
                 console.error('error:', error);
             }
@@ -143,14 +149,13 @@ const handleFileAva = () => {
 }
 
 const uploadBg = async () => {
+    await getUserByIDApi()
     bgFileInput.value?.click();
-   
 }
 
 const uploadAva = async () => {
+    await getUserByIDApi()
     avaFleInput.value?.click();
-   
-
 }
 
 const id = ref<number>(0);
@@ -159,11 +164,22 @@ const removeBackgroundPicture = async (id: Number) => {
     try {
         await deleteUserPicture(id);
         console.log("Изображение успешно удалено");
+
         searchModalState.value = false; // Закрывает модальное окно после удаления
     } catch (error) {
         console.error("Произошла ошибка при удалении изображения", error);
     }
 };
+const getUserByIDApi = async () =>{
+    try {
+        const response  = await getUserByID(Number(localStorage.getItem("userId")))
+        console.log(response);
+        
+    } catch (error) {
+        
+    }
+}
+onMounted(getUserByIDApi)
 </script>
 
 <style lang="scss" scoped>

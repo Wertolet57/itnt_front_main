@@ -3,10 +3,12 @@
         <div class="d-flex mb-3 align-center">
             <p style="color: #263238" class="txt-cap2 mr-5">Будем рады видеть в команде:</p>
         </div>
-        <UiVacancyPanel card readOnly :data="demoVacancy" />
+        <div class="" v-if="vacancy" v-for="job in vacancy">
+            <UiVacancyPanel :project="props.projectName" card readOnly :data="job" />
+        </div>
     </div>
     <div v-else>
-        <div class="d-flex mb-3 align-center justify-space-between">
+        <div v-if="vacancy.length > 0"  class="d-flex mb-3 align-center justify-space-between">
             <p style="color: #263238" class="txt-cap2 mr-5">Открытые вакансии</p>
             <UiButton @click="modalState.open()" fit style="height: 36px; padding: 11px 16px; font-size: 16px" isSmall>
                 Архив
@@ -43,7 +45,10 @@
 
             </vue-bottom-sheet>
         </div>
-        <UiVacancyPanel card :data="demoVacancy" />
+        <div class=" my-2" v-if="vacancy" v-for="job in vacancy">
+            <!-- {{ job }} -->
+            <UiVacancyPanel card :data="job" />
+        </div>
         <div class="d-flex mt-2 justify-space-between align-center">
             Добавить вакансию
             <UiButton @click="vacansyState.open()" plus />
@@ -57,12 +62,13 @@
                 <UiTextArea label="Описание*" v-model="vacancyParams.description" />
                 <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
                 <div class="" @click="vacansyState.close()">
-                    <UiButton class="mt-4"  @click="postVacancy" bg-color="blue">Добавить вакансию</UiButton>
+                    <UiButton class="mt-4" @click="postVacancy" bg-color="blue">Добавить вакансию</UiButton>
                 </div>
             </div>
 
         </vue-bottom-sheet>
-        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="4000" color="white" rounded="lg">
+        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="4000" color="white"
+            rounded="lg">
             <div class="flex flex-row justify-between items-center">
                 Вакансия добавлена в проект
             </div>
@@ -81,10 +87,21 @@ import UiTextArea from '../ui-kit/UiTextArea.vue'
 import { modalActionsList } from '~/helpers/types'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
-import { ref } from 'vue'
-import { sendProposition } from '~/API/ways/notifications'
-import { addVacancy } from '~/API/ways/project'
+import { ref, onMounted } from 'vue'
+import { sendProposition, getProjectPropositions } from '~/API/ways/notifications'
+import { addVacancy, getVacancy } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
+const vacancy = ref([])
+const getVacancyApi = async () => {
+    try {
+        const response = await getVacancy(router.params.ID)
+        vacancy.value = response.data.object
+        console.log(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+onMounted(getVacancyApi)
 const router = useRoute()
 const snackbarVisible = ref(false)
 const vacancyParams = ref({
@@ -97,11 +114,21 @@ const postVacancy = async () => {
         await addVacancy(router.params.ID, vacancyParams.value);
         vacansyState.value = false
         snackbarVisible.value = true
-        // alert('Vacancy added successfully!');
+        await getVacancyApi()
     } catch (error) {
         console.error('Error adding vacancy:', error);
     }
 };
+const getProjectPropositionsApi = async () => {
+    try {
+        const response = await getProjectPropositions(Number(route.params.ID));
+        console.log('getProjectPropositions', response)
+    } catch (error) {
+        
+    }
+
+}
+onMounted(getProjectPropositionsApi)
 const sendProp = async () => {
     console.log(localStorage.getItem('userId'), router.params.ID);
 
@@ -109,6 +136,7 @@ const sendProp = async () => {
         try {
             const response = await sendProposition(router.params.ID, 1, 'vacancy', "US")
             console.log(response)
+            await getProjectPropositionsApi()
         } catch (error) {
             console.error('Error sending proposition:', error)
         }
@@ -120,6 +148,12 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    projectId: {
+        type: Number
+    },
+    projectName: {
+        type: String
+    }
 })
 const modalState = ref(null)
 const vacansyState = ref(false)

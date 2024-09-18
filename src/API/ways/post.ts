@@ -69,3 +69,9 @@ export const getProjectYear = () => {
 export const getProjectFresh = () => {
     return API.get(`${prefix}/project/fresh`)
 }
+
+export const getPostComments = (postId: number) => {
+
+    return API.get(`${prefix}/post/comments?postId=${postId}`)
+
+}

@@ -58,9 +58,13 @@
 
         <!-- footer -->
         <div class="feedCard__footer">
-            <UiButton bgColor="def" class="feedCard__footer__button" @click="$router.push('/blogComment')" fit>
+            <UiButton bgColor="def" class="feedCard__footer__button"
+                
+                @click="$router.push('/blogComment')" fit>
+                
                 <p class="txt-cap1">Обсудить этот пост</p>
             </UiButton>
+
             <!-- <UiButton bgColor="def"></UiButton> -->
             <div class="d-flex align-center">
                 <UiButton @click="shareBlog" bgColor="def" class="mr-3" :imgSrc="share"
@@ -75,9 +79,9 @@
     <vue-bottom-sheet v-if="props.userType == 'user'" ref="modalState">
         <div class="modal">
             <div class="modal__list">
-                <div class="modal__list__item">
+                <div @click="complaint" class="modal__list__item">
                     <img src="../../assets/icons/warning-red.svg" alt="" />
-                    <p @click="complaint" class="txt-body1 text-[#FF3D00]">
+                    <p  class="txt-body1 text-[#FF3D00]">
                         <!-- {{ item.name }} -->
                         Сообщить об нарушении
                     </p>

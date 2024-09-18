@@ -31,6 +31,7 @@ import share from "~/assets/icons/share-blue.svg";
 import warning from "~/assets/icons/warning-red.svg";
 import notification from '~/assets/setting/notification.svg'
 
+
 import { modalActionsList } from '~/helpers/types'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '~/store/user'
@@ -73,7 +74,7 @@ const modalItems: modalActionsList[] = [
         route: '/me/edit',
     },
     {
-        name: 'уведомления',
+        name: 'Уведомления',
         icon: notification,
         route: '/me/notification',
     },

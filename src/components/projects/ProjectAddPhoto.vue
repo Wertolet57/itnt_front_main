@@ -5,7 +5,7 @@
         </div>
         <div class="photo-upload grid grid-cols-4">
             <!-- Отображаем загруженные изображения -->
-            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images relative">
+            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class=" relative">
                 <img @click="openDialog(index)" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
                     class="slider__image" />
             </div>
@@ -42,7 +42,7 @@
             </p>
         </div>
         <div v-if="filteredProjectFiles.length > 0" class="photo-upload grid grid-cols-4">
-            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="images last relative">
+            <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="last relative">
                 <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
                     class="slider__image" />
                 <div @click="deleteSlide(file.id)" v-if="delMode === true" class="close">
@@ -80,7 +80,7 @@ const toggleDelete = () => {
 
 }
 let data = ref([])
-onMounted(async () => {
+const getProjectByIDApi = async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
             data.value = response.data.object.projectFiles
@@ -88,11 +88,13 @@ onMounted(async () => {
             console.error('error:', e)
         }
     })
-})
+}
+onMounted(getProjectByIDApi)
 const deleteSlide = async (fileId: Number) => {
     try {
         const response = await deleteProjectFile(fileId)
         console.log(response);
+        await getProjectByIDApi()
 
     } catch (error) {
         console.log(error)
@@ -136,6 +138,7 @@ const uploadFile = async (file: File, index: number) => {
 
     try {
         const response = await addProjectSlide(formData, route.params.ID);
+        await getProjectByIDApi()
         console.log(`Файл ${fileNames.value[index]} успешно загружен на сервер:`, response);
     } catch (error) {
         console.error(`Ошибка при загрузке файла ${fileNames.value[index]}:`, error);
@@ -202,23 +205,15 @@ const filteredProjectFiles = computed(() =>
 
 
 <style scoped lang="scss">
-.photo-upload {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    /* 4 колонки */
-    grid-template-rows: repeat(2, 1fr);
-    /* 2 ряда */
-    gap: 10px;
-    /* Зазор между элементами */
-}
-
-.close {
+.last{
+    :last-child{
+        .close {
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     right: -5px;
-    bottom: -5px;
+    bottom: 2px;
     padding: 2px;
     background-color: white;
     border-radius: 50%;
@@ -273,9 +268,76 @@ const filteredProjectFiles = computed(() =>
         }
     }
 }
+    }
+}
+.photo-upload {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+    /* Зазор между элементами */
+}
 
-.last-close {
-    bottom: 2px;
+.close {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: -5px;
+    bottom: 0px;
+    padding: 2px;
+    background-color: white;
+    border-radius: 50%;
+
+    &__button {
+        padding: 0;
+        width: 100%;
+        height: 100%;
+
+        img {
+            padding: 0px;
+            background-color: #FFEBEE;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    @media (min-width: 768px) {
+        right: -8px;
+        bottom: -8px;
+        width: 20%;
+        height: auto;
+
+        &__button {
+            padding: 0;
+            width: 150%;
+            height: 150%;
+
+            img {
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    @media (min-width: 1024px) {
+        right: -8px;
+        bottom: -8px;
+        width: 20%;
+        height: auto;
+        &__button {
+            padding: 0;
+            width: 200%;
+            height: 200%;
+
+            img {
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
 }
 
 .upload-wrapper {

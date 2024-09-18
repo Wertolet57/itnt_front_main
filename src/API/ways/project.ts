@@ -3,108 +3,20 @@ import { API } from '../main.ts'
 // import ComplaintData from "~/helpers/types"
 
 const prefix = '/project'
-
-const getProjectByID = (id: any) => {
-    return API.get(`${prefix}/${id}`)
-}
-
-const getAllProjects = () => {
-    return API.get(`${prefix}/search`)
-}
-export const getNewProjects = (newProjects: Boolean) => {
-    return API.get(`${prefix}/search?${newProjects}`)
-}
-const getProjectsByValue = (prjValue: any) => {
-    return API.get(`${prefix}/search?searchString=${prjValue}`)
-}
-export const searcgProjects = (params: any) => {
-    const queryParams = new URLSearchParams(params).toString();
-    return API.get(`${prefix}?${queryParams}`);
-}
-const getProjectComments = (projectID: number) => {
-    return API.get(`${prefix}/projectComments?projectId=${projectID}`)
-
-}
-const postProject = (prjInfo: Object) => {
+export const postProject = (prjInfo: Object) => {
     return API.post(`${prefix}/`, prjInfo)
 }
-
-const patchProject = (prjInfo: Object) => {
+export const patchProject = (prjInfo: Object) => {
     return API.patch(`${prefix}/`, prjInfo)
 }
-
-const addLike = (projectID: number) => {
+export const getProjectByID = (id: any) => {
+    return API.get(`${prefix}/${id}`)
+}
+export const addLike = (projectID: number) => {
     return API.post(`${prefix}/${projectID}/addLike`, projectID)
 }
-const addComment = (projectID: number, userID: number, message: string) => {
-    // const now = new Date();
-    // const insertDate = now.toISOString();
-    return API.post(`${prefix}/addComment`, {
-        // id: id,
-        // insertDate: insertDate,
-        project: {
-            id: projectID
-        },
-        user: {
-            id: userID
-        },
-        "message": message
-    });
-};
-const addComplaint = (projectId: number, userId: number, complaint: String) => {
-
-
-    return API.post(`${prefix}/addComplaint`, {
-        "complaintInfo": complaint,
-        "project": {
-            "id": projectId
-        },
-        "user": {
-            "id": userId
-        }
-    });
-};
-const addFollow = (projectId: number, userId: number) => {
-    return API.post(`${prefix}/addFollow`, {
-        project: {
-            id: projectId
-        },
-        "user": {
-            "id": userId
-        }
-    });
-}
-export const delFollow = (projectId: number, userId: number) => {
-    return API.post(`${prefix}/delFollow`, {
-        project: {
-            id: projectId
-        },
-        "user": {
-            "id": userId
-        }
-    });
-}
-const addProjectAvatar = (avatarUrl: FormData, projectID: number) => {
-    return API.post(`${prefix}/addProjectAvatar?projectId=${projectID}`, avatarUrl, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-}
-
-
-const addProjectFile = (link: String, projectID: number) => {
-    return API.post(`${prefix}/addProjectFile?link=${link}&projectId=${projectID}`, );
-};
-export const addProjectSlide = (file: FormData, projectID: number) => {
-    return API.post(`${prefix}/addProjectFile?projectId=${projectID}`, file, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-};
-export const deleteProjectFile =( id:Number) =>{
-    return API.delete(`${prefix}/delProjectFile?id=${id}`)
+export const addUser = (projectID: number, userId: number) => {
+    return API.post(`${prefix}/${projectID}/addUser/${userId}`, projectID)
 }
 export const addVacancy = (
     projectId: number,
@@ -150,17 +62,94 @@ export const addVacancy = (
         headers: { 'accept': 'application/json;charset=UTF-8' }
     });
 };
-
-const delLike = (projectID: number) => {
+export const delLike = (projectID: number) => {
     return API.delete(`${prefix}/${projectID}/delLike`)
 }
-
-const deleteComment = (projectID: number) => {
-    return API.delete(`${prefix}/deleteComment`)
+export const setNewOwner = (projectID: number, userId:number) => {
+    return API.post(`${prefix}/${projectID}/setNewOwner?userId=${userId}`)
+}
+export const getVacancy = (projectID: number) => {
+    return API.get(`${prefix}/${projectID}/vacancy`)
+}
+export const delUser = (projectID: number, userId: number) => {
+    return API.delete(`${prefix}/${projectID}/delUser?userId=${userId}`)
+}
+export const addComment = (projectID: number, userID: number, message: string) => {
+    return API.post(`${prefix}/addComment`, {
+        project: {
+            id: projectID
+        },
+        user: {
+            id: userID
+        },
+        "message": message
+    });
+};
+export const addComplaint = (projectId: number, userId: number, complaint: String) => {
+    return API.post(`${prefix}/addComplaint`, {
+        "complaintInfo": complaint,
+        "project": {
+            "id": projectId
+        },
+        "user": {
+            "id": userId
+        }
+    });
+};
+export const addFollow = (projectId: number, userId: number) => {
+    return API.post(`${prefix}/addFollow`, {
+        project: {
+            id: projectId
+        },
+        "user": {
+            "id": userId
+        }
+    });
+}
+export const addProjectAvatar = (avatarUrl: FormData, projectID: number) => {
+    return API.post(`${prefix}/addProjectAvatar?projectId=${projectID}`, avatarUrl, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+}
+export const addProjectSlide = (file: FormData, projectID: number) => {
+    return API.post(`${prefix}/addProjectFile?projectId=${projectID}`, file, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+export const addProjectFile = (link: String, projectID: number) => {
+    return API.post(`${prefix}/addProjectFile?link=${link}&projectId=${projectID}`,);
+};
+export const deleteComment = (commentId : number) => {
+    return API.delete(`${prefix}/deleteComment?commentId=${commentId}`)
+}
+export const delFollow = (projectId: number, userId: number) => {
+    return API.delete(`${prefix}/delFollow?projectId=${projectId}&userId=${userId}`);
+}
+export const deleteProjectFile = (id: Number) => {
+    return API.delete(`${prefix}/delProjectFile?id=${id}`)
+}
+export const getProjectComments = (projectID: number) => {
+    return API.get(`${prefix}/projectComments?projectId=${projectID}`)
+}
+export const getProjectFollowers = (projectID: number) => {
+    return API.get(`${prefix}/projectComments?projectId=${projectID}`)
 }
 
-export {
-    getProjectsByValue, getProjectByID, getAllProjects, addLike, delLike, postProject, patchProject,
-    addFollow, addProjectAvatar, addProjectFile, addComment, addComplaint, getProjectComments
-    // deleteComment
+//search
+export const getAllProjects = () => {
+    return API.get(`${prefix}/search`)
+}
+export const getNewProjects = (newProjects: Boolean) => {
+    return API.get(`${prefix}/search?${newProjects}`)
+}
+export const getProjectsByValue = (prjValue: any) => {
+    return API.get(`${prefix}/search?searchString=${prjValue}`)
+}
+export const searcgProjects = (params: any) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`${prefix}?${queryParams}`);
 }

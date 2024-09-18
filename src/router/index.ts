@@ -113,6 +113,10 @@ const routes: Array<routes> = [
         component: ProjectComment,
     },
     {
+        path: '/blogComment',
+        component: ProjectComment
+    },  
+    {
         path: '/project/new',
         component: ProjectNew,
     },

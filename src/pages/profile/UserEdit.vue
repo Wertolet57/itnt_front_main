@@ -5,41 +5,50 @@
         <div class="userEdit my-4">
             <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" />
             <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" />
-            <!-- <v-select menu-icon="mdi-chevron-down" v-model="user.country" variant="outlined" label="Страна" rounded="lg"
-                class="mb-2" color="active" :items="Object.keys(list)" hide-details></v-select>
-            <v-select menu-icon="mdi-chevron-down" v-model="user.city" :disabled="user.country ? false : true"
-                variant="outlined" color="active" label="Выберите город" rounded="lg"
-                :items="(list as any)[user.country]"></v-select> -->
-                <div class="custom-select">
-            <select  v-model="user.country" @change="onCountryChange">
-                <option disabled>Выберите страну</option>
-                <option v-for="country in countries" :key="country.id" :value="country">
-                    {{ country.name }}
-                </option>
-            </select>
-        </div>
-        <div class="custom-select">
-            <select class="mt-4" v-model="user.city">
-                <option disabled>Выберите город</option>
-                <option v-for="city in filteredCities" :key="city.id" :value="city">
-                    {{ city.name }}
-                </option>
-            </select>
-        </div>
+            <!-- <details class="custom-select">
+                <summary class="radios" v-for="country in countries" :key="country.id" :value="country">
+                    <input type="radio" name="item" id="default" title="Auswählen..." checked>
+                    <input type="radio" name="item" :id="`item${country.id}`" :title="country.name">
+                </summary>
+                <ul class="list" v-for="country in countries" :key="country.id" :value="country">
+                    <li>
+                        <label :for="`item${country.id}`">
+                            {{ country.name }}
+                            <span></span>
+                        </label>
+                    </li>
+                </ul>
+            </details> -->
+            <div class="custom-select">
+                <select v-model="user.country" @change="onCountryChange">
+                    <option disabled>Выберите страну</option>
+                    <option v-for="country in countries" :key="country.id" :value="country">
+                        {{ country.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="custom-select">
+                <select class="mt-4" v-model="user.city">
+                    <option disabled>Выберите город</option>
+                    <option v-for="city in filteredCities" :key="city.id" :value="city">
+                        {{ city.name }}
+                    </option>
+                </select>
+            </div>
 
             <div class="props mb-12">
                 <div class="props__inner" :class="{ 'props__inner--selected': user.openedForProposition === false }">
                     <label>
                         <input type="radio" v-model="user.openedForProposition" :value="false" />
                         <v-icon icon="mdi-check" v-if="user.openedForProposition === false" class="checkmark" />
-                        <span>Мне не интересно сотрудничество</span>
+                        <p>Мне не интересно сотрудничество</p>
                     </label>
                 </div>
                 <div class="props__inner" :class="{ 'props__inner--selected': user.openedForProposition === true }">
                     <label>
                         <input type="radio" v-model="user.openedForProposition" :value="true" />
                         <v-icon icon="mdi-check" v-if="user.openedForProposition === true" class="checkmark" />
-                        <span>Я хочу получать предложения о сотрудничестве</span>
+                        <p>Я хочу получать предложения о сотрудничестве</p>
                     </label>
                 </div>
             </div>
@@ -218,16 +227,17 @@ const fullBannerUrl = computed(() => {
 }
 
 .custom-select select {
-  appearance: none;
-  width: 100%;
-  font-size: 1.15rem;
-  padding: 0.675em 0px 0.675em 1em;
-  background-color: none;
-  border: 1px solid #caced1;
-  border-radius: 8px;
-  color: #000;
-  cursor: pointer;
+    appearance: none;
+    width: 100%;
+    font-size: 1.15rem;
+    padding: 0.675em 0px 0.675em 1em;
+    background-color: none;
+    border: 1px solid #caced1;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
 }
+
 .props {
     display: flex;
     flex-direction: row;
@@ -327,5 +337,134 @@ select:focus {
         gap: 4px;
         border-radius: 100px;
     }
+}
+
+details {
+    position: relative;
+}
+
+details[open] {
+    z-index: 1;
+}
+
+summary {
+    padding: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #ddd;
+    list-style: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+details[open] summary:before {
+    content: '';
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+summary:after {
+    content: '';
+    display: inline-block;
+    float: right;
+    width: .5rem;
+    height: .5rem;
+    border-bottom: 1px solid currentColor;
+    border-left: 1px solid currentColor;
+    border-bottom-left-radius: 2px;
+    transform: rotate(45deg) translate(50%, 0%);
+    transform-origin: center center;
+    transition: transform ease-in-out 100ms
+}
+
+summary:focus {
+    outline: none;
+}
+
+details[open] summary:after {
+    transform: rotate(-45deg) translate(0%, 0%);
+}
+
+ul {
+    width: 100%;
+    background: #ddd;
+    position: absolute;
+    top: calc(100% + .5rem);
+    left: 0;
+    padding: 1rem;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+li {
+    margin: 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid #ccc;
+}
+
+li:first-child {
+    padding-top: 0;
+}
+
+li:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* FAKE SELECT */
+
+summary.radios {
+    counter-reset: radios;
+}
+
+summary.radios:before {
+    content: var(--selection);
+}
+
+input[type=radio] {
+    counter-increment: radios;
+    appearance: none;
+    display: none;
+}
+
+input[type=radio]:checked {
+    display: inline;
+    --display: block;
+}
+
+input[type=radio]:after {
+    content: attr(title);
+    display: inline;
+    font-size: 1rem;
+}
+
+ul.list {
+    counter-reset: labels;
+}
+
+label {
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    justify-content: space-between;
+}
+
+label span {
+    --display: none;
+    display: var(--display);
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid #727272;
+    border-radius: 3px;
 }
 </style>

@@ -30,6 +30,9 @@
         <div @click="FollowUser" class="bg-white p-[10px] max-h-[48px] rounded-[12px] shadow-md">
             <img :src="imageUrl" alt="" />
         </div>
+        <div @click="deleteFollowUser" class="bg-white p-[10px] max-h-[48px] rounded-[12px] shadow-md">
+            <img :src="star" alt="" />
+        </div>
         <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
             rounded="lg">
             <div class="flex flex-row justify-between items-center">
@@ -93,7 +96,16 @@ const snackbarVisible = ref(false)
 const FollowUser = async () => {
     try {
         snackbarVisible.value = true
-        const response = await addFollow(5)
+        const response = await addFollow(11)
+        console.log(response)
+    } catch (error) {
+        console.log(error);
+    }
+}
+const deleteFollowUser = async () => {
+    try {
+        snackbarVisible.value = true
+        const response = await delFollow(5, 2)
         console.log(response)
     } catch (error) {
         console.log(error);

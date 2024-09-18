@@ -15,12 +15,9 @@
             <ProjectsList class="my-8" :projects="data.projects" />
         </div>
     </v-container>
-    <!-- <UiInput v-model="data.firstName" class="mb-4" label="Имя" :required="true" />
-    <UiInput v-model="data.lastName" class="mb-4" label="Фамилия" :required="true" />
-    <UiInput v-model="data.fullDescription" class="mb-4" label="Фамилия" :required="true" />
-
-    <button @click="changeUser">clicked</button> -->
-
+    <!-- {{post}} -->
+    {{ lastPart }}
+    <!-- {{ users }} -->
     <Footer />
 </template>
 
@@ -39,13 +36,33 @@ import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import { onMounted, ref, computed } from 'vue'
 import { getUserByID } from '~/API/ways/user.ts'
 import { useRoute } from 'vue-router'
+import { getPostByUser } from '~/API/ways/post.ts'
 const route = useRoute();
-let data = ref({})
+const lastPart = ref(null);
 
+let data = ref({})
+onMounted(() => {
+    const fullPath = window.location.origin + route.fullPath;
+    const parts = fullPath.split('/');
+    lastPart.value = parts[parts.length - 1];
+});
 onMounted(async () => {
     try {
-        const response = await getUserByID(11);
+        const response = await getUserByID(2);
         data.value = response.data.object;
+        // data.value.firstName = '';
+        // data.value.lastName = '';
+        // data.value.fullDescription = '';
+        console.log(response);
+    } catch (e) {
+        console.error('error:', e);
+    }
+})
+let post = ref()
+onMounted(async () => {
+    try {
+        const response = await getPostByUser(2);
+        post.value = response.data.object;
         // data.value.firstName = '';
         // data.value.lastName = '';
         // data.value.fullDescription = '';

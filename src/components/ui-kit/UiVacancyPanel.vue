@@ -39,8 +39,8 @@ export default {
 
                 <div class="ui-vacancyPanel__modal__info">
                     <div>
-                        <p>iTalent</p>
-                        <p>Driver</p>
+                        <p>{{props.project}}</p>
+                        <p>{{ props.data.offer }}</p>
                     </div>
 
                     <UiTextArea label="Сопроводительное письмо*" v-model="propMessage" />
@@ -54,13 +54,13 @@ export default {
     <!-- EDITABLE -->
     <div class="card" style="padding: 15px; padding-bottom: 20px" v-else>
         <div class="d-flex mb-2">
-            <p>Вакансия {{  }}</p>
+            <p>Вакансия {{ }}</p>
             <v-spacer />
             <v-icon @click="vacancyPanel.open()" icon="mdi-dots-vertical" />
         </div>
 
         <div class="ui-vacancyPanel__inputs">
-            <UiInput label="Должность*" v-model="props.data.type" />
+            <!-- <UiInput label="Должность*" v-model="props.data.type" /> -->
             <UiTextArea label="Описание*" v-model="props.data.description" />
             <UiInput label="Что мы предлагаем*" v-model="props.data.offer" />
         </div>
@@ -70,13 +70,17 @@ export default {
                 <div class="modal__list">
                     <div v-for="(item, id) in editableModalItems" :key="id" class="modal__list__item">
                         <img :src="item.icon" alt="" />
-                        <p :class="item.name === 'Удалить человека из проекта' && 'error-txt'" class="txt-body1">
+                        <p v-if="item.name === 'Архивировать'" @click="archiveVacancy" class="txt-body1">
+                            {{ item.name }}
+                        </p>
+                        <p v-if="item.name === 'Удалить вакансию'" @click="deleteVacancy" class="txt-body1">
                             {{ item.name }}
                         </p>
                     </div>
                 </div>
             </div>
         </vue-bottom-sheet>
+
     </div>
 </template>
 
@@ -91,14 +95,44 @@ import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { ref, defineEmits, onMounted } from 'vue'
 import { modalActionsList } from '~/helpers/types'
-import { sendProposition} from '~/API/ways/notifications';
+import { sendProposition } from '~/API/ways/notifications';
 import { useRoute } from 'vue-router';
+import { addVacancy, getVacancy } from '~/API/ways/project'
 const router = useRoute()
-// let propositionId = ref(2);
-// watch(() => props.data.id, (newId) => {
-//   propositionId.value = newId;
-// });  
 const emit = defineEmits(['confirm'])
+const vacancyParams = ref({
+    archive: false,
+    description: '',
+    offer: '',
+});
+const getVacancyApi = async () => {
+    try {
+        const response = await getVacancy(router.params.ID)
+        console.log(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+onMounted(getVacancyApi)
+const postVacancy = async () => {
+    try {
+        await addVacancy(router.params.ID, vacancyParams.value);
+        await getVacancyApi();
+    } catch (error) {
+        console.error('Error adding vacancy:', error);
+    }
+};
+
+// Function to handle the "Архивировать" action
+const archiveVacancy = () => {
+    vacancyParams.value.archive = true;
+    postVacancy(); // Call the function to submit the changes
+};
+
+// Function to handle the "Удалить вакансию" action (add logic for deletion)
+const deleteVacancy = () => {
+    console.log('Vacancy deletion logic here');
+};
 
 const modalState = ref(null)
 const vacancyPanel = ref(null)
@@ -108,9 +142,9 @@ const sendPropositions = async () => {
         answer: 'YES',
         message: propMessage.value,
         project: {
-            id:router.params.ID,
+            id: router.params.ID,
         },
-        propositionDirection:'USER_TO_PROJECT',
+        propositionDirection: 'USER_TO_PROJECT',
         user: {
             id: localStorage.getItem('userId'),
         },
@@ -129,6 +163,9 @@ const props = defineProps({
     card: {
         type: Boolean,
         default: false,
+    },
+    project: {
+        type: String,
     },
     readOnly: {
         type: Boolean,

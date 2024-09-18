@@ -25,28 +25,8 @@
             <!-- EDITABLE -->
         </div>
         <div class="projectMedia__list" v-if="props.readOnly === false">
-            <div @click="modalState.open()" class="projectMedia__item projectMedia__item--adder cursor-pointer">
-                <div v-if="uploadedFile">
-                    <img :src="uploadedFile" alt="Uploaded file" />
-                </div>
-                <v-icon v-else icon="mdi-plus" />
-                <vue-bottom-sheet ref="modalState">
-                    <div class="mx-5 mb-10">
-                        <p class="txt-body1 mb-12">
-                            Добавьте ссылку на видео-хостинг или загрузите файл в удобное облако и прикрепите ссылку
-                            на
-                            него.
-                        </p>
-                        <UiInput v-model="link" id="linkInput" label="Ссылка*" />
-
-                        <UiInput label="Описание ссылки*" class="my-8" />
-                        <UiButton @click="submitProjectLink" bgColor="blue">Добавить</UiButton>
-                    </div>
-                </vue-bottom-sheet>
-            </div>
             <div v-for="(file, index) in filteredFiles" :key="index" class="">
-                <div class="" v-if="file.pictureUrl == null || ''">
-
+                <div v-if="file.pictureUrl == null || ''">
                 </div>
                 <div v-else class="projectMedia__item">
                     <div style="gap: 10px" class="d-flex align-center">
@@ -58,6 +38,29 @@
                     </div>
                     <p style="color: #29b6f6" class="txt-cap1">{{ sanitizeUrl(truncateUrl(file.pictureUrl)) }}</p>
                 </div>
+            </div>
+
+            <div @click="mediaState.open()" class="projectMedia__item projectMedia__item--adder cursor-pointer">
+                <v-progress-circular v-if="loading" width="2" class="loading mx-auto text-center mt-2" color="active"
+                    indeterminate></v-progress-circular>
+                <div v-else-if="uploadedFile">
+                    <img :src="uploadedFile" alt="Uploaded file" />
+                </div>
+                <v-icon v-else icon="mdi-plus" />
+
+                <vue-bottom-sheet ref="mediaState">
+                    <div class="mx-5 mb-10">
+                        <p class="txt-body1 mb-12">
+                            Добавьте ссылку на видео-хостинг или загрузите файл в удобное облако и прикрепите ссылку на
+                            него.
+                        </p>
+                        <UiInput v-model="link" id="linkInput" label="Ссылка*" />
+                        <UiInput label="Описание ссылки*" class="my-8" />
+                        <div @click="mediaState.close()">
+                            <UiButton @click="submitProjectLink" bgColor="blue">Добавить</UiButton>
+                        </div>
+                    </div>
+                </vue-bottom-sheet>
             </div>
         </div>
     </div>
@@ -76,18 +79,26 @@ const router = useRoute()
 const uploadedFile = ref<string | null>(null)
 const link = ref('')  // переменная для хранения ссылки
 let data = ref([])
+const loading = ref(false)
 const submitProjectLink = async () => {
-    try {
-        const response = await addProjectFile(link.value, Number(router.params.ID));
-        console.log('Файл успешно добавлен', response);
-    } catch (error) {
-        console.error('Ошибка при добавлении файла', error);
-    }
+    loading.value = true;
+    setTimeout(async () => {
+        try {
+            const response = await addProjectFile(link.value, Number(router.params.ID));
+            console.log('Файл успешно добавлен', response);
+            mediaState.value = false;
+            await getProjectByIDAPi();
+        } catch (error) {
+            console.error('Ошибка при добавлении файла', error);
+        } finally {
+            loading.value = false;
+        }
+    }, 3000);
 };
 const filteredFiles = computed(() => {
     return data.value.filter(file => file.pictureUrl && file.pictureUrl.includes('https'));
 });
-const modalState = ref(false)
+const mediaState = ref(false)
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -98,7 +109,7 @@ const props = defineProps({
         default: () => []
     },
 })
-onMounted(async () => {
+const getProjectByIDAPi = async () => {
     await getProjectByID(router.params.ID).then((response) => {
         try {
             data.value = response.data.object.projectFiles
@@ -106,7 +117,8 @@ onMounted(async () => {
             console.error('error:', e)
         }
     })
-})
+}
+onMounted(getProjectByIDAPi)
 function sanitizeUrl(url: string | null | undefined): string {
     if (!url) {
         return ''; // Возвращаем пустую строку или можно указать другой текст по умолчанию
@@ -142,7 +154,7 @@ function truncateUrl(url) {
         &--adder {
             align-items: center;
             justify-content: center;
-            // height: 122px;
+            height: 109px;
         }
     }
 }
