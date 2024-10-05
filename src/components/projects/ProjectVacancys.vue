@@ -4,39 +4,56 @@
             <p style="color: #263238" class="txt-cap2 mr-5">Будем рады видеть в команде:</p>
         </div>
         <div class="" v-if="vacancy" v-for="job in vacancy">
-            <UiVacancyPanel :project="props.projectName" card readOnly :data="job" />
+            <UiVacancyPanel class="mb-2" :project="props.projectName" card readOnly :data="job" />
         </div>
     </div>
     <div v-else>
-        <div v-if="vacancy.length > 0"  class="d-flex mb-3 align-center justify-space-between">
+        <div v-if="vacancy.length > 0" class="d-flex mb-3 align-center justify-space-between">
             <p style="color: #263238" class="txt-cap2 mr-5">Открытые вакансии</p>
             <UiButton @click="modalState.open()" fit style="height: 36px; padding: 11px 16px; font-size: 16px" isSmall>
                 Архив
             </UiButton>
             <vue-bottom-sheet ref="modalState">
                 <div class="min-h-[350px]">
-                    <p class="mb-2 px-4 py-2">Архив ваших вакансий:</p>
-                    <div class="searchTeammateModal__items" v-for="item in editableModalItems">
-                        <v-expansion-panels box-shadow="none">
-                            <v-expansion-panel class="feedPanel">
+                    <p class="mb-2 px-4 pl-12 py-2">Архив ваших вакансий:</p>
+                    <div class="searchTeammateModal__items mx-4" v-if="vacancy" v-for="job in vacancy">
+                        <v-expansion-panels class="top-overlay" v-if="job.archive == true">
+                            <v-expansion-panel class=" rounded-[16px]" elevation="0">
                                 <v-expansion-panel-title overlay="none" class="feedPanel__head">
                                     <template v-slot:actions="{ expanded }">
-                                        <v-icon class="bg-[#e1f5fe] px-6 py-3 rounded-xl" color="#1769AA"
-                                            :icon="expanded ? 'mdi-chevron-up' : ' mdi-chevron-down'"></v-icon>
+
+                                        <img :src="commit">
                                     </template>
                                     <div class="projectTeam__item d-flex justify-space-between">
                                         <div class="d-flex projectTeam__item__main">
                                             <div class="txt-body2">
-                                                <p style="color: #263238">{{ item.name }}</p>
-                                                <p style="color: #9e9e9e">{{ item.role }}</p>
+                                                <p style="color: #263238">{{ job.offer }}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </v-expansion-panel-title>
 
                                 <v-expansion-panel-text>
-                                    <UiVacancyPanel card :data="demoVacancy" />
-                                    <UiButton bg-color="smBlue" @click="sendPropositions">Опубликовать</UiButton>
+                                    <UiVacancyPanel :vacancyID="job.id" card :data="job" />
+                                </v-expansion-panel-text>
+                            </v-expansion-panel>
+                            <v-expansion-panel class="rounded-[16px]" elevation="0">
+                                <v-expansion-panel-title overlay="none" class="feedPanel__head">
+                                    <template v-slot:actions="{ expanded }">
+
+                                        <img :src="commit">
+                                    </template>
+                                    <div class="projectTeam__item d-flex justify-space-between">
+                                        <div class="d-flex projectTeam__item__main">
+                                            <div class="txt-body2">
+                                                <p style="color: #263238">{{ job.offer }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </v-expansion-panel-title>
+
+                                <v-expansion-panel-text>
+                                    <UiVacancyPanel :vacancyID="job.id" card :data="job" />
                                 </v-expansion-panel-text>
                             </v-expansion-panel>
                         </v-expansion-panels>
@@ -44,10 +61,11 @@
                 </div>
 
             </vue-bottom-sheet>
+
         </div>
         <div class=" my-2" v-if="vacancy" v-for="job in vacancy">
-            <!-- {{ job }} -->
-            <UiVacancyPanel card :data="job" />
+            <UiVacancyPanel v-if="job.archive == false" :vacancyID="job.id" card :data="job" />
+
         </div>
         <div class="d-flex mt-2 justify-space-between align-center">
             Добавить вакансию
@@ -80,17 +98,29 @@
 </template>
 
 <script setup lang="ts">
+import commit from "../../assets/icons/commit.svg"
 import UiVacancyPanel from '../ui-kit/UiVacancyPanel.vue'
 import UiButton from '../ui-kit/UiButton.vue'
 import UiInput from '../ui-kit/UiInput.vue'
 import UiTextArea from '../ui-kit/UiTextArea.vue'
-import { modalActionsList } from '~/helpers/types'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { ref, onMounted } from 'vue'
 import { sendProposition, getProjectPropositions } from '~/API/ways/notifications'
 import { addVacancy, getVacancy } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
+const props = defineProps({
+    readOnly: {
+        type: Boolean,
+        default: false,
+    },
+    projectId: {
+        type: Number
+    },
+    projectName: {
+        type: String
+    }
+})
 const vacancy = ref([])
 const getVacancyApi = async () => {
     try {
@@ -121,59 +151,31 @@ const postVacancy = async () => {
 };
 const getProjectPropositionsApi = async () => {
     try {
-        const response = await getProjectPropositions(Number(route.params.ID));
+        const response = await getProjectPropositions(Number(router.params.ID));
         console.log('getProjectPropositions', response)
     } catch (error) {
-        
-    }
 
+    }
 }
+
 onMounted(getProjectPropositionsApi)
-const sendProp = async () => {
-    console.log(localStorage.getItem('userId'), router.params.ID);
+// const sendProp = async () => {
+//     console.log(localStorage.getItem('userId'), router.params.ID);
 
-    if (localStorage.getItem('userId') && router.params.ID) {
-        try {
-            const response = await sendProposition(router.params.ID, 1, 'vacancy', "US")
-            console.log(response)
-            await getProjectPropositionsApi()
-        } catch (error) {
-            console.error('Error sending proposition:', error)
-        }
-    }
-}
+//     if (localStorage.getItem('userId') && router.params.ID) {
+//         try {
+//             const response = await sendProposition(router.params.ID, 1, 'vacancy', "US")
+//             console.log(response)
+//             await getProjectPropositionsApi()
+//         } catch (error) {
+//             console.error('Error sending proposition:', error)
+//         }
+//     }
+// }
 
-const props = defineProps({
-    readOnly: {
-        type: Boolean,
-        default: false,
-    },
-    projectId: {
-        type: Number
-    },
-    projectName: {
-        type: String
-    }
-})
+
 const modalState = ref(null)
 const vacansyState = ref(false)
-
-const demoVacancy = {
-    type: 'Driver',
-    description: `Ищем надёжного джентельмена, со своим транспортным средством, желательно без растительности на голове, c суровым взглядом и парой пушек в багажнике. 
-Вам можно доверить доставку любого груза/человека в любую точку земного шара.`,
-    offer: 'Доля в компании + ЗП + оплата расходников на авто и парикмахера',
-}
-const editableModalItems: modalActionsList[] = [
-    {
-        name: 'PR manager',
-        icon: 'account',
-    },
-    {
-        name: 'PR manager',
-        icon: 'account',
-    },
-]
 </script>
 
 <style scoped lang="scss">
@@ -190,5 +192,12 @@ const editableModalItems: modalActionsList[] = [
         align-items: center;
         gap: 16px;
     }
+}
+
+.top-overlay {
+    position: relative;
+    border-radius: 16px;
+    box-shadow: 0px -1px 2.5px rgba(0, 0, 0, 0.1), 0px 1px 2.5px rgba(0, 0, 0, 0.1);
+
 }
 </style>

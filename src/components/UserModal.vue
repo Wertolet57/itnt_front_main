@@ -1,16 +1,16 @@
 <script lang="ts">
 export default {
-    name: 'TopModal',
+    name: 'UserModal',
 }
 </script>
 
 <template>
-    <div class="topModal" v-click-outside="onClickOutside">
+    <div class="topModal" @click="onClickOutside">
         <!--  -->
 
         <div class="modal__list modalList">
             <template v-for="(item, id) in modalItems" :key="id">
-                <div @click="onModalClick(item)" class="modal__list__item">
+                <div @click="onModalClick(item.route)" class="modal__list__item">
                     <img :src="item.icon" alt="" />
                     <p :class="item.name === 'Сообщить о нарушении' && 'error-txt'" class="txt-body1">{{ item.name }}
                     </p>
@@ -34,34 +34,30 @@ import { modalActionsList } from '~/helpers/types'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '~/store/user'
 
+const props = defineProps({
+    userID: Number
+})
 const user = useUserStore()
 const router = useRouter()
 
 const emit = defineEmits(['close'])
 
 function onClickOutside() {
-    user.userObj.topModalState = false
+    user.userObj.userModalState = false
     emit('close')
 }
 
-function onModalClick(item) {
-    user.userObj.topModalState = false;
-    if (item.name === 'Сообщить о нарушении') {
-        const complaintText = 'Сообщить о нарушении'; // Текст жалобы
-        sendComplaint(complaintText);
-    } else {
-        router.push(item.route);
-    }
+function onModalClick(route: string) {
+    user.userObj.userModalState = false
+    router.push(route)
 }
 
 async function sendComplaint() {
     try {
         const response = await postAddComplaint(19, 'some text');
         console.log('Жалоба успешно отправлена:', response);
-        // Обработка успешного ответа...
     } catch (error) {
         console.error('Ошибка отправки жалобы:', error);
-        // Обработка ошибки...
     }
 }
 
@@ -69,22 +65,32 @@ const modalItems: modalActionsList[] = [
     {
         name: 'Написать сообщение',
         icon: msg_route,
-        route: `/messenger/chat/${user.id}`,
+        route: `/messenger/chat/${props.userID}`,
     },
     {
         name: 'Поделиться этим профилем',
         icon: share,
-        route: '/me/edit',
+        func: () => {
+            try {
+                navigator.share({
+                    title: 'ITNT',
+                    text: 'Откройте для себя ITNT.',
+                    url: 'http://62.113.105.220/user/' + props.userID,
+                })
+            } catch (error) {
+                console.log('error :' + error)
+            }
+        },
     },
     {
         name: 'Заблокировать',
         icon: block,
-        route: '/me/edit',
+        // route: '/me/edit',
     },
     {
         name: 'Сообщить о нарушении',
         icon: complain,
-        route: '/me/edit'
+        // route: '/me/edit'
     },
 ]
 </script>

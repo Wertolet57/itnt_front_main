@@ -51,7 +51,7 @@ import RatingProjectCard from '~/components/projects/RatingProjectCard.vue'
 
 import { ref, onMounted } from 'vue'
 import { getAllProjects } from '~/API/ways/project'
-import { getProjectWeek, getProjectMonth, getProjectYear,getProjectFresh } from '~/API/ways/post'
+import { getProjectWeek, getProjectMonth, getProjectYear, getProjectFresh } from '~/API/ways/post'
 let projectsInfo = ref({})
 
 onMounted(async () => {

@@ -191,11 +191,11 @@ const formattedTime = computed(() => {
     border-radius: 4px;
     border-bottom: 4px solid #E0E0E0;
     box-shadow:
-        0px 1px -3px rgba(0, 0, 0, 0.1);
+        0px 1px 0px rgba(0, 0, 0, 0.1),
     //     /* Тень сверху */
-    //     // 1px 0px 3px rgba(0, 0, 0, 0.1),
+        0px 0px 5px rgba(0, 0, 0, 0.1),
     //     /* Тень справа */
-    //     // -1px 0px 3px rgba(0, 0, 0, 0.1);
+        0px 0px 5px rgba(0, 0, 0, 0.1);
     // /* Тень слева */
     text-align: center;
 

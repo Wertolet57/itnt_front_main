@@ -35,11 +35,11 @@
             </div>
             <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
                 <!-- {{ post }} -->
-                <ProjectBlog :blog-data="post" user-type="user" withoutBg feedCardType="newProjectStage" />
+                <ProjectBlog :blog-data="post" user-type="user"  feedCardType="newProjectStage" />
             </div>
-            <ProjectBlog user-type="me" feedCardType="newProjectStage" />
+            <!-- <ProjectBlog user-type="user" feedCardType="newProjectStage" />
             <ProjectBlog user-type="user" withoutBg feedCardType="newProjectPhotos" />
-            <ProjectBlog user-type="user" feedCardType="newProjectPhotos" />
+            <ProjectBlog user-type="user" feedCardType="newProjectPhotos" /> -->
         </v-container>
     </v-col>
     <Footer />

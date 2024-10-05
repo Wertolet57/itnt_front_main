@@ -101,7 +101,7 @@ const socket = ref(null);
 const initializeSocket = () => {
     socket.value = io('ws://62.217.181.172:8080/user/5', {
         query: {
-            userId: 1,
+            userId: 5,
             dialogId: 9,
         },
     });

@@ -215,7 +215,7 @@ onMounted(getUserByIDApi)
         background-size: cover;
         background-position: center;
         border-radius: 100%;
-        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.5);
 
         img {
             // border: 1.5px solid #e0e0e0;

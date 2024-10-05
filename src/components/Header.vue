@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-    <v-app-bar class="px-4 z-1 relative" :elevation="0" height="46" color="white">
+    <v-app-bar class="px-4 addaptive z-1 relative" :elevation="0" height="46" color="white">
         <v-icon class="mr-3" @click="$router.back()" icon="mdi-arrow-left" />
         <img v-if="user.pictureUrl === null || user.pictureUrl=== ''" class="" :src="ava">
         <img v-if="user.pictureUrl !== null || user.pictureUrl !== ''"  v-show="props.showLogo" :src="user.pictureUrl" />
@@ -81,7 +81,7 @@ export default {
             <v-icon icon="mdi-magnify" />
         </div>
     </v-app-bar>
-    <UserModal @close="isModalOpen = false" v-if="user.userObj.userModalState === true" />
+    <UserModal @close="user.userObj.userModalState = false" v-if="user.userObj.userModalState === true" />
 
     <TopModal @close="isModalOpen = false" v-if="user.userObj.topModalState === true" />
 </template>
@@ -213,6 +213,7 @@ function copyID() {
 </script>
 
 <style scoped lang="scss">
+.addaptive{}
 .searchTeammateModal {
     min-height: 350px;
     &__items {

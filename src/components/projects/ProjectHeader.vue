@@ -1,26 +1,16 @@
-<script lang="ts">
-export default {
-    name: 'ProjectHeader',
-}
-</script>
-
 <template>
     <div class="projectHeader">
-        <!-- TODO: READONLY PROJECT PICTURE -->
-        <div v-if="props.readOnly || props.commentText" class="">
-            <div class="ava">
-                <img :src="props.prjAva" class="" />
-            </div>
+        <!-- Project Picture (Readonly or Editable) -->
+        <div v-if="props.readOnly || props.commentText" class="ava">
+            <img :src="props.prjAva" />
         </div>
-
         <div class="back w-full" v-else>
-            <div style="display: flex; align-items: start" class="rounded-circle mx-auto mt-6">
-                <div v-if="props.prjAva === '' || null || 'string'" class="mx-auto cursor-pointer">
-                    <v-file-input @change="uploadImage" height="200" accept="image/png, image/jpeg, image/bmp"
-                        class="input-file bg-black">
-                    </v-file-input>
-                    <img src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle  mx-auto cursor-pointer"
-                        height="208" width="208" />
+            <div class="upload-wrapper">
+                <div v-if="!props.prjAva" class="mx-auto cursor-pointer">
+                    <v-file-input @change="uploadImage" accept="image/png, image/jpeg, image/bmp"
+                        class="input-file bg-black" />
+                    <img src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle" height="208"
+                        width="208" />
                 </div>
                 <div v-else class="ava">
                     <img :src="props.prjAva" height="208" width="208" />
@@ -28,58 +18,31 @@ export default {
             </div>
         </div>
 
-        <!-- READONLY -->
-        <div class="projectHeader__container" v-if="props.readOnly">
-            <div class="mt-5 mb-7">
-                <div class="d-flex justify-space-between">
-                    <h2>{{ props.prjName }}</h2>
-                    <!-- {{ user[0] }} -->
-
-                    <div v-show="props.prjType" class="projectHeader__capital txt-body1">{{ props.prjType }}</div>
-                </div>
-                <p class="txt-body1">{{ props?.prjSlogan }}</p>
-            </div>
+        <!-- Readonly Section -->
+        <div v-if="props.readOnly" class="projectHeader__container">
+            <h2>{{ props.prjName }}</h2>
+            <div v-if="props.prjType" class="projectHeader__capital">{{ props.prjType }}</div>
+            <p>{{ props.prjSlogan }}</p>
             <div class="projectHeader__controls">
-                <div class="d-flex justify-space-between mb-4">
-                    <!-- <div class="m-0 p-0" v-for="project in user">
-                        <div class=" text-white"
-                            v-if="project.project.id == `${route.params.ID}` && project.relationType == 'PROJECT_FOLLOWER'">
-                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
-                                подписан
-                            </UiButton>
-                        </div>
-                        <div class="bg-black text-white"
-                            v-if="project.project.id == `${route.params.ID}` && project.relationType == 'PROJECT_OWNER'">
-                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
-                                свой
-                            </UiButton>
-                        </div>
-                        <div class="bg-black text-white"
-                            v-if="project.project.id == `${route.params.ID}` && project.relationType !== 'PROJECT_OWNER' && project.relationType !=='PROJECT_FOLLOWER'">
-                            <UiButton bgColor="blue" @click="follow" style="max-width: 152px">
-                                ttty
-                            </UiButton>
-                        </div>
-                    </div> -->
-                    <UiButton bgColor="blue" @click="deleteFollow" style="max-width: 152px">{{ isFollowing ? 'Подписан' :
-            'Подписаться' }}</UiButton>
+                <div class="d-flex justify-space-between mt-2 mb-4">
+                    <UiButton bgColor="blue" @click="isFollowing ? deletefollow() : follow()" style="max-width: 152px">
+                        {{ isFollowing ? 'Отписаться' : 'Подписаться' }}
+                    </UiButton>
                     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
                         color="white " rounded="lg">
-
                         <div class="flex flex-row justify-between items-center">
-                            Подписка оформлена
+                            {{ isFollowing ? 'Подписка оформлена' : 'Вы отписались' }}
                         </div>
                     </v-snackbar>
-                    <UiButton @click="shareProject()" :imgSrc="share" onlyIcon />
+                    <UiButton @click="shareProject()" :imgSrc="shareIcon" onlyIcon />
                     <Fire :id="props.prjID" />
                 </div>
-                <UiButton @click="$router.push('/project/' + props.prjID + '/comment')" bgColor="def" :imgSrc="message">
+                <UiButton @click="$router.push(`/`+ props.prjID + '/blogComment')" bgColor="def"
+                    :imgSrc="messageIcon">
                     Обсуждение проекта</UiButton>
-
             </div>
         </div>
-
-        <!-- comment page -->
+        <!-- Comment Page Header -->
         <div v-if="props.commentText" class="">
             <div class="mt-5 mb-7 mx-4">
                 <div class="d-flex justify-space-between">
@@ -89,7 +52,6 @@ export default {
                 <p class="txt-body1">{{ props?.prjSlogan }}</p>
             </div>
         </div>
-
         <!-- EDITABLE -->
         <div class="projectHeader__edit" v-if="!props.commentText && !props.readOnly">
             <UiInput label="Название проекта*" v-model="prjObject.name" :required="true" />
@@ -100,104 +62,102 @@ export default {
 </template>
 
 <script lang="ts" setup>
-import message from "~/assets/icons/message-black.svg"
-import share from "~/assets/icons/share-black.svg"
-import { ref, onMounted } from 'vue'
-import Fire from '../Fire.vue'
-import UiButton from '../ui-kit/UiButton.vue'
-import UiInput from '../ui-kit/UiInput.vue'
-import { addProjectAvatar, addFollow, delFollow } from '~/API/ways/project.ts';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import Fire from '../Fire.vue';
+import UiButton from '../ui-kit/UiButton.vue';
+import UiInput from '../ui-kit/UiInput.vue';
 import { storeToRefs } from 'pinia'
-import { getInterestList } from "~/API/ways/dictionary"
+import { addProjectAvatar, addFollow, delFollow, getProjectByID } from '~/API/ways/project.ts';
 import { getUserByID } from '~/API/ways/user';
+import messageIcon from "~/assets/icons/message-black.svg";
 import { useProjectStore } from '~/store/projectStore'
-const route = useRoute()
-const deleteFollow = async () => {
-    try {
-        const response = delFollow(10, 5)
-        console.log(response)
-    } catch (error) {
-        console.log(error);
 
-    }
-}
-const { prjObject } = storeToRefs(useProjectStore())
+import shareIcon from "~/assets/icons/share-black.svg";
+const route = useRoute();
 const props = defineProps({
-    readOnly: {
-        type: Boolean,
-        default: false,
-    },
-    commentText: {
-        type: Boolean,
-        default: false,
-    },
-    prjName: {
-        type: String,
-    },
-    prjSlogan: {
-        type: String,
-    },
-    prjType: {
-        type: String,
-    },
-    prjID: {
-        type: Number,
-    },
-    prjAva: {
-        type: String,
-    }
-
-})
-
-let prjAva = ref(props.prjAva)
-async function uploadImage(e: any) {
-    const file = e.target.files[0]
-    const formData = new FormData()
-    formData.append('file', file)
+    readOnly: { type: Boolean, default: false, },
+    commentText: { type: Boolean, default: false, },
+    prjName: String,
+    prjSlogan: String,
+    prjType: String,
+    prjID: Number,
+    prjAva: String
+});
+const userID = localStorage.getItem("userId");
+const prjAva = ref(props.prjAva);
+const snackbarVisible = ref(false);
+const isFollowing = ref(false);
+const user = ref();
+const followers = ref([]);
+const projects = ref([]);
+const { prjObject } = storeToRefs(useProjectStore())
+onMounted(async () => {
     try {
-        const response = await addProjectAvatar(formData, Number(route.params.ID),)
-        prjAva.value = URL.createObjectURL(file)
-        console.log(response)
+        user.value = (await getUserByID(Number(userID))).data.object;
+        const projectData = await getProjectByID(route.params.ID);
+        projects.value = projectData.data.object.users;
+        followers.value = projects.value.filter(user => user.relationType === 'PROJECT_FOLLOWER');
     } catch (error) {
-        console.error('Ошибка при загрузке аватара проекта:', error)
+        console.error('Error loading data:', error);
+    }
+});
+
+async function uploadImage(event: any) {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+        await addProjectAvatar(formData, Number(route.params.ID));
+        prjAva.value = URL.createObjectURL(file);
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+    }
+}
+async function checkFollowStatus() {
+    try {
+        const response = await getProjectByID(route.params.ID);
+        const followers = response.data.object.users.filter(relation => relation.relationType === 'PROJECT_FOLLOWER');
+        // Проверяем, есть ли текущий пользователь среди подписчиков
+        isFollowing.value = followers.some(follower => follower.user.id === Number(userID));
+    } catch (e) {
+        console.error('Error fetching project followers:', e);
     }
 }
 
+
+async function follow() {
+    try {
+        await addFollow(Number(props.prjID));
+        isFollowing.value = true;
+        snackbarVisible.value = true;
+    } catch (error) {
+        console.error('Error following project:', error);
+    }
+}
+async function deletefollow() {
+    try {
+        await delFollow(Number(props.prjID), userID);
+        isFollowing.value = false;
+        snackbarVisible.value = true;
+    } catch (error) {
+        console.error('Error following project:', error);
+    }
+}
 function shareProject() {
     try {
         navigator.share({
             title: 'ITNT',
-            text: 'Откройте для себя ITNT.',
-            url: 'http://62.113.105.220/',
-        })
+            text: 'Check out ITNT!',
+            url: 'http://62.113.105.220/'
+        });
     } catch (error) {
-        console.log('error :' + error)
+        console.error('Error sharing project:', error);
     }
 }
-const isFollowing = ref(false)
-const snackbarVisible = ref(false);
-
-async function follow() {
-    try {
-        const response = await addFollow(Number(props.prjID), Number(localStorage.getItem("userId")));
-        console.log(response);
-        isFollowing.value = true
-        snackbarVisible.value = true
-    } catch (error) {
-        console.error('Ошибка при подписке на проект:', error);
-    }
-}
-let user = ref()
-onMounted(async () => {
-    try {
-        const response = await getUserByID(Number(localStorage.getItem("userId")))
-        user.value = response.data.object.projects
-        console.log(response);
-    } catch (e) {
-        console.error('error:', e);
-    }
-})
+onMounted(() => {
+    checkFollowStatus();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -228,9 +188,6 @@ onMounted(async () => {
     min-width: 228px;
     min-height: 320px;
     left: 50%;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
     z-index: 1;
     transform: translate(-50%, -12%);
     position: absolute;
@@ -244,7 +201,7 @@ onMounted(async () => {
 
     img {
         aspect-ratio: 110 / 106;
-        max-width: 10%;
+        max-width: 20%;
         height: auto;
         border-radius: 100%;
     }

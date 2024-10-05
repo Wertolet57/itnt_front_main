@@ -3,21 +3,21 @@
     <ProfileHeader :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" readOnly />
     <v-container class="pa-6" style="padding: 0 20px; margin-bottom: 48px">
         <div v-if="!hasData">
-            <ProfileInfo :profile="true" :userName="data.firstName" :userSurname="data.lastName"
+            <ProfileInfo :user-id="lastPart" :proposition="data.openedForProposition" :profile="true" :userName="data.firstName" :userSurname="data.lastName"
                 :userDescription="data.fullDescription" />
-            <p class="text-center text-[18px] font-[16px]">Пользователь ещё не поделился подробной информацией о себе и своих
-                навыках.</p>
+            <p class="text-center text-[18px] font-[16px]">Пользователь ещё не поделился подробной информацией о себе
+                исвоих навыках.</p>
         </div>
         <div class="" v-else>
-            <ProfileInfo :profile="true" :userName="data.firstName" :userSurname="data.lastName"
+            <ProfileInfo :proposition="data.openedForProposition" :profile="true" :userName="data.firstName" :userSurname="data.lastName"
                 :userDescription="data.fullDescription" />
-            <UiSkills readOnly />
-            <ProjectsList class="my-8" :projects="data.projects" />
+            <UiSkills :skillList="data.interests" readOnly />
+            <ProjectsList :read-only="true" class="my-8" :projects="data.projects" />
+        </div>
+          <div v-if="posts" v-for="post in posts">
+            <ProjectBlog :blog-data="post" user-type="user" withoutBg feedCardType="newProjectStage" />
         </div>
     </v-container>
-    <!-- {{post}} -->
-    {{ lastPart }}
-    <!-- {{ users }} -->
     <Footer />
 </template>
 
@@ -34,9 +34,8 @@ import ProjectsList from '~/components/profile/ProjectsList.vue'
 import ProfileHeader from '~/components/profile/ProfileHeader.vue'
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import { onMounted, ref, computed } from 'vue'
-import { getUserByID } from '~/API/ways/user.ts'
+import { getUserByID, getUserPosts } from '~/API/ways/user.ts'
 import { useRoute } from 'vue-router'
-import { getPostByUser } from '~/API/ways/post.ts'
 const route = useRoute();
 const lastPart = ref(null);
 
@@ -45,27 +44,26 @@ onMounted(() => {
     const fullPath = window.location.origin + route.fullPath;
     const parts = fullPath.split('/');
     lastPart.value = parts[parts.length - 1];
+    console.log(lastPart.value);
+    
 });
 onMounted(async () => {
     try {
-        const response = await getUserByID(2);
+        const response = await getUserByID(lastPart.value);
         data.value = response.data.object;
-        // data.value.firstName = '';
-        // data.value.lastName = '';
-        // data.value.fullDescription = '';
         console.log(response);
     } catch (e) {
         console.error('error:', e);
     }
 })
-let post = ref()
+
+
+let posts = ref()
 onMounted(async () => {
     try {
-        const response = await getPostByUser(2);
-        post.value = response.data.object;
-        // data.value.firstName = '';
-        // data.value.lastName = '';
-        // data.value.fullDescription = '';
+        const response = await getUserPosts(lastPart.value);
+        posts.value = response.data.object;
+
         console.log(response);
     } catch (e) {
         console.error('error:', e);

@@ -12,7 +12,7 @@ export default {
                 <v-expansion-panel-title :class="props.card && 'ui-vacancyPanel--card'" class="pa-0 pl-2 pr-4">
                     <div class="ui-vacancyPanel__head txt-body2">
                         <v-icon icon="mdi-account-outline" size="small" />
-                        {{ props.data.type }}
+                        {{ props.data.offer }}
                     </div>
                 </v-expansion-panel-title>
 
@@ -39,7 +39,7 @@ export default {
 
                 <div class="ui-vacancyPanel__modal__info">
                     <div>
-                        <p>{{props.project}}</p>
+                        <p>{{ props.project }}</p>
                         <p>{{ props.data.offer }}</p>
                     </div>
 
@@ -52,17 +52,30 @@ export default {
     </div>
 
     <!-- EDITABLE -->
-    <div class="card" style="padding: 15px; padding-bottom: 20px" v-else>
-        <div class="d-flex mb-2">
-            <p>Вакансия {{ }}</p>
-            <v-spacer />
-            <v-icon @click="vacancyPanel.open()" icon="mdi-dots-vertical" />
-        </div>
+    <div v-else class="card" style="padding: 15px; padding-bottom: 20px">
+        <div v-if="vacancyParams.archive == true" class="">
+            <div class="">
+                <UiTextArea label="Описание*" v-model="vacancyParams.description" />
+                <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
 
-        <div class="ui-vacancyPanel__inputs">
-            <!-- <UiInput label="Должность*" v-model="props.data.type" /> -->
-            <UiTextArea label="Описание*" v-model="props.data.description" />
-            <UiInput label="Что мы предлагаем*" v-model="props.data.offer" />
+                <UiButton @click="archiveVacancy(false)" class="mt-4" bg-color="blue__no__shadow" >Разархивировать</UiButton>
+            </div>
+        </div>
+        <div v-if="vacancyParams.archive == false" class="">
+            <div class="d-flex mb-2">
+                <!-- <p>Вакансия {{ props.data.type }} {{ props.data.archive }}</p> -->
+                <v-spacer />
+                <v-icon @click="vacancyPanel.open()" icon="mdi-dots-vertical" />
+            </div>
+
+            <div class="ui-vacancyPanel__inputs">
+                <UiTextArea label="Описание*" v-model="vacancyParams.description" />
+                <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
+                <div v-if="isFormChanged" class="flex flex-row justify-end gap-[12px]">
+                    <UiButton isSmall @click="resetForm" class="mt-4" bg-color="def2">Отмена</UiButton>
+                    <UiButton isSmall @click="changeVacancy" class="mt-4" bg-color="blue">Сохранить</UiButton>
+                </div>
+            </div>
         </div>
 
         <vue-bottom-sheet ref="vacancyPanel">
@@ -70,17 +83,16 @@ export default {
                 <div class="modal__list">
                     <div v-for="(item, id) in editableModalItems" :key="id" class="modal__list__item">
                         <img :src="item.icon" alt="" />
-                        <p v-if="item.name === 'Архивировать'" @click="archiveVacancy" class="txt-body1">
+                        <p v-if="item.name === 'Архивировать'" @click="archiveVacancy(true)" class="txt-body1">
                             {{ item.name }}
                         </p>
-                        <p v-if="item.name === 'Удалить вакансию'" @click="deleteVacancy" class="txt-body1">
+                        <p v-if="item.name === 'Удалить вакансию'" @click="deleteVacancys" class="txt-body1">
                             {{ item.name }}
                         </p>
                     </div>
                 </div>
             </div>
         </vue-bottom-sheet>
-
     </div>
 </template>
 
@@ -93,47 +105,122 @@ import UiInput from './UiInput.vue'
 import UiTextArea from './UiTextArea.vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
-import { ref, defineEmits, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { modalActionsList } from '~/helpers/types'
 import { sendProposition } from '~/API/ways/notifications';
 import { useRoute } from 'vue-router';
-import { addVacancy, getVacancy } from '~/API/ways/project'
+import { patchVacancy, getVacancy, deleteVacancy, getVacancyById } from '~/API/ways/project'
 const router = useRoute()
-const emit = defineEmits(['confirm'])
-const vacancyParams = ref({
-    archive: false,
-    description: '',
-    offer: '',
+const props = defineProps({
+    data: {
+        type: Object || Array,
+        default: () => [],
+    },
+    card: {
+        type: Boolean,
+        default: false,
+    },
+    project: {
+        type: String,
+    },
+    readOnly: {
+        type: Boolean,
+        default: false,
+    },
+    archieve: {
+        type: Boolean,
+        default: false,
+    },
+    vacancyID: {
+        type: Number
+    }
+})
+const initialVacancyParams = ref({
+    description: props.data.description,
+    offer: props.data.offer,
+    archive: props.data.archive,
 });
+const vacancyParams = ref({
+    description: props.data.description,
+    offer: props.data.offer,
+    archive: props.data.archive
+});
+const isFormChanged = computed(() => {
+    return (
+        vacancyParams.value.description !== initialVacancyParams.value.description ||
+        vacancyParams.value.offer !== initialVacancyParams.value.offer ||
+        vacancyParams.value.archive !== initialVacancyParams.value.archive
+    );
+});
+// API call to get vacancy details
 const getVacancyApi = async () => {
     try {
-        const response = await getVacancy(router.params.ID)
+        const response = await getVacancy(router.params.ID);
         console.log(response);
     } catch (error) {
         console.log(error);
     }
-}
-onMounted(getVacancyApi)
-const postVacancy = async () => {
+};
+const getVacancyByIDApi = async () => {
     try {
-        await addVacancy(router.params.ID, vacancyParams.value);
-        await getVacancyApi();
+        const response = await getVacancyById(router.params.ID, props.vacancyID);
+        console.log(response);
     } catch (error) {
-        console.error('Error adding vacancy:', error);
+        console.log(error);
     }
 };
 
-// Function to handle the "Архивировать" action
-const archiveVacancy = () => {
-    vacancyParams.value.archive = true;
-    postVacancy(); // Call the function to submit the changes
+// Function to update vacancy data
+const changeVacancy = async () => {
+    const vacancyData = {
+        description: vacancyParams.value.description,
+        offer: vacancyParams.value.offer,
+        id: props.vacancyID
+    };
+
+    try {
+        await patchVacancy(router.params.ID, vacancyData); // Update the vacancy using its ID
+        await getVacancyApi(); // Refresh data
+        initialVacancyParams.value = { ...vacancyParams.value }; // Update the initial parameters
+        console.log('Vacancy updated successfully');
+    } catch (error) {
+        console.error('Error updating vacancy:', error);
+    }
 };
 
-// Function to handle the "Удалить вакансию" action (add logic for deletion)
-const deleteVacancy = () => {
-    console.log('Vacancy deletion logic here');
+// Function to archive the vacancy
+const archiveVacancy = async (type: Boolean) => {
+    const vacancyData = {
+        description: vacancyParams.value.description,
+        offer: vacancyParams.value.offer,
+        id: props.vacancyID,
+        archive: type
+    };
+    try {
+        await patchVacancy(router.params.ID, vacancyData);
+        await getVacancyByIDApi();
+        console.log('Vacancy archived successfully');
+    } catch (error) {
+        console.error('Error archiving vacancy:', error);
+    }
 };
 
+// Function to delete the vacancy
+const deleteVacancys = async () => {
+    try {
+        await deleteVacancy(router.params.ID, props.vacancyID);
+        await getVacancyApi();
+        console.log('Vacancy deleted successfully');
+    } catch (error) {
+        console.error('Error deleting vacancy:', error);
+    }
+};
+const resetForm = () => {
+    vacancyParams.value = { ...initialVacancyParams.value };
+};
+// Fetch vacancy data on component mount
+onMounted(getVacancyApi);
+onMounted(getVacancyByIDApi);
 const modalState = ref(null)
 const vacancyPanel = ref(null)
 const propMessage = ref('')
@@ -155,23 +242,7 @@ const sendPropositions = async () => {
         console.error(error);
     }
 };
-const props = defineProps({
-    data: {
-        type: Object || Array,
-        default: () => [],
-    },
-    card: {
-        type: Boolean,
-        default: false,
-    },
-    project: {
-        type: String,
-    },
-    readOnly: {
-        type: Boolean,
-        default: false,
-    },
-})
+
 
 const editableModalItems: modalActionsList[] = [
     {

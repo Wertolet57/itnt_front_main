@@ -6,7 +6,7 @@
         <ProjectTeam :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys :project-name="data.name" :project-id="data.id" class="mt-12" readOnly />
         <ProjectStage :stage="data.projectStage" readOnly />
-        <ProjectMedia class="mt-12"  readOnly />
+        <ProjectMedia class="mt-12" readOnly />
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
@@ -16,14 +16,15 @@
                 </div>
             </div>
         </vue-bottom-sheet>
-        <div class="my-[48px]">
-            <h1>Что у меня нового:</h1>
+        <div v-if="data && data.owner && data.owner.id == userID" class="my-[48px] ">
+            <h1 class="font-medium">Что у нас нового:</h1>
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
-
-        <!-- {{ data.projectFiles[1] }} -->
-        <div v-if="posts" v-for="(post, index) in posts " :key="index">
-            <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
+        <div class="mt-8 mb-2" v-else>
+            <h1 class="font-medium">Блог проекта:</h1>
+        </div>
+        <div v-if="posts" v-for="post in posts">
+            <ProjectBlog :blog-data="post" user-type="me" feedCardType="newProjectStage" />
         </div>
         <!-- <div class="flex flex-col p-10 gap-[10px] bg-black text-green-700">
 
@@ -40,11 +41,11 @@
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import ProjectStage from '~/components/projects/ProjectStage.vue'
 import { onMounted, ref, computed, watch } from 'vue'
-import { getProjectByID, addUser, setNewOwner, getVacancy } from '~/API/ways/project.ts'
+import { getProjectByID, addUser, setNewOwner, getVacancy, getProjectPosts } from '~/API/ways/project.ts'
 import { useRoute } from 'vue-router'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
-import { getPostByProject } from '~/API/ways/post';
+const userID = localStorage.getItem("userId")
 const vacancy = ref()
 onMounted(async () => {
     await getVacancy(Number(route.params.ID)).then((response) => {
@@ -55,20 +56,20 @@ onMounted(async () => {
         }
     })
 })
-const addUsers = async () =>{
+const addUsers = async () => {
     try {
-        const response = await addUser(10,24)
+        const response = await addUser(10, 24)
         console.log(response);
     } catch (error) {
-        
+
     }
 }
-const setNewOwners = async () =>{
+const setNewOwners = async () => {
     try {
-        const response = await setNewOwner(10,7)
+        const response = await setNewOwner(10, 7)
         console.log(response);
     } catch (error) {
-        
+
     }
 }
 let data = ref({})
@@ -91,7 +92,7 @@ onMounted(async () => {
 let posts = ref()
 onMounted(async () => {
     try {
-        const response = await getPostByProject(Number(route.params.ID));
+        const response = await getProjectPosts(Number(route.params.ID));
         posts.value = response.data.object
         console.log(response);
     } catch (e) {
@@ -107,10 +108,10 @@ const baseURL = 'http://62.217.181.172/';
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 
 const fullAvatarUrl = computed(() => {
-    if(data.value.avatarUrl === "string"){
+    if (data.value.avatarUrl === "string") {
         return defAva
     }
-    else{
+    else {
         return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
     }
 });

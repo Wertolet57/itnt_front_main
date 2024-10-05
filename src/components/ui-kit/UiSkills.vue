@@ -3,207 +3,196 @@ export default {
     name: 'UiSkills',
 }
 </script>
-
 <template>
-    <v-card v-if="props.skillsType != 'Project'" class="ui-skills shadow-sm p-4">
-        <!-- <button @click="patchSkills" class="p-8 bg-black">patch</button> -->
-         {{categories}}
-        <div class="ui-skills__head" v-if="props.readOnly === false">
-            <p class="txt-cap2">{{ $t('me.skills') }} </p>
-            <div v-if="deleteMode === false" @click="showSheet = true" class="ui-skills__btn">
-                <p class="txt-body1">{{ $t('me.add') }} </p>
-                <v-icon icon="mdi-plus" size="x-small" />
+    <v-card class="ui-skills shadow-sm p-4">
+        <button @click="deleteInt(2)">delete 1</button>
+        <div class="">
+            <div class="ui-skills__head" v-if="!props.readOnly">
+                <p class="txt-cap2">{{ $t('me.skills') }}</p>
+                <div v-if="deleteMode === false" @click="openSheet" class="ui-skills__btn cursor-pointer">
+                    <p class="txt-body1">{{ $t('me.add') }}</p>
+                    <v-icon icon="mdi-plus" size="x-small" />
+                </div>
+                <div v-if="deleteMode === true" @click="cancelDelete" class="ui-skills__btn cursor-pointer">
+                    <p class="txt-body1">{{ $t('me.cancel') }}</p>
+                </div>
+                <div v-if="props.skillList.length > 0 && deleteMode === false" @click="toggleDeleteTrue"
+                    class="ui-skills__trash cursor-pointer">
+                    <img src="../../assets/icons/trash.svg" alt="trash icon" />
+                </div>
+                <div v-if="props.skillList.length > 0 && deleteMode === true" @click="deleteSkills"
+                    class="ui-skills__trash cursor-pointer">
+                    <img src="../../assets/icons/trash.svg" alt="trash icon" />
+                </div>
             </div>
-            <div v-else @click="deleteMode = false" class="ui-skills__btn">
-                <p class="txt-body1">{{ $t('me.cancel') }} </p>
-            </div>
-            <div v-if="chosenSkills?.length > 0" @click="deleteMode ? deleteSelectedSkills() : deleteMode = true"
-                class="ui-skills__trash">
-                <img src="../../assets/icons/trash.svg" alt="" />
-            </div>
-            <!-- {{ props.skill }} -->
+            <div class="" v-else></div>
         </div>
         <div class="ui-skills__list">
-            <div class="flex w-full text-black">
-                {{ props.skillList }}
-            </div>
-            <div v-for="(skill, id) in chosenSkills" :key="id">
-                <div @click="toggleSkillSelection(id)"
-                    :class="{ 'ui-skills__skill': true, 'selected border-[1.5px] border-red-500': deleteMode && selectedSkills.includes(id) }">
-                    {{ skill }}
-                </div>
+            <div v-for="skill in props.skillList" :key="skill.id" class="ui-skills__skill"
+                :class="{ 'ui-skills__skill--delete': deleteMode && selectedSkills.includes(skill.id) }"
+                @click="deleteMode ? toggleSkillSelection(skill.id) : null">
+                {{ skill.name }}
             </div>
         </div>
-        <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
-            rounded="lg">
-            <div class="flex flex-row justify-between items-center">
-                Навык удален
-            </div>
-        </v-snackbar>
     </v-card>
-    <div class="ui-skills__projects" v-else>
-        <div @click="openModal(skill)" class="ui-skills__projects__tag" v-for="(skill, id) in chosenSkills" :key="id">
-            <p class="txt-body2">{{ skill }}</p>
-        </div>
-        <div v-show="chosenSkills.length < 3" @click="showPopup = true" class="ui-skills__projects__tag">
-            <v-icon size="x-small" icon="mdi-plus" />
-        </div>
-    </div>
-    <!-- TODO: убрать логику модалки в имзенение проекта  -->
-    <v-dialog v-model="searchModalState" width="100%">
-        <v-card class="ui-skills__search">
-            <p>
-                <span v-show="props.skillsType === 'Project'"> Найти: </span>
-                <span v-show="props.skillsType != 'Project'">Найти специалистов с навыком: </span>
-                <span>{{ chosenModalSkill }}</span>
-            </p>
-            <div class="ui-skills__search__actions">
-                <UiButton @click="searchModalState = false" bgColor="smOutlined" isSmall> Отмена </UiButton>
-                <UiButton @click="goToSearchPage" bgColor="smBlue" isSmall>Найти</UiButton>
-            </div>
-        </v-card>
-    </v-dialog>
+
     <transition name="bottom-sheet">
-        <div v-if="showSheet" style="overflow-y: auto;" class="bottom-sheet min-h-[400px] bg-white text-left"
-            @click="showPopup = false">
-            <div class="txt-body1 mb-2 mx-4">Выбрано : {{ chosenSkills.length }}</div>
+        <div v-if="showSheet" class="bottom-sheet min-h-[400px] bg-white text-left">
             <UiInput v-model="searchTerm" class="mx-4" label="Введите навык для поиска" />
-            <div class="ui-skills__choser mt-2 " v-for="(skill, id) in categories" :key="id">
-                <div class="m-0" v-for="(interest, id) in skill.object" :key="id">
-                    <p class="text-[#29b6f6] text-lg mx-5 ml-[3%] ui-skills__choser__title">
+            <div class="ui-skills__choser mt-2" v-for="(category, id) in filteredCategories" :key="id">
+                <p class="text-[#29b6f6] text-lg mx-5 ml-[3%] ui-skills__choser__title">{{ category.name }}</p>
+                <div v-for="(interest, id) in category.interests" :key="id" class="m-0 cursor-pointer">
+                    <p @click="toggleSkill(interest.id, interest.name)" class="txt-body1 ui-skills__choser__skill"
+                        :class="{ 'skill-chosen': isSkillSelected(interest.name) }">
                         {{ interest.name }}
                     </p>
-                    <div class="m-0 p-0 cursor-pointer" v-for="(name, id) in interest.interests" :key="id">
-                        <p @click="addSkill(name.name)" v-if="name.name" class="txt-body1 ui-skills__choser__skill"
-                            :class="{ 'skill-chosen': chosenSkills.includes(name.name) }">
-                            {{ name.name }}
-                        </p>
-                    </div>
-                    <!-- <UiAgree class="ui-skills__choser__close" @click="patchSkills" /> -->
                 </div>
             </div>
-            <v-btn @click="showSheet = false" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
+            <v-btn @click="saveSelectedSkills" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
         </div>
     </transition>
 </template>
+
 <script lang="ts" setup>
-// import trashBlack from '~/assets/demo/trash_black.svg'
-// ui-kit
+
+import { ref, onMounted, computed } from 'vue'
 import UiInput from './UiInput.vue'
-import UiButton from './UiButton.vue'
-import UiAgree from './UiAgree.vue'
-import { ref, Ref, onMounted } from 'vue'
-// import { skills } from '~/helpers/skills'
-import { getInterestListGrouped } from '~/API/ways/dictionary'
-import { useRouter } from 'vue-router'
-import { patchUser } from '~/API/ways/user'
-const router = useRouter();
-const showSheet = ref(false);
-let showPopup = ref(false)
-// const snackbar = ref(false)
-// const timeout = 1000
+import { patchUser, deleteInterest } from '../../API/ways/user' // Убедитесь, что пути импорта корректны
+import { getInterestListGrouped } from '../../API/ways/dictionary'
 const props = defineProps({
-    readOnly: {
-        type: Boolean,
-        default: false,
-    },
-    skillsType: {
-        type: String,
-    },
-    skillList: {
-        type: String,
-    }
-})
-const categories = ref();
+    readOnly: { type: Boolean, default: false },
+    skillList: { type: Array, default: () => [] }
+});
+
+const emit = defineEmits(['update-skills']);
+const showSheet = ref(false);
+const categories = ref([]);
 const searchTerm = ref('');
-const getInterst = async () => {
+const selectedSkills = ref([]);
+const deleteMode = ref(false)
+const cancelDelete = () => {
+    deleteMode.value = false
+    selectedSkills.value = [];
+}
+const toggleDeleteTrue = () => {
+    deleteMode.value = true
+}
+onMounted(async () => {
     try {
         const response = await getInterestListGrouped();
         categories.value = response.data.object;
     } catch (error) {
         console.error("Error fetching interests:", error);
     }
-}
-const deleteMode = ref(false)
-const chosenModalSkill = ref(null)
-const searchModalState = ref(false)
-function openModal(skill: any) {
-    chosenModalSkill.value = skill
-    searchModalState.value = true
-}
-const addSkill = (skillName: any) => {
-    const index = chosenSkills.value.indexOf(skillName);
-    if (index !== -1) {
-        chosenSkills.value.splice(index, 1);
-    } else {
-        chosenSkills.value.push(skillName);
-    }
-}
-const chosenSkills: Ref<Array<string>> = ref([])
-onMounted(getInterst)
-const showDeleteConfirmation = ref(false);
-const selectedSkills = ref<number[]>([]);
-function toggleSkillSelection(id: number) {
-    if (deleteMode.value) {
-        const index = selectedSkills.value.indexOf(id);
-        if (index === -1) {
-            // Навык еще не выбран, добавляем его
-            selectedSkills.value.push(id);
-        } else {
-            // Навык уже выбран, убираем его
-            selectedSkills.value.splice(index, 1);
-        }
-    } else {
-        // Если не в режиме удаления, открываем модальное окно для редактирования навыка
-        openModal(chosenSkills.value[id]);
-    }
-}
-const snackbarVisible = ref(false)
+});
 
-function deleteSelectedSkills() {
-    selectedSkills.value.forEach(id => {
-        chosenSkills.value.splice(id, 1);
-    });
-    snackbarVisible.value = true
-
-    // Очищаем массив выбранных навыков
-    selectedSkills.value = [];
-    // Выключаем режим удаления
-    deleteMode.value = false;
-    showDeleteConfirmation.value = true;
-
-}
-const goToSearchPage = () => {
-    const skill = chosenModalSkill.value;
-    router.push({ path: '/search', query: { skill } });
+const openSheet = () => {
+    selectedSkills.value = [...props.skillList]; // Копируем текущие навыки пользователя
+    showSheet.value = true;
 };
-const patchSkills = async () => {
-    const data = {
-    id: 5,
-    interests: [
-        {
-            favourite: false,
-            id: 1,
-            interestGroup: {
-                id: 2,
-                color: "blue",
-                name: "Backend Developer"
-            },
-            name: "IT"
-        }
-    ],
+
+const filteredCategories = computed(() => {
+    if (!searchTerm.value) return categories.value;
+    return categories.value.map(category => ({
+        ...category,
+        interests: category.interests.filter(interest =>
+            interest.name.toLowerCase().includes(searchTerm.value.toLowerCase())
+        )
+    })).filter(category => category.interests.length > 0);
+});
+
+const isSkillSelected = (skillName: string) => {
+    return selectedSkills.value.some(skill => skill.name === skillName);
+};
+const toggleSkillSelection = (id) => {
+    const index = selectedSkills.value.indexOf(id);
+    if (index === -1) {
+        selectedSkills.value.push(id);
+    } else {
+        selectedSkills.value.splice(index, 1);
+    }
+};
+
+const toggleSkill = (skillId: number, skillName: string) => {
+    const index = selectedSkills.value.findIndex(skill => skill.name === skillName);
+    if (index !== -1) {
+        selectedSkills.value.splice(index, 1);
+    } else {
+        selectedSkills.value.push({ id: skillId, name: skillName });
+    }
+};
+const deleteInt = async (skilliD:Number) => {
+    try {
+        await deleteInterest(skilliD);
+
+    } catch (error) {
+        console.log(error);
+    }
 }
+const deleteSkills = async () => {
+    const userId = localStorage.getItem("userId");
+    const updatedSkills = props.skillList.map(skill => {
+        if (selectedSkills.value.includes(skill.id)) {
+            return null;  // Отмечаем выбранные навыки как null
+        }
+        return skill;  // Оставляем остальные навыки без изменений
+    });
+
+    const data = {
+        id: userId,
+        interests: updatedSkills
+    };
 
     try {
-        const response = await patchUser(data);
-        console.log(response); // Выводим ответ для проверки
+        await patchUser(data);
+        // Обновляем локальный список навыков, удаляя выбранные
+        const remainingSkills = props.skillList.filter(skill => !selectedSkills.value.includes(skill.id));
+        emit('update-skills', remainingSkills);
+        cancelDelete();
     } catch (error) {
-        console.error('Error patching user:', error); // Обработка ошибки
+        console.error('Ошибка при удалении навыков:', error);
     }
-}
+};
+// const deleteSkills = async () => {
+//     const userId = localStorage.getItem("userId");
+//     const remainingSkills = props.skillList.filter(skill => !selectedSkills.value.includes(skill.id));
+//     const remainingSkillIds = remainingSkills.map(skill => (skill));
+
+//     const data = {
+//         id: userId,
+//         interests: remainingSkillIds
+//     };
+
+//     try {
+//         await patchUser(data);
+//         emit('update-skills', remainingSkills);
+//         toggleDeleteFalse();
+//     } catch (error) {
+//         console.error('Ошибка при удалении навыков:', error);
+//     }
+// };
+const saveSelectedSkills = async () => {
+    const data = {
+        id: localStorage.getItem("userId"),
+        interests: selectedSkills.value
+    };
+
+    try {
+        await patchUser(data);
+        emit('update-skills', selectedSkills.value);
+        showSheet.value = false;
+    } catch (error) {
+        console.error('Ошибка при обновлении навыков:', error);
+    }
+};
 </script>
 
 <style lang="scss">
+.ui-skills__skill--delete {
+    background-color: #ff3d00;
+    border: 2px solid #ff3d00;
+}
+
 .bottom-sheet {
     position: fixed;
     bottom: 0;
@@ -361,6 +350,12 @@ const patchSkills = async () => {
         max-width: fit-content;
         border: 1.5px solid $primary;
         border-radius: 8px;
+
+        &--delete {
+            background-color: #FFEBEE;
+            border: 1px solid red;
+            color: black;
+        }
     }
 
     &__choser {
@@ -383,10 +378,6 @@ const patchSkills = async () => {
                 width: auto;
                 height: auto;
             }
-        }
-
-        &__title {
-            color: $def-gray;
         }
 
         &__skill {

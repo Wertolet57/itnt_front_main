@@ -3,12 +3,14 @@
     <ProjectHeader :prjAva="fullAvatarUrl" :read-only="false"  />
     <v-container>
         <ProjectCard />
-        <ProjectTeam class="mt-12" />
+        <ProjectTeam :team="data.users" class="mt-12" />
         <!-- <ProjectInvesting /> -->
         <ProjectVacancys class="mt-12" />
         <ProjectStage />
         <ProjectMedia :read-only="false" class="mt-12 mb-12" />
- 
+        <div v-if="posts" v-for="post in posts ">
+            <ProjectBlog :blog-data="post" user-type="me"  feedCardType="newProjectStage" />
+        </div>
         <UiButton @click="changeProject" bgColor="blue" class="mt-12">Опубликовать проект</UiButton>
     </v-container>
     <Footer />
@@ -16,7 +18,7 @@
 <script setup lang="ts">
 import Footer from '~/components/Footer.vue'
 import Header from '~/components/Header.vue'
-
+import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import UiButton from '~/components/ui-kit/UiButton.vue'
 import ProjectHeader from '~/components/projects/ProjectHeader.vue'
 import ProjectMedia from '~/components/projects/ProjectMedia.vue'
@@ -26,8 +28,7 @@ import ProjectVacancys from '~/components/projects/ProjectVacancys.vue'
 import ProjectStage from '~/components/projects/ProjectStage.vue'
 // import ProjectInvesting from '~/components/projects/ProjectInvesting.vue'
 
-import { getProjectByID, patchProject } from '~/API/ways/project'
-
+import { getProjectByID, patchProject ,getProjectPosts} from '~/API/ways/project'
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '~/store/projectStore'
@@ -66,6 +67,16 @@ async function changeProject() {
         }
     })
 }
+let posts = ref()
+onMounted(async () => {
+    try {
+        const response = await getProjectPosts(Number(route.params.ID));
+        posts.value = response.data.object
+        console.log(response);
+    } catch (e) {
+        console.error('error:', e);
+    }
+});
 const baseURL = 'http://62.217.181.172/';
 
 import defAva from "~/assets/demo/projectsmallphoto.svg"

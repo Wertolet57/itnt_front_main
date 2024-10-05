@@ -98,7 +98,13 @@ const props = defineProps({
         box-shadow: 0px -1px 0px 0px #00000033 inset;
         box-shadow: 0px 23px 10px -23px #00000026;
     }
-
+    &--def2 {
+        border: 1px solid #00000026;
+        background: linear-gradient(0deg, #ffffff, #ffffff),
+            linear-gradient(0deg, rgba(158, 158, 158, 0.2), rgba(158, 158, 158, 0.2));
+        box-shadow: 0px -1px 0px 0px #00000033 inset;
+        box-shadow: 0px 23px 10px -23px #00000026;
+    }
     &--orange {
         color:white;
         border: 1px solid #9e9e9e33;
@@ -137,7 +143,13 @@ const props = defineProps({
         box-shadow: 0 22px 22px -17px $primary;
         color: $def-white;
     }
-
+    &--blue__no__shadow {
+        background-color: #12b7ec;
+        // @include btn-blue-gradient;
+        // border: 1px solid #12b7ec;
+        // box-shadow: 0 22px 22px -17px $primary;
+        color: $def-white;
+    }
     &--disabled {
         border-radius: 12px;
         border: 1px solid #9e9e9e;

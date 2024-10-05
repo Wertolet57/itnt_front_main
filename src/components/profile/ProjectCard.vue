@@ -7,7 +7,8 @@ export default {
 <template>
     <div v-if="!isHidden" class="project-card">
         <div class="">
-            <v-icon @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="absolute  p-0 m-0" />
+            <v-icon v-if="props.readOnly === true" class="hidden" />
+            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="absolute  p-0 m-0" />
             <div class="project-card__info">
                 <img class="" v-if="projects && projects.isAnonymous && projects.isAnonymous === true" width="41"
                     height="38" src="../../assets/icons/anonProject.svg" />
@@ -85,6 +86,10 @@ const props = defineProps({
     prjID: {
         type: Number,
     },
+    readOnly: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const router = useRouter();

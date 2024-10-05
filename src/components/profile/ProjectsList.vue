@@ -15,7 +15,9 @@ export default {
         <UiSwitch @changeValue="currentProjects = $event" :items="['Текущие', 'Прошлые']" />
         <template v-if="props.projects">
             <template v-for="(project, id) in visibleProjects" :key="id">
-                <ProjectCard v-if="project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                <ProjectCard :read-only="true" v-if="props.readOnly && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                    :projectInfo="project" />
+                    <ProjectCard v-if="props.readOnly === false && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
                     :projectInfo="project" />
             </template>
 

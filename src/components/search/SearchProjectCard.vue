@@ -54,7 +54,7 @@
             <div class="searchTeammateModal modal">
                 <p class="mb-[24px]">Выберите причину жалобы на пользователя:</p>
                 <div class="d-flex align-center mb-[24px]">
-                    <img @click="$router.push('/user/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
+                    <img @click="$router.push('/project/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
                         height="37" src="../../assets/demo/ava-small-header.svg" />
                     <div>
                         <div class="d-flex cursor-pointer align-center">

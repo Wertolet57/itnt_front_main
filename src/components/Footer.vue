@@ -5,26 +5,24 @@ export default {
 </script>
 
 <template>
-    <v-bottom-navigation :elevation="10" grow>
+    <v-bottom-navigation class="small__screen" :elevation="10" grow>
         <v-footer>
             <div class="footer__row">
-                <div
-                    class="footer__item"
-                    v-for="(route, id) in routes"
-                    :key="id"
-                    @click="$router.push(route?.name)"
-                    :class="route.name === $route.path && 'footer__item--active'"
-                >
-                    <img
-                        width="22"
-                        height="22"
-                        :src="route?.icon"
-                        :alt="route.icon"
-                    />
+                <div class="footer__item" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
+                    :class="route.name === $route.path && 'footer__item--active'">
+                    <img width="22" height="22" :src="route?.icon" :alt="route.icon" />
                 </div>
             </div>
         </v-footer>
     </v-bottom-navigation>
+    <div class="big__screen">
+        <div class="footer__column">
+            <div class="footer__item2" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
+                :class="route.name === $route.path && 'footer__item2--active'">
+                <img width="22" height="22" :src="route?.icon" :alt="route.icon" />
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -60,20 +58,68 @@ const routes: modalActionsList[] = [
 </script>
 
 <style lang="scss" scoped>
+.small__screen {
+    display: block;
+
+    @media (min-width: 1200px) {
+        display: none;
+    }
+}
+
+.big__screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80px;
+    background-color: #ffffff;
+    display: none;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+
+    @media (min-width: 1200px) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+        margin-top: auto;
+    }
+}
+
 .footer {
     background: #ffffff;
     padding: 18px 27px;
     width: 100%;
+
+    &__column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        width: 100%;
+    }
+
     &__row {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         width: 100%;
     }
+    &__item2 {
+        display: flex;
+        align-items: center;
+        padding: 28px 18px;
+        
+        &--active {
+            padding: 28px 18px;
+            background: #e1f5fe;
+            border-radius: 8px;
+        }
+    }
     &__item {
         display: flex;
         align-items: center;
         padding: 4px 18px;
+
         &--active {
             padding: 4px 18px;
             background: #e1f5fe;

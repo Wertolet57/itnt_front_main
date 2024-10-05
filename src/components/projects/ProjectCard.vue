@@ -9,20 +9,7 @@
                 </v-row>
                 <Swiper :id="route.params.ID" />
             </v-dialog>
-            <!-- <v-carousel interval="3000" cycle class="elevation-1 slider" :show-arrows="false">
-                <v-carousel-item class="slider__image" v-for="(file, index) in filteredProjectFiles" :key="file.id"
-                    :src="getFileUrl(file.pictureUrl)" reverse-transition="fade-transition"
-                    transition="fade-transition">
-                    <template #default>
-                        <img :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="slider__image" />
-                    </template>
-</v-carousel-item>
-</v-carousel> -->
-            <div class="projectCard__tags">
-                <div class="projectCard__tags--tag txt-body2">Инвестиции</div>
-                <div class="projectCard__tags--tag txt-body2">Стартапы</div>
-                <div class="projectCard__tags--tag txt-body2">Нетворкинг</div>
-            </div>
+            <ProjectSkills :tags="tags" :read-only="true" />
             <div class="projectCard__info">
                 <p class="projectCard__info__title txt-body1">{{ props?.prjDescHead }}</p>
                 <p class="projectCard__info__title txt-body2 flex-wrap">
@@ -41,8 +28,7 @@
             <!-- Теги проекта -->
             <div class="projectCard__editable__tags">
                 <p>Ваш проект в трёх словах (теги)*</p>
-
-                <UiSkills skillsType="Project" />
+                <ProjectSkills :tags="tags" :read-only="false" />
             </div>
 
             <!-- Описание проекта -->
@@ -55,10 +41,6 @@
                     <UiTextArea :class="descriptionClass" :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']"
                         counter label="Описание проекта*" v-model="prjObject.description"
                         @input="updateFormattedText" />
-                    <div class="flex w-full">
-                        <span class="text-red-500">{{ greenPart }}</span><span>{{ blackPart }}</span>
-                    </div>
-
                     <UiPrompt :projectCard="true">
 
                         Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных
@@ -81,15 +63,20 @@ import ProjectAddPhoto from './ProjectAddPhoto.vue';
 import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useProjectStore } from '~/store/projectStore'
-import UiSkills from '../ui-kit/UiSkills.vue'
+import ProjectSkills from '../projects/ProjectSkills.vue'
 import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
+const projTags = [
+    "Финансы", "Техника","Проекты"
+]
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
 let data = ref([])
+let tags = ref()
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
+            tags.value = response.data.object.activityFields
             data.value = response.data.object.projectFiles
         } catch (e) {
             console.error('error:', e)
@@ -97,13 +84,13 @@ onMounted(async () => {
     })
 })
 const dialog = ref(false)
-const greenPart = computed(() => prjObject.value.description.slice(0, 100));
-const blackPart = computed(() => prjObject.value.description.slice(100));
+// const greenPart = computed(() => prjObject.value.description.slice(0, 100));
+// const blackPart = computed(() => prjObject.value.description.slice(100));
 
-// Эта функция вызывается при каждом изменении текста
-const updateFormattedText = () => {
-  // Логика может быть пустой, если нет дополнительной обработки
-};
+// // Эта функция вызывается при каждом изменении текста
+// const updateFormattedText = () => {
+//     // Логика может быть пустой, если нет дополнительной обработки
+// };
 const props = defineProps({
     readOnly: {
         type: Boolean,

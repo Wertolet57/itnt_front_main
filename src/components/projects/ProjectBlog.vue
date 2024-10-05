@@ -21,7 +21,7 @@
                     <div class="d-flex align-center">
                         <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                     </div>
-                    <p class="txt-body3 text-black mb-2">id: {{ props.blogData.id }}</p>
+                    <p class="txt-body3 text-white mb-2">id: {{ props.blogData.id }}</p>
                 </div>
             </div>
             <button @click="modalState.open()">
@@ -37,10 +37,10 @@
                     {{ props.blogData.descriptionHeader }}
                 </p>
                 <p class="txt-cap1 mt-4">
-                     {{ props.blogData.description }}
+                    {{ props.blogData.description }}
                 </p>
                 <p class="txt-cap1 mt-1">
-              
+
                 </p>
             </div>
 
@@ -57,18 +57,31 @@
         </div>
 
         <!-- footer -->
-        <div class="feedCard__footer">
-            <UiButton bgColor="def" class="feedCard__footer__button"
-                
-                @click="$router.push('/blogComment')" fit>
-                
+        <div v-if="props.userType == 'me'" class="feedCard__footer">
+            <div class="d-flex align-center">
+                <UiButton @click="shareBlog" bgColor="def " class="mr-3" :imgSrc="share"
+                    style="padding: 10px 13px 10px 14px" onlyIcon />
+                <div @click="$router.push(`${blogData.id}` + '/postComment')" class="def">
+                    <img :src="chat" width="20" height="20" alt="">
+                    <p class="text-xs text-center p-0 m-0">2</p>
+                </div>
+                <!-- <UiButton :is-normal="true" only-icon :img-src="chat" bgColor="def" class="p-0 m-0"
+                    style="padding: 22px 13px 22px 14px" @click="$router.push('/blogComment')" fit>
+                </UiButton> -->
+
+                <!-- <Fire :id="props.blogID" /> -->
+            </div>
+            <Fire :prjType="false" :id="props.blogData.id" />
+        </div>
+        <div v-if="props.userType == 'user'" class="feedCard__footer">
+            <UiButton bgColor="def" class="feedCard__footer__button"@click="$router.push(`${blogData.id}` + '/postComment')" fit>
+
                 <p class="txt-cap1">Обсудить этот пост</p>
             </UiButton>
 
-            <!-- <UiButton bgColor="def"></UiButton> -->
             <div class="d-flex align-center">
                 <UiButton @click="shareBlog" bgColor="def" class="mr-3" :imgSrc="share"
-                    style="padding: 10px 13px 9px 14px" onlyIcon />
+                    style="padding: 11px 13px 9px 14px" onlyIcon />
 
                 <!-- <Fire :id="props.blogID" /> -->
                 <Fire :prjType="false" :id="props.blogData.id" />
@@ -81,7 +94,7 @@
             <div class="modal__list">
                 <div @click="complaint" class="modal__list__item">
                     <img src="../../assets/icons/warning-red.svg" alt="" />
-                    <p  class="txt-body1 text-[#FF3D00]">
+                    <p class="txt-body1 text-[#FF3D00]">
                         <!-- {{ item.name }} -->
                         Сообщить об нарушении
                     </p>
@@ -108,7 +121,7 @@
 
 <script lang="ts" setup>
 import share from "~/assets/icons/share-black.svg"
-// import chat from "~/assets/icons/chat-black.svg"
+import chat from "~/assets/icons/chat-black.svg"
 import bgImage from "~/assets/Frame221.png"
 import trash from "~/assets/trash_blue.svg"
 import edit_icon from "~/assets/edit_icon.svg"
@@ -118,7 +131,7 @@ import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import UiButton from '../ui-kit/UiButton.vue'
 import { computed, ref } from 'vue'
-import {addComplaint} from "../../API/ways/post"
+import { addComplaint } from "../../API/ways/post"
 const props = defineProps({
     feedCardType: {
         type: String,
@@ -136,8 +149,8 @@ const props = defineProps({
     }
 })
 let complaintData = ref()
-const complaint = async()=>{
-    const data = addComplaint(Number(props.blogData.id),Number(localStorage.getItem('userId')), '123')
+const complaint = async () => {
+    const data = addComplaint(Number(props.blogData.id), Number(localStorage.getItem('userId')), '123')
     complaintData.value = data;
 
 }
@@ -187,6 +200,17 @@ const feedCardSubtitle = computed(() => {
 </script>
 
 <style scoped lang="scss">
+.def {
+    border-radius: 12px;
+    padding: 4px 16px;
+    border: 1px solid #9e9e9e33;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, rgba(158, 158, 158, 0.2), rgba(158, 158, 158, 0.2));
+        box-shadow: 0px 12px 10px -10px rgba(0, 0, 0, 0.15), 
+        // 10px 40px 10px -23px rgba(0, 0, 0, 0.15);
+
+}
+
 .feedCard {
     padding: 0px 0px;
     border-radius: 12px;

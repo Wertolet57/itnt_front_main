@@ -1,18 +1,21 @@
 <template>
-    <div>        
+    <div>
         <div class="d-flex mb-2 align-center justify-space-between">
             <p v-show="props.readOnly" style="color: #263238" class="txt-cap2">Наша команда:</p>
             <p v-show="!props.readOnly" style="color: #263238" class="txt-cap2">Участники проекта:</p>
             <!-- <UiButton v-if="checkOrders && checkOrders.id && checkOrders.id == userID" @click="joinTeam.open()" fit
             style="height: 36px; padding: 11px 16px" bgColor="smBlue" isSmall> -->
-            <UiButton @click="joinTeam.open()" class="relative" fit style="height: 36px; padding: 11px 16px" bgColor="smBlue" isSmall>
-            <p @click="joinTeam.open()" class="txt-cap2">Заявки <div v-if="teamMembers.length >0" class="length">{{teamMembers.length}}</div></p>
+            <UiButton @click="joinTeam.open()" class="relative" fit style="height: 36px; padding: 11px 16px"
+                bgColor="smBlue" isSmall>
+                <p @click="joinTeam.open()" class="txt-cap2">Заявки
+                <div v-if="teamMembers.length > 0" class="length">{{ teamMembers.length }}</div>
+                </p>
             </UiButton>
             <vue-bottom-sheet max-height="245px" full-screen ref="modalState">
                 <div class="modalList">
-                    <div v-for="(item, id) in joinTeamModalItems" :key="id" class="modalList__item flex flex-row">
-                        <img :src="item.icon" alt="" />
-                        <p :class="item.name === 'Пожаловаться' && 'error-txt'" class="txt-body1">{{ item.name }}</p>
+                    <div class="modalList__item flex flex-row">
+                        <img :src="account" alt="" />
+                        <p class="txt-body1">Открыть профиль</p>
                     </div>
                 </div>
             </vue-bottom-sheet>
@@ -21,12 +24,13 @@
         <!-- READONLY -->
         <div v-if="props.readOnly" class="projectTeam">
             <div class="projectTeam__list">
-                <div v-for="users in teamMembers">
-                    <div class="projectTeam__item d-flex justify-space-between">
+                <div v-for="users in props.team">
+                    <div v-if="users.relationType === 'PROJECT_USER'"
+                        class="projectTeam__item d-flex justify-space-between">
                         <div class="d-flex projectTeam__item__main">
                             <img class="mr-5" src="../../assets/demo/projectsmallphoto.svg" alt="" />
                             <div class="txt-body2">
-                                <p style="color: #263238">{{ users.user.login }}</p>
+                                <p style="color: #263238">{{ users.user.firstName }}</p>
                                 <p style="color: #9e9e9e"> {{ users.user.id }}</p>
                             </div>
                         </div>
@@ -35,11 +39,12 @@
                 </div>
             </div>
 
-            <vue-bottom-sheet max-height="45px" full-screen ref="modalState">
+            <vue-bottom-sheet max-height="105px" full-screen ref="modalState">
                 <div class="modalList">
-                    <div v-for="(item, id) in readOnlyModalItems" :key="id" class="modalList__item flex flex-row" >
-                        <img :src="item.icon" alt="" />
-                        <p :class="item.name === 'Пожаловаться' && 'error-txt'" class="txt-body1">{{ item.name }}</p>
+                    <div @click="$router.push('/' + `user/5`)" class="modalList__item flex flex-row">
+                        <img :src="account" alt="" />
+                        <p class="txt-body1">Открыть профиль</p>
+
                     </div>
                 </div>
             </vue-bottom-sheet>
@@ -49,8 +54,9 @@
         <div v-else>
             <div class="projectTeam__list">
                 <div class="projectTeam__list">
-                    <div v-for="users in teamMembers">
-                        <div class="projectTeam__item--edit d-flex justify-space-between">
+                    <div v-for="users in props.team">
+                        <div v-if="users.relationType === 'PROJECT_USER'"
+                            class="projectTeam__item--edit d-flex justify-space-between">
                             <div class="projectTeam__item__header--edit">
                                 <div class="d-flex">
                                     <img class="mr-7" width="37" height="37"
@@ -63,7 +69,7 @@
                                     <div class="isCEO"> {{ users.user.id }}
                                     </div>
 
-                                    <v-icon @click="modalState.open()" icon="mdi-dots-vertical" />
+                                    <v-icon @click="editState.open()" icon="mdi-dots-vertical" />
                                 </div>
                             </div>
                             <div class="projectTeam__item__body--edit">
@@ -74,6 +80,26 @@
                     </div>
                 </div>
             </div>
+            <vue-bottom-sheet max-height="245px" full-screen ref="editState">
+                <div class="modalList">
+                    <div @click="$router.push('/' + `user/5`)" class="modalList__item flex flex-row">
+                        <img :src="account" alt="" />
+                        <p class="txt-body1">Открыть профиль</p>
+
+                    </div>
+                    <div @click="delDialog" class="modalList__item flex flex-row">
+                        <img :src="close" alt="" />
+                        <p class="txt-body1 error-txt">Удалить человека из проекта</p>
+
+                    </div>
+                    <div @click="authorityModal" class="modalList__item flex flex-row">
+                        <img :src="key" alt="" />
+                        <p class="txt-body1">Передать полномочия владельца проекта</p>
+
+                    </div>
+                </div>
+            </vue-bottom-sheet>
+
 
             <div class="d-flex mt-2 justify-space-between align-center">
                 Пригласить участника
@@ -93,25 +119,27 @@
                         </div>
                         <!-- Отображаем кнопку Чат, если элемент не раскрыт -->
                         <div v-if="expandedIndex !== index" class="user-actions txt-cap2">
-                            <button @click="$router.push('/' + `messenger/chat/39`)" class="btn-chat">Чат</button>
+                            <button @click="$router.push('/' + `messenger/chat/${user.user.id}`)"
+                                class="btn-chat">Чат</button>
                         </div>
                         <div class="icon-bg">
                             <v-icon color="#1769AA"
                                 :icon="expandedIndex === index ? 'mdi-chevron-up' : ' mdi-chevron-down'"></v-icon>
                         </div>
                     </div>
-                    <transition name="expand">
-                        <div v-if="expandedIndex === index" class="user-expanded">
-                            <div class="user-message">{{ user.message }}</div>
-                            <div class="user-actions txt-cap2">
-                                <button @click="react(Answer.No)" class="btn-decline">Отклонить</button>
-                                <button @click="$router.push('/' + `messenger/chat/39`)" class="btn-chat">Чат</button>
-                                <!-- <div @click="addUsers" class=""> -->
-                                    <button @click="react(Answer.Yes)" class="btn-approve">Одобрить</button>
-                                <!-- </div> -->
+                    <!-- <transition name="expand"> -->
+                    <div v-if="expandedIndex === index" class="user-expanded">
+                        <div class="user-message">{{ user.message }}</div>
+                        <div class="user-actions txt-cap2">
+                            <button @click="react(Answer.No)" class="btn-decline">Отклонить</button>
+                            <button @click="$router.push('/' + `messenger/chat/39`)" class="btn-chat">Чат</button>
+                            <div @click="addUsers(user.user.id)" class="">
+                                <button class="btn-approve">Одобрить</button>
+                                <!-- <button @click="react(Answer.Yes)" class="btn-approve">Одобрить</button> -->
                             </div>
                         </div>
-                    </transition>
+                    </div>
+                    <!-- </transition> -->
                 </div>
             </div>
 
@@ -123,10 +151,12 @@
                 <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
                 <div class="searchTeammateModal__items">
                     <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center">
-                        <img @click="$router.push('/' + `messenger/chat/39`)" class="mr-3 cursor-pointer" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
+                        <img @click="$router.push('/' + `messenger/chat/39`)" class="mr-3 cursor-pointer" width="30"
+                            height="30" src="../../assets/demo/ava-small-header.svg" />
                         <div>
-                            <div @click="$router.push('/' + `messenger/chat/39`)" class="cursor-pointer d-flex align-center">
-                                <p class="txt-cap1">{{ user.login}}</p>
+                            <div @click="$router.push('/' + `messenger/chat/39`)"
+                                class="cursor-pointer d-flex align-center">
+                                <p class="txt-cap1">{{ user.login }}</p>
                                 <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
                                 <!-- <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p> -->
                             </div>
@@ -138,12 +168,16 @@
         </vue-bottom-sheet>
         <v-dialog v-model="authority" width="100%">
             <v-card class="ui-skills__search p-4">
-                <p>
-                    <span>Изменение фонового изображения</span>
+                <p>Передача ключей от проекта!  Вы собираетесь передать полный контроль над проектом другому
+                    человеку. Отменить это будет невозможно, вы потеряете роль владельца Danger Flower и не сможете
+                    управлять проектом.  Будьте осторожны, опасайтесь мошенников.  
+
                 </p>
+                <p class="text-[#FF3D00]"> Передать ключи от проекта Анне Красновой? </p>
+
                 <div class="ui-skills__search__actions">
-                    <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
-                    <UiButton bgColor="smOutlined" isSmall>Заменить</UiButton>
+                    <UiButton bgColor="" isSmall>Нет</UiButton>
+                    <UiButton bgColor="smError" isSmall>Передать</UiButton>
                 </div>
             </v-card>
         </v-dialog>
@@ -153,7 +187,7 @@
                 <p class="text-[#FF3D00]"> Вы дейстительно хотите исключить Анну Краснову из проекта? </p>
 
                 <div class="ui-skills__search__actions">
-                    <UiButton bgColor="smDefault" isSmall>Оставить</UiButton>
+                    <UiButton bgColor="" isSmall>Оставить</UiButton>
                     <UiButton bgColor="smError" isSmall>Исключить</UiButton>
                 </div>
             </v-card>
@@ -183,6 +217,7 @@ import { getProjectByID, addUser } from "../../API/ways/project"
 import ava from '../../assets/demo/ava-small-header.svg'
 const state = ref(false)
 const checkOrders = ref()
+const editState = ref(false)
 const userID = localStorage.getItem("userId")
 onMounted(async () => {
     const response = await getProjectByID(Number(route.params.ID));
@@ -202,14 +237,14 @@ let authority = ref(false)
 let deleteMember = ref(false)
 
 const delDialog = () => {
-    if (modalState.value) {
-        modalState.value.close()
+    if (editState.value) {
+        editState.value.close()
     }
     deleteMember.value = true
 }
 const authorityModal = () => {
-    if (modalState.value) {
-        modalState.value.close()
+    if (editState.value) {
+        editState.value.close()
     }
     authority.value = true
 }
@@ -228,6 +263,9 @@ const props = defineProps({
     team: {
         type: Object,
     },
+    userID: {
+        type: Number
+    }
 })
 const users = ref<User[]>([]);
 const searchQuery = ref('');
@@ -243,7 +281,7 @@ const getProjectPropositionsApi = async () => {
         teamMembers.value = response.data.object;
         console.log('getProjectPropositions', response)
     } catch (error) {
-        
+
     }
 
 }
@@ -275,12 +313,12 @@ const fetchUsers = async () => {
         users.value = [];
     }
 };
-const addUsers = async () =>{
+const addUsers = async (user: number) => {
     try {
-        const response = await addUser(route.params.ID, 5)
+        const response = await addUser(route.params.ID, user)
         console.log(response);
     } catch (error) {
-        
+
     }
 }
 const react = async (propositionAnswer: Answer) => {
@@ -294,20 +332,12 @@ const react = async (propositionAnswer: Answer) => {
         console.error('Error sending proposition:', error);
     }
 };
-
 // 
 const teamRoles = ref(false)
 const modalState = ref(null)
 const searchTeammateModal = ref(null)
 let joinTeam = ref(false)
 
-
-const readOnlyModalItems: modalActionsList[] = [
-    {
-        name: 'Открыть профиль',
-        icon: account,
-    },
-]
 
 const editableModalItems: modalActionsList[] = [
     {
@@ -331,7 +361,7 @@ const joinTeamModalItems: modalActionsList[] = [
     {
         name: 'Передать полномочия владельца проекта',
         icon: key,
-        func: ()=>{
+        func: () => {
 
         }
     },
@@ -340,14 +370,15 @@ onMounted(fetchUsers);
 </script>
 
 <style lang="scss" scoped>
-.length{
+.length {
     position: absolute;
-    top:-8px;
+    top: -8px;
     right: -6px;
     border-radius: 50%;
     padding: 4px 6px;
     background: red;
 }
+
 .projectTeam {
     &__list {
         display: flex;
@@ -358,8 +389,15 @@ onMounted(fetchUsers);
     &__item {
         align-items: center;
         padding: 16px 9px 15px 16px;
-        border-radius: 12px 12px 2px 2px;
         background: #fff;
+
+        &--first {
+            border-radius: 12px 12px 2px 2px;
+        }
+
+        &--last {
+            border-radius: 2px 2px 12px 12px;
+        }
 
         &--edit {
             display: flex;
@@ -384,7 +422,6 @@ onMounted(fetchUsers);
                 padding-right: 14px;
                 padding-bottom: 23px;
                 padding-left: 30px;
-
                 align-items: center;
             }
         }
@@ -418,7 +455,8 @@ onMounted(fetchUsers);
 
 .modalList {
     padding: 0 20px;
-    &__item{
+
+    &__item {
         display: flex;
         flex-direction: row;
         align-items: center;

@@ -25,14 +25,14 @@ export default {
         </div>
 
         <div class="card__stats">
-            <div class="card__stats--chip">
+            <div class="card__stats--chip ">
                 <img width="14" height="14" src="@/assets/icons/account-black.svg" alt="" />
-                <p class="txt-cap1"><span>&#183;</span> {{ props.projectInfoSet.usersCount }}
+                <p class="txt-cap1"><span class="pl-1.5 pr-1">&#183;</span> {{ props.projectInfoSet.usersCount }}
                 </p>
             </div>
             <div class="card__stats--chip">
                 <img width="14" height="14" src="@/assets/icons/search-black.svg" alt="" />
-                <p v-if="allData" class="txt-cap1"><span>&#183;</span> {{ allData.vacancyCount }}
+                <p v-if="allData" class="txt-cap1"><span class="pl-1.5 pr-1">&#183;</span> {{ allData.vacancyCount }}
                 </p>
             </div>
 
@@ -92,18 +92,25 @@ export default {
     <vue-bottom-sheet max-height="380px" full-screen ref="complainState">
         <div class="searchTeammateModal modal">
             <p class="mb-2">Выберите причину жалобы на пользователя:</p>
-            <div class="searchTeammateModal__item">
-                <input type="radio" name="complaint" id=""> Спам
-            </div>
-            <div class="searchTeammateModal__item">
-                <input type="radio" name="complaint" id=""> Агрессивное поведение
-            </div>
-            <div class="searchTeammateModal__item">
-                <input type="radio" name="complaint" id=""> Взрослый контент (ссылки, картинки, видео и
-                т.п.)
-            </div>
-            <UiTextArea v-model="complaint" />
-            <UiButton bg-color="blue" @click="sendComplaint">Отправить жалобу</UiButton>
+            <div class="d-flex align-center mb-[16px]">
+                    <img @click="$router.push('/project/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
+                        height="37" src="../../assets/demo/ava-small-header.svg" />
+                    <div>
+                        <div class="d-flex cursor-pointer align-center">
+                            <p class="txt-body3">{{ props.projectInfoSet.name }}</p>
+                        </div>
+                    </div>
+                </div>
+                <v-radio-group v-model="complaint" color="#29b6f6">
+                    <v-radio class="mb-[10px]" base-color="#29b6f6" label="Спам" value="Спам"></v-radio>
+                    <v-radio class="mb-[10px]" base-color="#29b6f6" label="Агрессивное поведение"
+                        value="Агрессивное поведение"></v-radio>
+                    <v-radio class="mb-[10px]" base-color="#29b6f6"
+                        label="Взрослый контент (ссылки, картинки, видео и т.п.)" value="Взрослый контент"></v-radio>
+                </v-radio-group>
+                <UiButton bg-color="blue" @click="sendComplaint">Отправить жалобу</UiButton>
+            <!-- <UiTextArea v-model="complaint" /> -->
+            <!-- <UiButton bg-color="blue" @click="sendComplaint">Отправить жалобу</UiButton> -->
         </div>
     </vue-bottom-sheet>
     <v-dialog class="elevation-0" v-model="dialog" width="90%">

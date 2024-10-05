@@ -28,7 +28,7 @@
           <v-row class="social" justify="center">
             <UiButton @click="googleSignIn" onlyIcon :imgSrc="googleIcon" />
             <UiButton @click="signInWithApple" onlyIcon :imgSrc="appleIcon" />
-            <UiButton onlyIcon>VK
+            <UiButton onlyIcon :imgSrc="vkIcon">
               <v-dialog activator="parent" max-width="500">
                 <template v-slot:default="{ isActive }">
                   <v-card rounded="xl">
@@ -53,7 +53,7 @@
                 </template>
               </v-dialog>
             </UiButton>
-            <UiButton @click="signInWithGitHub" onlyIcon>GIT</UiButton>
+            <UiButton @click="signInWithGitHub" :img-src="gitIcon" onlyIcon></UiButton>
             <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
             <!-- <vue-apple-login
                             type="sign in"
@@ -67,8 +67,8 @@
           </v-row>
         </v-col>
       </div>
-      <teleg />
-      <vk />
+      <!-- <teleg /> -->
+      <!-- <vk /> -->
     </v-col>
   </v-row>
 
@@ -109,6 +109,8 @@
 </template>
 
 <script setup lang="ts">
+import gitIcon from "../../assets/github.svg"
+import vkIcon from "../../assets/vk.svg"
 import vk from "./vklogin.vue"
 import teleg from "./telegramlogin.vue"
 import googleIcon from "~/assets/icons/companies/google.svg"

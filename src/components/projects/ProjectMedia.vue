@@ -1,8 +1,13 @@
 <template>
     <div class="projectMedia">
-        <div class="d-flex mb-3 align-center">
-            <p style="color: #263238" class="txt-cap2 mr-5">Вложенные файлы и ссылки</p>
-            <!-- <div class="txt-body1" style="color: #9e9e9e">0 / 6</div> -->
+        <div class="flex justify-between ">
+            <div class="d-flex mb-3 align-center">
+                <p style="color: #263238" class="txt-cap2 mr-2">Вложенные файлы и ссылки</p>
+                <div class="txt-body1" style="color: #9e9e9e"> {{filteredFiles.length}} / 6</div>
+            </div>
+            <!-- <div v-if="props.readOnly === false" @click=""class="mr-4">
+                edit
+            </div> -->
         </div>
         <div class="projectMedia__list" v-if="props.readOnly === true">
             <!-- READONLY -->
@@ -29,6 +34,9 @@
                 <div v-if="file.pictureUrl == null || ''">
                 </div>
                 <div v-else class="projectMedia__item">
+                    <!-- <button @click="deleteLinks(file.id)">
+                        {{ file.id }}
+                    </button> -->
                     <div style="gap: 10px" class="d-flex align-center">
                         <img src="../../assets/icons/media/video.svg" />
                         <p style="color: #9e9e9e" class="txt-cap1 cursor-pointer">
@@ -40,7 +48,7 @@
                 </div>
             </div>
 
-            <div @click="mediaState.open()" class="projectMedia__item projectMedia__item--adder cursor-pointer">
+            <div v-if="filteredFiles.length < 6" @click="mediaState.open()" class="projectMedia__item projectMedia__item--adder cursor-pointer">
                 <v-progress-circular v-if="loading" width="2" class="loading mx-auto text-center mt-2" color="active"
                     indeterminate></v-progress-circular>
                 <div v-else-if="uploadedFile">
@@ -74,10 +82,10 @@ import UiInput from '../ui-kit/UiInput.vue'
 import UiButton from '../ui-kit/UiButton.vue'
 import { addProjectFile } from '~/API/ways/project';
 import { useRoute } from 'vue-router'
-import { getProjectByID } from '~/API/ways/project.ts'
+import { getProjectByID ,deleteProjectFile} from '~/API/ways/project.ts'
 const router = useRoute()
 const uploadedFile = ref<string | null>(null)
-const link = ref('')  // переменная для хранения ссылки
+const link = ref('') 
 let data = ref([])
 const loading = ref(false)
 const submitProjectLink = async () => {
@@ -95,6 +103,13 @@ const submitProjectLink = async () => {
         }
     }, 3000);
 };
+const deleteLinks = async(fileID:Number)=>{
+    try {
+        await deleteProjectFile(fileID)
+    } catch (error) {
+        
+    }
+}
 const filteredFiles = computed(() => {
     return data.value.filter(file => file.pictureUrl && file.pictureUrl.includes('https'));
 });

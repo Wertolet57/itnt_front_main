@@ -1,15 +1,41 @@
 <template>
     <Header showID :showUserMinify="true" />
     <ProfileHeader :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <!-- <div class=" mx-5 form-group">
+        <select id="country-select" required>
+            <option value="" disabled selected hidden></option>
+            <option value="northumbria">Нортумбрия</option>
+            <option value="cyprus">Республика Кипр</option>
+            <option value="iraq">Республика Ирак</option>
+            <option value="congo">Республика Конго</option>
+            <option value="logon">Республика Логон</option>
+            <option value="reunion">Реюньон</option>
+            <option value="russia">Россия</option>
+            <option value="rwanda">Руанда</option>
+        </select>
+        <label for="country-select">Страна</label>
+    </div>
+
+    <div class="mx-5 form-group">
+        <select id="city-select" required>
+            <option value="" disabled selected hidden></option>
+            <option value="cyprus">Республика Кипр</option>
+            <option value="iraq">Республика Ирак</option>
+            <option value="congo">Республика Конго</option>
+        </select>
+        <label for="city-select">Город</label>
+    </div> -->
+
+
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
             :user-name="userInfo.firstName" :city="userInfo.city ? userInfo.city.name : ''"
             :country="userInfo.country ? userInfo.country.name : ''" :user-surname="userInfo.lastName"
             :read-only="true" />
-        <UiSkills :skillList="userInfo.lastName" />
+        <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
         <!-- {{ userInfo }} -->
-        
+
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
@@ -24,8 +50,8 @@
             <h1>Что у меня нового:</h1>
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
-        <div v-if="posts && posts.object" v-for="(post, index) in posts" :key="index">
-            <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
+        <div v-if="posts" v-for="post in posts">
+            <ProjectBlog :blog-data="post" user-type="me"  feedCardType="newProjectStage" />
         </div>
     </v-container>
     <Footer />
@@ -44,10 +70,9 @@ import UiSkills from '~/components/ui-kit/UiSkills.vue'
 import ProfileInfo from '~/components/profile/ProfileInfo.vue'
 import ProjectsList from '~/components/profile/ProjectsList.vue'
 import ProfileHeader from '~/components/profile/ProfileHeader.vue'
-import { getUserByID } from '~/API/ways/user.ts'
+import { getUserByID , getUserPosts } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { onMounted, ref, computed } from 'vue';
-import { getPostByUser } from '~/API/ways/post';
 
 
 let posts = ref();
@@ -59,7 +84,7 @@ const closeModal = () => {
 
 const getPosts = async () => {
     try {
-        const data = await getPostByUser(Number(localStorage.getItem('userId')));
+        const data = await getUserPosts(Number(localStorage.getItem('userId')));
         posts.value = data.data.object;
     } catch (error) {
         console.error(error);
@@ -75,9 +100,11 @@ onMounted(getPosts);
 const modalState = ref(null);
 
 isAuth();
-
-let userInfo = ref({});
 onMounted(async () => {
+    await fetchUserInfo();
+});
+let userInfo = ref({});
+const fetchUserInfo = async () => {
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
         try {
             userInfo.value = response.data.object;
@@ -86,7 +113,11 @@ onMounted(async () => {
             console.error('text error:', e);
         }
     })
-})
+}
+const updateUserSkills = async (newSkills: any) => {
+    userInfo.value.interests = newSkills;
+    await fetchUserInfo();
+};
 const baseURL = 'http://62.217.181.172/';
 
 const fullAvatarUrl = computed(() => {
@@ -98,5 +129,63 @@ const fullBannerUrl = computed(() => {
 </script>
 
 <style scoped>
+.form-group {
+    position: relative;
+    max-width: 300px;
+    margin-bottom: 40px;
+}
 
+label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 16px;
+    color: black;
+    background-color: #FAFAFA;
+    padding: 0 0px;
+    transition: 0.2s ease;
+    z-index: 1;
+    pointer-events: none;
+    /* Отключаем события для label, чтобы не мешать кликам по select */
+}
+select option:first-child{
+    display: none;
+}
+select {
+    appearance: none;
+    background-color: #FAFAFA;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 15px 10px;
+    font-size: 16px;
+    width: 100%;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+select:focus+label,
+/* Когда select в фокусе, label поднимается */
+select:not([value=""]):valid+label {
+    /* Когда значение выбрано, label поднимается */
+    top: -12px;
+    left: 8px;
+    font-size: 16px;
+    color: #007bff;
+    z-index: 2;
+    /* Убираем z-index после перемещения, чтобы label не закрывал select */
+}
+
+/* Стрелка для select */
+select {
+    position: relative;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='%23000000' d='M12 15.5l7-7H5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 16px;
+}
 </style>

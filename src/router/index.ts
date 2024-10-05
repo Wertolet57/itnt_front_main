@@ -15,7 +15,8 @@ import ProjectInfo from '~/pages/project/ProjectInfo.vue'
 import ProjectEdit from '~/pages/project/ProjectEdit.vue'
 import ProjectNew from '~/pages/project/ProjectNew.vue'
 import ProjectVisited from '~/pages/project/ProjectVisited.vue'
-import ProjectComment from '~/components/projects/ProjectComment.vue'
+import PostComment from '~/components/feed/PostComment.vue'
+// import ProjectComment from '~/components/projects/ProjectComment.vue'
 import BlogPage from '~/components/projects/BlogPage.vue'
 
 // enter
@@ -105,16 +106,12 @@ const routes: Array<routes> = [
         component: ProjectInfo,
     },
     {
-        path: '/project/comment',
-        component: ProjectComment,
+        path: '/:ID/blogComment',
+        component: BlogPage,
     },
     {
-        path: '/blogComment',
-        component: ProjectComment,
-    },
-    {
-        path: '/blogComment',
-        component: ProjectComment
+        path: '/:ID/postComment',
+        component: PostComment
     },  
     {
         path: '/project/new',

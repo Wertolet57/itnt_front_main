@@ -64,8 +64,8 @@ export const postAddUserPicture = (file: FormData, mainPicture: boolean) => {
         },
     });
 };
-export const delFollow = (userFollowerId: number, userId: Number) => {
-    return API.delete(`${prefix}/delFollow?userFollowerId=${userFollowerId}&userId=${userId}`);
+export const delFollow = (userId: Number) => {
+    return API.delete(`${prefix}/${userId}/delFollow`);
 }
 export const deleteUserPicture = (id: Number) => {
     return API.delete(`${prefix}/delUserPicture?id=${id}`);
@@ -91,7 +91,6 @@ export const postAnonimProjects = (isAnonymous: Boolean, projectId: Number) => {
 export const postMenuProjects = (isInQuickMenu: Boolean, projectId: Number) => {
     return API.post(`${prefix}/project/${projectId}/quick_menu?isInQuickMenu=${isInQuickMenu}`)
 }
-
 export const postUserConfirm = (phone: String, token: String) => {
     return API.post(`${prefix}/loginCodeConfirmation`, {
         login: phone,
@@ -101,4 +100,12 @@ export const postUserConfirm = (phone: String, token: String) => {
 // PUT
 export const putUser = (user: Object) => {
     return API.put(`${prefix}/`, { user })
+}
+
+
+export const getUserPosts = (userId: Number)=>{
+    return API.get(`${prefix}/${userId}/posts`)
+}
+export const deleteInterest = (interestId: Number)=>{
+    return API.delete(`${prefix}/delUserInterest?interestId=${interestId}`)
 }
