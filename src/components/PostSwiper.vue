@@ -2,8 +2,9 @@
     <div class="flex h-[180px] max-w-[1024px] mx-4">
         <swiper :breakpoints="swiperBreakpoints" :spaceBetween="0" :modules="modules" class="mySwiper">
             <swiper-slide class="rounded-[16px]" v-for="file in data" :key="file.id">
-                <img class="rounded-[16px]" :src="`${baseURL}/${file.pictureUrl}`" alt="Project Image" />
+                <img class="rounded-[16px]" :src="`${baseURL}/${file.pictureUrl}`" :alt="baseURL" />
             </swiper-slide>
+            {{ baseURL }}
         </swiper>
     </div>
 </template>
