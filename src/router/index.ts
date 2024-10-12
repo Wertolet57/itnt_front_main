@@ -35,7 +35,8 @@ import error from '~/pages/error.vue'
 // messanger
 import Messenger from '~/pages/Messenger.vue'
 import Chat from '~/components/Chat/Chat.vue'
-
+//post
+import PostEdit from "~/pages/post/PostEdit.vue"
 interface routes {
     path: string
     component: any
@@ -112,12 +113,12 @@ const routes: Array<routes> = [
     {
         path: '/:ID/postComment',
         component: PostComment
-    },  
+    },
     {
         path: '/project/new',
         component: ProjectNew,
     },
-    
+
     {
         path: '/projectVisited/:ID',
         component: ProjectVisited,
@@ -149,6 +150,10 @@ const routes: Array<routes> = [
     {
         path: '/messenger/chat/:ID',
         component: Chat,
+    },
+    {
+        path: '/post/:ID',
+        component: PostEdit
     },
     // Ошибки
     { path: '/:pathMatch(.*)*', component: error },

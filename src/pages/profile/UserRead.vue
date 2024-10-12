@@ -3,19 +3,20 @@
     <ProfileHeader :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" readOnly />
     <v-container class="pa-6" style="padding: 0 20px; margin-bottom: 48px">
         <div v-if="!hasData">
-            <ProfileInfo :user-id="lastPart" :proposition="data.openedForProposition" :profile="true" :userName="data.firstName" :userSurname="data.lastName"
-                :userDescription="data.fullDescription" />
+            <ProfileInfo :user-id="lastPart" :proposition="data.openedForProposition" :profile="true"
+                :userName="data.firstName" :userSurname="data.lastName" :userDescription="data.fullDescription" />
             <p class="text-center text-[18px] font-[16px]">Пользователь ещё не поделился подробной информацией о себе
                 исвоих навыках.</p>
         </div>
         <div class="" v-else>
-            <ProfileInfo :proposition="data.openedForProposition" :profile="true" :userName="data.firstName" :userSurname="data.lastName"
-                :userDescription="data.fullDescription" />
+            <ProfileInfo :proposition="data.openedForProposition" :profile="true" :userName="data.firstName"
+                :userSurname="data.lastName" :userDescription="data.fullDescription" />
             <UiSkills :skillList="data.interests" readOnly />
             <ProjectsList :read-only="true" class="my-8" :projects="data.projects" />
         </div>
-          <div v-if="posts" v-for="post in posts">
-            <ProjectBlog :blog-data="post" user-type="user" withoutBg feedCardType="newProjectStage" />
+        <div v-if="posts" v-for="post in posts">
+            <ProjectBlog :blog-data="post" :authorID="post.authorUser.id" :author="post.authorUser.firstName"
+                user-type="user" feedCardType="newProjectStage" />
         </div>
     </v-container>
     <Footer />
@@ -45,7 +46,7 @@ onMounted(() => {
     const parts = fullPath.split('/');
     lastPart.value = parts[parts.length - 1];
     console.log(lastPart.value);
-    
+
 });
 onMounted(async () => {
     try {

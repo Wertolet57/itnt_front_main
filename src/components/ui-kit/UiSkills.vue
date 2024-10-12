@@ -5,7 +5,7 @@ export default {
 </script>
 <template>
     <v-card class="ui-skills shadow-sm p-4">
-        <button @click="deleteInt(2)">delete 1</button>
+        <!-- <button @click="deleteInt(2)">delete 1</button> -->
         <div class="">
             <div class="ui-skills__head" v-if="!props.readOnly">
                 <p class="txt-cap2">{{ $t('me.skills') }}</p>
@@ -121,56 +121,33 @@ const toggleSkill = (skillId: number, skillName: string) => {
         selectedSkills.value.push({ id: skillId, name: skillName });
     }
 };
-const deleteInt = async (skilliD:Number) => {
+const deleteInt = async (skillIds: number[]) => {
     try {
-        await deleteInterest(skilliD);
-
+        for (const skillId of skillIds) {
+            await deleteInterest(skillId);
+        }
     } catch (error) {
-        console.log(error);
+        console.log('Ошибка при удалении навыков:', error);
     }
-}
+};
+
 const deleteSkills = async () => {
     const userId = localStorage.getItem("userId");
-    const updatedSkills = props.skillList.map(skill => {
-        if (selectedSkills.value.includes(skill.id)) {
-            return null;  // Отмечаем выбранные навыки как null
-        }
-        return skill;  // Оставляем остальные навыки без изменений
-    });
-
+        const skillsToDelete = props.skillList.filter(skill => selectedSkills.value.includes(skill.id));
     const data = {
         id: userId,
-        interests: updatedSkills
+        interests: props.skillList.filter(skill => !selectedSkills.value.includes(skill.id)), // Убираем выбранные
     };
-
     try {
+        await deleteInt(skillsToDelete.map(skill => skill.id)); // Удаляем выбранные навыки
         await patchUser(data);
-        // Обновляем локальный список навыков, удаляя выбранные
-        const remainingSkills = props.skillList.filter(skill => !selectedSkills.value.includes(skill.id));
-        emit('update-skills', remainingSkills);
+        emit('update-skills', data.interests); // Обновляем локальный список навыков
         cancelDelete();
     } catch (error) {
         console.error('Ошибка при удалении навыков:', error);
     }
 };
-// const deleteSkills = async () => {
-//     const userId = localStorage.getItem("userId");
-//     const remainingSkills = props.skillList.filter(skill => !selectedSkills.value.includes(skill.id));
-//     const remainingSkillIds = remainingSkills.map(skill => (skill));
 
-//     const data = {
-//         id: userId,
-//         interests: remainingSkillIds
-//     };
-
-//     try {
-//         await patchUser(data);
-//         emit('update-skills', remainingSkills);
-//         toggleDeleteFalse();
-//     } catch (error) {
-//         console.error('Ошибка при удалении навыков:', error);
-//     }
-// };
 const saveSelectedSkills = async () => {
     const data = {
         id: localStorage.getItem("userId"),

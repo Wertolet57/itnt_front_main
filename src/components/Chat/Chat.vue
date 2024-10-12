@@ -97,9 +97,9 @@ const route = useRoute();
 const lastPart = ref(null);
 const messages = ref([]);
 const socket = ref(null);
-
+const token = localStorage.getItem('userToken')
 const initializeSocket = () => {
-    socket.value = io('ws://62.217.181.172:8080/user/5', {
+    socket.value = io(`ws://62.217.181.172:8080/chat/1/5?token=${token}`, {
         query: {
             userId: 5,
             dialogId: 9,

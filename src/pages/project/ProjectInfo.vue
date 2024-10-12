@@ -24,7 +24,8 @@
             <h1 class="font-medium">Блог проекта:</h1>
         </div>
         <div v-if="posts" v-for="post in posts">
-            <ProjectBlog :blog-data="post" user-type="me" feedCardType="newProjectStage" />
+            <ProjectBlog :blog-data="post" :authorID="post.authorProject.id" :author="post.authorProject.name" user-type="user"
+            feedCardType="newProjectStage" />
         </div>
         <!-- <div class="flex flex-col p-10 gap-[10px] bg-black text-green-700">
 

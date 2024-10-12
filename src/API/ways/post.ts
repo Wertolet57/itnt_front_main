@@ -2,7 +2,7 @@ import { API } from '../main'
 // import ComplaintData from "~/helpers/types"
 const prefix = '/main'
 
-export const addPostUser = (description: String, descriptionHeader: String, authorUser: any) => {
+export const addPostUser = (description: String, descriptionHeader: String, authorUser: any, backgroundPictureUrl: String, pictureUrl: String) => {
     let requestBody = {
         "authorProject": {
             "id": 0
@@ -12,10 +12,13 @@ export const addPostUser = (description: String, descriptionHeader: String, auth
         },
         description,
         descriptionHeader,
+        backgroundPictureUrl,
+        pictureUrl
+
     };
     return API.post(`${prefix}/addPost`, requestBody);
 }
-export const addPostProject = (description: String, descriptionHeader: String, authorProject: any) => {
+export const addPostProject = (description: String, descriptionHeader: String, authorProject: any, backgroundPictureUrl: any, pictureUrl: any) => {
     let requestBody = {
         "authorProject": {
             "id": authorProject
@@ -25,6 +28,9 @@ export const addPostProject = (description: String, descriptionHeader: String, a
         },
         description,
         descriptionHeader,
+        backgroundPictureUrl,
+        pictureUrl
+
     };
     return API.post(`${prefix}/addPost`, requestBody);
 }
@@ -71,7 +77,32 @@ export const getProjectFresh = () => {
 }
 
 export const getPostComments = (postId: number) => {
-
     return API.get(`${prefix}/post/comments?postId=${postId}`)
+}
 
+export const getPostById = (postId: number) => {
+    return API.get(`${prefix}/post/${postId}`)
+}
+export const patchPost = (description: String, descriptionHeader: String, backgroundPictureUrl: any, id: any) => {
+    let requestBody = {
+        description,
+        descriptionHeader,
+        backgroundPictureUrl,
+        id
+    };
+    return API.patch(`${prefix}/post`, requestBody);
+}
+
+export const addPostFile = (file: FormData, postId: number) => {
+    return API.post(`${prefix}/post/addPostFile?postId=${postId}`, file, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+export const delPost = (postId: number) => {
+    return API.delete(`${prefix}/delPost?postId=${postId}`)
+}
+export const delPostFile = (Id: number) => {
+    return API.delete(`${prefix}/post/delPostFile?id=${Id}`)
 }

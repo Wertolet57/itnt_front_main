@@ -9,7 +9,8 @@
         <ProjectStage />
         <ProjectMedia :read-only="false" class="mt-12 mb-12" />
         <div v-if="posts" v-for="post in posts ">
-            <ProjectBlog :blog-data="post" user-type="me"  feedCardType="newProjectStage" />
+            <ProjectBlog :blog-data="post" :authorID="post.authorProject.id" :author="post.authorProject.name" user-type="me"
+            feedCardType="newProjectStage" />
         </div>
         <UiButton @click="changeProject" bgColor="blue" class="mt-12">Опубликовать проект</UiButton>
     </v-container>

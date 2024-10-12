@@ -49,7 +49,7 @@ const filteredProjectFiles = computed(() =>
     data.value.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
 );
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .swiper {
     width: 100%;
     height: 400px;

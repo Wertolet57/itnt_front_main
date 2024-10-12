@@ -1,30 +1,30 @@
-<script lang="ts">
-export default {
-    name: 'UiPost',
-}
-</script>
-
 <template>
-    <div v-if="props.prjAuth" class="card" style="padding: 15px; padding-bottom: 20px">
+    <div class="card" style="padding: 15px; padding-bottom: 20px">
         <div class="d-flex mb-2">
             <p>Публикация новой записи</p>
         </div>
         <div class="ui-vacancyPanel__inputs">
             <UiInput label="Текст записи*" v-model="localDescriptionHeader" />
             <UiInput label="Что мы предлагаем*" v-model="localDescription" class="mt-[48px]" />
-            <UiButton bg-color="def">Добавить обложку для записи <input type="file" /></UiButton>
-            <UiButton @click="handlePostBlogByProject" bg-color="smBlue" class="mt-[48px]">Опубликовать</UiButton>
-        </div>
-    </div>
-    <div v-if="props.userAuth" class="card" style="padding: 15px; padding-bottom: 20px">
-        <div class="d-flex mb-2">
-            <p>Публикация новой записи</p>
-        </div>
-        <div class="ui-vacancyPanel__inputs">
-            <UiInput label="Текст записи*" v-model="localDescriptionHeader" />
-            <UiInput label="Что мы предлагаем*" v-model="localDescription" class="mt-[48px]" />
-            <UiButton bg-color="def">Добавить обложку для записи <input type="file" /></UiButton>
-            <UiButton @click="handlePostBlogByUser" bg-color="smBlue" class="mt-[48px]">Опубликовать</UiButton>
+            <UiButton v-if="!imagePreview" bg-color="def">
+                <label for="fileInput" style="cursor: pointer;">Добавить обложку для записи</label>
+            </UiButton>
+            <input @change="handleFileChange" type="file" id="fileInput" style="display: none;">
+            
+            <!-- <AddPostPhoto class="bg-black p-4" :post-id="36" :read-only="false"/> -->
+            <div v-if="imagePreview" class="mt-4">
+                <img class="rounded-t-[12px]" :src="imagePreview" alt="Image preview"
+                    style="max-width: 100%; height: auto;" />
+            </div>
+            <UiButton @click="removeImage" v-if="imagePreview" bg-color="def">
+                Убрать
+            </UiButton>
+            <UiButton v-if="props.userAuth" @click="handlePostBlogByUser" bg-color="smBlue" class="mt-[48px]">
+                Опубликовать
+            </UiButton>
+            <UiButton v-if="props.prjAuth" @click="handlePostBlogByProject" bg-color="smBlue" class="mt-[48px]">
+                Опубликовать
+            </UiButton>
         </div>
     </div>
     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
@@ -36,14 +36,17 @@ export default {
 </template>
 
 <script lang="ts" setup>
-// import scrip from "~/assets/demo/scrip.svg";
 import UiButton from './UiButton.vue';
 import UiInput from './UiInput.vue';
-// import file from "~/assets/icons/media/ppt-blue.svg";
-// import { addPost } from "~/API/ways/user";
 import { addPostProject, addPostUser } from "~/API/ways/post";
+// import {addPostFile} from "../../API/ways/post"
+import AddPostPhoto from "../AddPostPhoto.vue"
 import { ref, computed } from 'vue';
-const snackbarVisible = ref(false)
+
+const snackbarVisible = ref(false);
+const image = ref<string | null>(null);
+const imagePreview = ref<string | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 const props = defineProps({
     descriptionHeader: String,
     description: String,
@@ -53,35 +56,50 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    edit: {
+        type: Boolean,
+        default: false,
+    },
     userAuth: {
         type: Boolean,
         default: false,
     }
 });
-
 const emit = defineEmits(['update:descriptionHeader', 'update:description', 'postSuccess']);
-
 const localDescriptionHeader = computed({
     get: () => props.descriptionHeader,
     set: (value) => emit('update:descriptionHeader', value),
 });
-
 const localDescription = computed({
     get: () => props.description,
     set: (value) => emit('update:description', value),
 });
+
+const handleFileChange = (event: Event) => {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            image.value = file.name;
+            imagePreview.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
 const handlePostBlogByUser = async () => {
     try {
         const data = await addPostUser(
             localDescription.value,
             localDescriptionHeader.value,
             props.authorUser,
+            image.value,
+            image.value
+
         );
         emit('postSuccess');
-
-        snackbarVisible.value = true
+        snackbarVisible.value = true;
         console.log('Post added successfully:', data);
-        // Add additional logic after successful post
     } catch (error) {
         console.error('Error adding post:', error);
     }
@@ -92,18 +110,24 @@ const handlePostBlogByProject = async () => {
             localDescription.value,
             localDescriptionHeader.value,
             props.authorProject,
+            image.value,
+            image.value
+
         );
         emit('postSuccess');
-
-        snackbarVisible.value = true
+        snackbarVisible.value = true;
         console.log('Post added successfully:', data);
-        // Add additional logic after successful post
     } catch (error) {
         console.error('Error adding post:', error);
     }
 };
+const removeImage = () => {
+    imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = ''; // Сброс инпута
+    }
+};
 </script>
-
 
 <style lang="scss" scoped>
 .ui-vacancyPanel {

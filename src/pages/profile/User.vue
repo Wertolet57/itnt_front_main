@@ -34,8 +34,6 @@
             :read-only="true" />
         <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
-        <!-- {{ userInfo }} -->
-
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
@@ -51,8 +49,10 @@
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
         <div v-if="posts" v-for="post in posts">
-            <ProjectBlog :blog-data="post" user-type="me"  feedCardType="newProjectStage" />
+            <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"
+                :authorID="post.authorUser.id" :author="post.authorUser.firstName" feedCardType="newProjectStage" />
         </div>
+
     </v-container>
     <Footer />
 </template>
@@ -70,18 +70,17 @@ import UiSkills from '~/components/ui-kit/UiSkills.vue'
 import ProfileInfo from '~/components/profile/ProfileInfo.vue'
 import ProjectsList from '~/components/profile/ProjectsList.vue'
 import ProfileHeader from '~/components/profile/ProfileHeader.vue'
-import { getUserByID , getUserPosts } from '~/API/ways/user.ts'
+import { getUserByID, getUserPosts } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
+import { delPost } from "../../API/ways/post"
 import { onMounted, ref, computed } from 'vue';
-
-
 let posts = ref();
-const closeModal = () => {
+const closeModal = async () => {
     if (modalState.value) {
         modalState.value.close();
     }
+    await getPosts()
 }
-
 const getPosts = async () => {
     try {
         const data = await getUserPosts(Number(localStorage.getItem('userId')));
@@ -90,6 +89,14 @@ const getPosts = async () => {
         console.error(error);
     }
 };
+const deletePost = async (postID: number) => {
+    try {
+        await delPost(postID)
+        await getPosts()
+    } catch (error) {
+        console.error('Ошибка при удалении поста:', error)
+    }
+}
 const postData = ref({
     descriptionHeader: '',
     description: '',
@@ -148,9 +155,11 @@ label {
     pointer-events: none;
     /* Отключаем события для label, чтобы не мешать кликам по select */
 }
-select option:first-child{
+
+select option:first-child {
     display: none;
 }
+
 select {
     appearance: none;
     background-color: #FAFAFA;
