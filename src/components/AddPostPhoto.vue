@@ -5,7 +5,8 @@
             <div v-for="file in data" :key="file.id" class="relative">
                 <img @click="toggleDelete" :src="`${baseURL}/${file.pictureUrl}`" alt="Project Image"
                     class="slider__image" />
-                    {{`${baseURL}/${file.pictureUrl}` }}
+                    {{baseURL}} 
+                    {{ file.pictureUrl }}
                 <div @click="deleteSlide(file.id)" v-if="delMode === true" class="close">
                     <span class="close__button">
                         <img :src="close" alt="">
