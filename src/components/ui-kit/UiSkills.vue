@@ -5,7 +5,6 @@ export default {
 </script>
 <template>
     <v-card class="ui-skills shadow-sm p-4">
-        <!-- <button @click="deleteInt(2)">delete 1</button> -->
         <div class="">
             <div class="ui-skills__head" v-if="!props.readOnly">
                 <p class="txt-cap2">{{ $t('me.skills') }}</p>
@@ -57,7 +56,7 @@ export default {
 
 import { ref, onMounted, computed } from 'vue'
 import UiInput from './UiInput.vue'
-import { patchUser, deleteInterest } from '../../API/ways/user' // Убедитесь, что пути импорта корректны
+import { patchUser, deleteInterest } from '../../API/ways/user'
 import { getInterestListGrouped } from '../../API/ways/dictionary'
 const props = defineProps({
     readOnly: { type: Boolean, default: false },
@@ -87,7 +86,7 @@ onMounted(async () => {
 });
 
 const openSheet = () => {
-    selectedSkills.value = [...props.skillList]; // Копируем текущие навыки пользователя
+    selectedSkills.value = [...props.skillList]; 
     showSheet.value = true;
 };
 

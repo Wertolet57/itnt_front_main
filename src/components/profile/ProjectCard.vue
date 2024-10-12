@@ -63,9 +63,9 @@ export default {
 </template>
 
 <script setup lang="ts">
-// import hidden from "~/assets/Profile/hideProjectCard.svg"
 
 import anonimus from "~/assets/project_modal/annonimus.svg"
+// import hidden from "~/assets/Profile/hideProjectCard.svg"
 import hide from "~/assets/project_modal/hide.svg"
 import project from "~/assets/project_modal/project.svg"
 import share from "~/assets/project_modal/share.svg"

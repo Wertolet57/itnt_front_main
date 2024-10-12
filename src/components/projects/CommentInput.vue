@@ -1,4 +1,3 @@
-<!-- CommentInput.vue -->
 <template>
     <div class="input">
         <div v-if="replyToComment">

@@ -1,31 +1,6 @@
 <template>
     <Header showID :showUserMinify="true" />
     <ProfileHeader :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
-    <!-- <div class=" mx-5 form-group">
-        <select id="country-select" required>
-            <option value="" disabled selected hidden></option>
-            <option value="northumbria">Нортумбрия</option>
-            <option value="cyprus">Республика Кипр</option>
-            <option value="iraq">Республика Ирак</option>
-            <option value="congo">Республика Конго</option>
-            <option value="logon">Республика Логон</option>
-            <option value="reunion">Реюньон</option>
-            <option value="russia">Россия</option>
-            <option value="rwanda">Руанда</option>
-        </select>
-        <label for="country-select">Страна</label>
-    </div>
-
-    <div class="mx-5 form-group">
-        <select id="city-select" required>
-            <option value="" disabled selected hidden></option>
-            <option value="cyprus">Республика Кипр</option>
-            <option value="iraq">Республика Ирак</option>
-            <option value="congo">Республика Конго</option>
-        </select>
-        <label for="city-select">Город</label>
-    </div> -->
-
 
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"

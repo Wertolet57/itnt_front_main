@@ -5,20 +5,6 @@
         <div class="userEdit my-4">
             <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" />
             <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" />
-            <!-- <details class="custom-select">
-                <summary class="radios" v-for="country in countries" :key="country.id" :value="country">
-                    <input type="radio" name="item" id="default" title="Auswählen..." checked>
-                    <input type="radio" name="item" :id="`item${country.id}`" :title="country.name">
-                </summary>
-                <ul class="list" v-for="country in countries" :key="country.id" :value="country">
-                    <li>
-                        <label :for="`item${country.id}`">
-                            {{ country.name }}
-                            <span></span>
-                        </label>
-                    </li>
-                </ul>
-            </details> -->
             <div class="custom-select">
                 <select v-model="user.country" @change="onCountryChange">
                     <option disabled>Выберите страну</option>

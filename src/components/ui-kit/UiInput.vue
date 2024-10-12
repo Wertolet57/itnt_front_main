@@ -22,7 +22,6 @@ export default {
         :append-inner-icon="props.appendIcon ? `mdi-${props.appendIcon}` : ''"
         @blur="checkRequired"
         ></v-text-field>
-        <!-- :prepend-inner-icon="props.prependIcon ? `mdi-${props.prependIcon}` : ''" -->
 </template>
 
 <script setup lang="ts">

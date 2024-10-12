@@ -1,6 +1,5 @@
 <template>
     <div class="projectHeader">
-        <!-- Project Picture (Readonly or Editable) -->
         <div v-if="props.readOnly || props.commentText" class="ava">
             <img :src="props.prjAva" />
         </div>
@@ -18,7 +17,6 @@
             </div>
         </div>
 
-        <!-- Readonly Section -->
         <div v-if="props.readOnly" class="projectHeader__container">
             <h2>{{ props.prjName }}</h2>
             <div v-if="props.prjType" class="projectHeader__capital">{{ props.prjType }}</div>

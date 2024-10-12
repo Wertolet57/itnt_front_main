@@ -33,7 +33,8 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-})</script>
+})
+</script>
 
 <style lang="scss" scoped>
 .ui-prompt {

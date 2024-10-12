@@ -1,8 +1,6 @@
 <template>
     <Header search />
-    <!-- <button @click="addCommentApi" class="p-4 bg-black m-8">sdsdsdsdsd</button> -->
     <v-container style="padding: 0 20px">
-        <!-- {{ ProjectSearch() }} -->
         <UiSwitch @changeValue="searchPageSwitchState = $event" :items="['Проекты', 'Люди']" />
         <UiInput @keyup.enter="" v-model="searchQuery" placeholder="Поиск..." append-inner-icon="mdi-magnify" />
         <!-- Детальный поиск -->
@@ -46,7 +44,6 @@
                         <p class="txt-body1 color-blue" @click="searchUsersByTegs">Открыт</p>
                     </div>
                 </div>
-                <!-- {{openforProp  }} -->
 
             </div>
         </div>

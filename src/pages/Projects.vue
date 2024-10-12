@@ -11,25 +11,21 @@
             :items="['Неделя', 'Месяц', 'Год']" />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
-                <!-- {{ projectByWeek }} by week -->
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 1" class="">
-                <!-- {{ projectByMonth }} by month -->
                 <div v-for="(project, id) in projectByMonth" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 2" class="">
-                <!-- {{ projectByYear }} by year -->
                 <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
                     <RatingProjectCard :projectInfoSet="project" />
                 </div>
             </div>
         </div>
-        <!-- projectByFresh -->
         <div v-if="projectsType === 0" v-for="(project, id) in projectByFresh" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div>

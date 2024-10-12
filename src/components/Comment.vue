@@ -34,8 +34,8 @@
 </template>
 
 <script lang="ts" setup>
-// import UiButton from '../ui-kit/UiButton.vue'
 import {ref,  computed, defineProps, defineEmits, onMounted  } from 'vue'
+// import UiButton from '../ui-kit/UiButton.vue'
 // import { postAddUserPicture } from "~/API/ways/user";
 import { getUserByID } from '~/API/ways/user.ts'
 
@@ -55,7 +55,6 @@ function startReply( commentObject: object, name: string) {
 }
 
 let name = ref("")
-//   
 onMounted(async () => {
   try {
     const response = await getUserByID(props.commentObject.userId);

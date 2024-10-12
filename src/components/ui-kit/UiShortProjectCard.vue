@@ -26,10 +26,6 @@ export default {
     </div>
 </template>
 
-<script setup lang="ts">
-// const props = defineProps({})
-</script>
-
 <style lang="scss" scoped>
 .ui-shortProjectCard {
     border: 1px solid $primary;

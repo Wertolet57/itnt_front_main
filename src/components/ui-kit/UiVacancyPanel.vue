@@ -63,7 +63,6 @@ export default {
         </div>
         <div v-if="vacancyParams.archive == false" class="">
             <div class="d-flex mb-2">
-                <!-- <p>Вакансия {{ props.data.type }} {{ props.data.archive }}</p> -->
                 <v-spacer />
                 <v-icon @click="vacancyPanel.open()" icon="mdi-dots-vertical" />
             </div>

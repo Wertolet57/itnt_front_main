@@ -5,7 +5,6 @@
   <script lang="ts" setup>
   import { onMounted, onBeforeUnmount } from 'vue'
   
-  // Extend the Window interface to include onTelegramAuth
   declare global {
     interface Window {
       onTelegramAuth: (user: any) => void
