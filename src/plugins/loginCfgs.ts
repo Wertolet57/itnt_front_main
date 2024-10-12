@@ -11,6 +11,6 @@ export const googleLoginConfig = {
 }
 export const VK_CONFIG = {
     clientId: 'https://vk.com/app51993685',
-    redirectUri: https://itnt.store/', 
+    redirectUri: 'https://itnt.store/', 
     scope: 'email',
   };
