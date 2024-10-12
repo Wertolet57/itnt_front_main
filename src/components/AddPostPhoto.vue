@@ -85,7 +85,7 @@ const handleFileChange = async (event: Event) => {
         }
     }
 };
-const baseUrl = `http://62.217.181.172/files`
+const baseURL ='https://itnt.store/';
 </script>
 
 <style scoped lang="scss">

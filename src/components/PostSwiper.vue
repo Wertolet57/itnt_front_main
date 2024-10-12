@@ -23,7 +23,8 @@ const props = defineProps({
 })
 // const route = useRoute();
 const modules = ref([Pagination]);
-const baseUrl = `http://62.217.181.172/files`
+const baseURL ='https://itnt.store/';
+
 const data = ref([]);
 onMounted(async () => {
     try {
