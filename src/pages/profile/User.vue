@@ -100,7 +100,7 @@ const updateUserSkills = async (newSkills: any) => {
     userInfo.value.interests = newSkills;
     await fetchUserInfo();
 };
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return userInfo.value.pictureUrl ? `${baseURL}files/${userInfo.value.pictureUrl}` : '';

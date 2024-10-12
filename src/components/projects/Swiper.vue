@@ -21,7 +21,7 @@ const props = defineProps({
 })
 const route = useRoute();
 const modules = ref([Pagination]);
-const baseURL = https://itnt.store/files/';
+const baseURL ='https://itnt.store/files/';
 const data = ref([]);
 
 // Function to check if URL is external

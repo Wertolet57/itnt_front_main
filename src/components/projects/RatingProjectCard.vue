@@ -236,7 +236,7 @@ const modalItems: modalActionsList[] = [
     //     icon: statistic,
     // },
 ]
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 
 const isExternalUrl = (url: string | null) => {
     return url?.startsWith('http') || url?.startsWith(',');

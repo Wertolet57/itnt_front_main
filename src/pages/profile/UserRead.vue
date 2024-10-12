@@ -76,7 +76,7 @@ const hasData = computed(() => {
         return !excludedKeys.includes(key) && value !== null && value !== '' && (Array.isArray(value) ? value.length > 0 : true)
     })
 })
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return data.value.pictureUrl ? `${baseURL}files/${data.value.pictureUrl}` : '';

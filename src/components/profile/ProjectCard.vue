@@ -153,7 +153,7 @@ const modalItems: modalActionsList[] = [
         },
     },
 ]
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return `${baseURL}files/${props.projectInfo.project.avatarUrl}`;

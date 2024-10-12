@@ -15,7 +15,7 @@ import { ref, onMounted, computed } from 'vue';
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 import { useRoute, useRouter } from 'vue-router'
 import { getPostById, patchPost } from "../../API/ways/post"
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 let data = ref({})
 const route = useRoute()
 const router = useRouter()

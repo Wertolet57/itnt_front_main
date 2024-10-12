@@ -16,7 +16,7 @@ import { ref, onMounted, computed } from 'vue';
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 import { useRoute } from 'vue-router'
 import { getProjectByID } from '~/API/ways/project.ts'
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 let data = ref({})
 const route = useRoute()
 

@@ -101,7 +101,7 @@ const postData = ref({
     description: '',
     authorProject: route.params.ID,
 });
-const baseURL = https://itnt.store/';
+const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';

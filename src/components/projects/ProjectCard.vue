@@ -103,7 +103,7 @@ const props = defineProps({
         type: String,
     },
 })
-const baseURL = https://itnt.store/files/';
+const baseURL ='https://itnt.store/files/';
 
 const isExternalUrl = (url: string | null) => {
     return url?.startsWith('http') || url?.startsWith(',');
