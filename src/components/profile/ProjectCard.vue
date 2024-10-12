@@ -60,7 +60,6 @@ export default {
             </div>
         </div>
     </vue-bottom-sheet>
-    <!-- {{ projects }} -->
 </template>
 
 <script setup lang="ts">

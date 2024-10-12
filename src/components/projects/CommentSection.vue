@@ -1,7 +1,4 @@
 <template>
-  <!-- <div class="" v-for="commentA in comments">
-    {{ commentA.childNodes }}
-  </div> -->
   <div class="comments-section mb-[90px]">
     <div class="form py-4">
       <div v-if="replyingTo !== null" class="replying-to">

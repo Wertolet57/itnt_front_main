@@ -23,10 +23,6 @@ export default {
                             <img class="mx-2" src="../../../assets/icons/singeDot-gray.svg" />
                             <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feedPanels.time') }}</span>
                         </div>
-
-                        <!-- <p class="feedPanel__card__subtitle txt-cap1">
-                            {{ }}
-                        </p> -->
                     </div>
 
                     <v-spacer></v-spacer>
