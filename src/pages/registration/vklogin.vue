@@ -1,4 +1,3 @@
-<!-- components/VKAuth.vue -->
 <template>
   <button class="mb-8" @click="handleLogin">Войти через VK</button>
 </template>
