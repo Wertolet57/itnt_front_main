@@ -85,7 +85,7 @@ const handleFileChange = async (event: Event) => {
         }
     }
 };
-const baseURL ='https://itnt.store/';
+const baseURL ='https://itnt.store/files';
 </script>
 
 <style scoped lang="scss">
