@@ -18,7 +18,7 @@ import { ref, onMounted, computed } from 'vue';
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 import { useRoute } from 'vue-router'
 import { getPostById } from "../../API/ways/post"
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 let data = ref({})
 const route = useRoute()
 const userData = localStorage.getItem("userId")

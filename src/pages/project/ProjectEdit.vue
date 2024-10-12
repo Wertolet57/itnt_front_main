@@ -78,7 +78,7 @@ onMounted(async () => {
         console.error('error:', e);
     }
 });
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 

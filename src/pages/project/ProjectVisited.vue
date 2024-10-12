@@ -101,7 +101,7 @@ const postData = ref({
     description: '',
     authorProject: route.params.ID,
 });
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';

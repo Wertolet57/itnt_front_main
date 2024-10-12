@@ -186,7 +186,7 @@ onMounted(() => {
 onUpdated(() => {
     setLastCloseClass();
 });
-const baseURL = 'http://62.217.181.172/files/';
+const baseURL = https://itnt.store/files/';
 
 const isExternalUrl = (url: string | null) => {
     return url?.startsWith('http') || url?.startsWith(',');

@@ -187,7 +187,7 @@ onMounted(async () => {
         }
     })
 })
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return data.value.pictureUrl ? `${baseURL}files/${data.value.pictureUrl}` : '';

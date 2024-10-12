@@ -155,7 +155,7 @@ const changeUser = async () => {
     }
 };
 
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return user.value.pictureUrl ? `${baseURL}files/${user.value.pictureUrl}` : '';

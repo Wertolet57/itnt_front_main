@@ -98,7 +98,7 @@ const postData = ref({
     description: '',
     authorProject: route.params.ID,
 });
-const baseURL = 'http://62.217.181.172/';
+const baseURL = https://itnt.store/';
 import defAva from "~/assets/demo/projectsmallphoto.svg"
 
 const fullAvatarUrl = computed(() => {

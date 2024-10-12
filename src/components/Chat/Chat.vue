@@ -74,7 +74,7 @@ const initializeSocket = () => {
             dialogId: 9,
         },
     });
-    // socket.value = io('http://62.217.181.172/dialog', {
+    // socket.value = io(https://itnt.store/dialog', {
     //     query: {
     //         userId: 1,
     //         dialogId: 9,
