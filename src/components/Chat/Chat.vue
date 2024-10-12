@@ -1,37 +1,6 @@
 <template>
     <div class="">
         <Header showUserMinify :routeName="lastPart" :chat="true" />
-        <!-- <div class="input px-2 pt-5 pb-0">
-            <ChatInput :imgSrc="chat" :action="sendApiMessage" placeholder="Hey..." />
-            <input type="text" @click="sendApiMessage">
-        </div>
-        <v-container class="chat-screen">
-            <v-row justify="space-around d-flex flex-column">
-                <v-card v-for="message in messages" :key="message.time" flat>
-                    <v-list-item :key="message.time" v-if="message.from != 'You'" class="shadow-none">
-                        <v-list-item-content class="received-message">
-                            <v-card color="white" class="flex-none-sent">
-                                <v-card-text class="white--text pa-2 d-flex flex-column">
-                                    <span class="align-self-start text-subtitle-1">{{ message.message }}</span>
-                                    <span class="text-caption font-italic align-self-end">{{ message.time }}</span>
-                                </v-card-text>
-                            </v-card>
-                        </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item v-else :key="message.time">
-                        <v-list-item-content class="sent-message justify-end">
-                            <v-card color="#E1F5FE" class="flex-none">
-                                <v-card-text class="white--text pa-2 d-flex flex-column">
-                                    <span class="text-subtitle-1 chat-message">{{ message.message }}</span>
-                                    <span class="text-caption align-self-end flex flex-row gap-2">{{ message.time }}<img
-                                            :src="delivered" alt=""></span>
-                                </v-card-text>
-                            </v-card>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-card>
-            </v-row>
-        </v-container> -->
         <div class="chat-container">
             <div class="date-container">
                 <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>

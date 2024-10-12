@@ -6,7 +6,6 @@ export default {
 
 <template>
     <div class="topModal" @click="onClickOutside">
-        <!--  -->
 
         <div class="modal__list modalList">
             <template v-for="(item, id) in modalItems" :key="id">

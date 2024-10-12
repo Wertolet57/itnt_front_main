@@ -1,7 +1,4 @@
 <template>
-    <!-- <div class="" v-for="commentA in comments">
-      {{ commentA.childNodes }}
-    </div> -->
     <div class="comments-section mb-[90px]">
       <div class="form py-4">
         <div v-if="replyingTo !== null" class="replying-to">
@@ -77,17 +74,7 @@
               <span>{{ comment.insertDate }}</span>
               <button @click="replyTo(comment?.id)">Ответить</button>
             </div>
-  
-            <!-- <div v-if="replyingTo === comment?.id">
-              <form @submit.prevent="submitReply(comment)">
-                <textarea v-model="replyText" placeholder="Ответить на комментарий"></textarea>
-                <button type="submit">Отправить ответ</button>
-              </form>
-            </div>
-  
-            <div v-for="reply in comment?.childNodes" :key="reply?.id" class="reply">
-              <p>{{ reply?.message }}</p>
-            </div> -->
+
           </div>
         </div>
   

@@ -65,7 +65,6 @@
                 <div class="flex flex-row justify-between flex-1">
                     <p class="card__name">Евгений Анисимов</p>
                     <div class="flex flex-row items-center gap-[6px]">
-                        <!-- <img :src="send" alt=""> -->
                         <p class="card__time">15:12</p>
                     </div>
                 </div>

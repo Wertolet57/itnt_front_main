@@ -20,7 +20,6 @@ export default {
         </div>
 
         <img @click="toggleUserModal" style="padding: 10px" v-if="props.showControlDots" :src="dots" />
-        <!-- <img @click="toggleProjectModal" style="padding: 10px" v-if="props.showControlDotsProject" :src="dots" /> -->
 
         <img @click="modalState.open()" style="padding: 10px" v-if="props.chat" :src="dots" />
         <vue-bottom-sheet ref="modalState">
@@ -76,7 +75,6 @@ export default {
             </div>
         </vue-bottom-sheet>
         <div v-if="props.search" class="d-flex w-full align-center">
-            <!-- <UiInput noStyle v-model="searchBarValue" /> -->
             <v-spacer />
             <v-icon icon="mdi-magnify" />
         </div>

@@ -27,13 +27,6 @@
             <ProjectBlog :blog-data="post" :authorID="post.authorProject.id" :author="post.authorProject.name" user-type="user"
             feedCardType="newProjectStage" />
         </div>
-        <!-- <div class="flex flex-col p-10 gap-[10px] bg-black text-green-700">
-
-            <button class="p-5" @click="addUsers">addUser</button>
-            <button class="p-5"  @click="setNewOwners">setNewOwners</button>
-            
-        </div> -->
-        <!-- {{  }} -->
     </v-container>
     <Footer />
 </template>

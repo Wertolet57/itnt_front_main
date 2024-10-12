@@ -6,7 +6,6 @@ export default {
 
 <template>
     <div class="topModal" v-click-outside="onClickOutside">
-        <!--  -->
         <UiShortProjectCard />
 
         <div class="modal__list modalList">

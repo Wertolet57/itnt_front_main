@@ -10,7 +10,6 @@ export default {
             <img v-if="status === 'default'" :src="flame" alt="Default" />
         </transition>
         <transition name="fade">
-            <!-- <img v-if="status === 'loading'" src="../assets/icons/chat-black.svg" alt="Loading" /> -->
             <v-progress-circular v-if="status === 'loading'" width="2" class="loading m-0 p-0 text-center" color="white"
                 indeterminate></v-progress-circular>
         </transition>
@@ -23,7 +22,6 @@ export default {
             <img v-if="status === 'default'" :src="flame" alt="Default" />
         </transition>
         <transition name="fade">
-            <!-- <img v-if="status === 'loading'" src="../assets/icons/chat-black.svg" alt="Loading" /> -->
             <v-progress-circular v-if="status === 'loading'" width="2" class="loading m-0 p-0 text-center" color="white"
                 indeterminate></v-progress-circular>
         </transition>
@@ -80,13 +78,6 @@ async function handleLike() {
 
     await nextTick()
 }
-// async function funDelLike() {
-//     await delLike(props.id).then((repsonse) => {
-//         console.log(repsonse)
-//     })
-
-//     await nextTick()
-// }
 async function handleLikePost() {
     console.log('clicked')
     status.value = 'loading'
@@ -114,13 +105,6 @@ async function handleLikePost() {
 
     await nextTick()
 }
-// async function funDelLikePost() {
-//     await delLike(props.id).then((repsonse) => {
-//         console.log(repsonse)
-//     })
-
-//     await nextTick()
-// }
 </script>
 
 <style lang="scss" scoped>
