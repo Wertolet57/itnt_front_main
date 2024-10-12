@@ -3,7 +3,7 @@
         <Swiper v-if="props.readOnly" :id="props.postId" />
         <div v-if="!props.readOnly" class="photo-upload grid grid-cols-3 gap-4">
             <div v-for="file in data" :key="file.id" class="relative">
-                <img @click="toggleDelete" :src="`${baseUrl}/${file.pictureUrl}`" alt="Project Image"
+                <img @click="toggleDelete" :src="`${baseURL}/${file.pictureUrl}`" alt="Project Image"
                     class="slider__image" />
                 <div @click="deleteSlide(file.id)" v-if="delMode === true" class="close">
                     <span class="close__button">
