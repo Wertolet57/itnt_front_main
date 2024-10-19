@@ -1,4 +1,6 @@
-{
+import { projectSkills } from "./types";
+
+const projectSkillsData = {
     "TECHNOLOGY_3D": "3D технологии",
     "ACCOUNTING": "Бухгалтерия",
     "ADVANCED_MATERIALS": "Перспективные материалы",
@@ -160,4 +162,15 @@
     "WEB_DEVELOPMENT_APPS": "Веб-разработка и приложения",
     "WELLNESS": "Благополучие",
     "WINE_SPIRITS": "Вино и спиртные напитки"
-}
+};
+
+const manageSkills: projectSkills[] = Object.entries(projectSkillsData).map(([key, value]) => ({
+    key,
+    value
+}));
+
+export const projectSkill = {
+    manageSkills
+};
+
+export default projectSkill;

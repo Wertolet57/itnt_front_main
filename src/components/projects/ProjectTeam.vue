@@ -3,10 +3,10 @@
         <div class="d-flex mb-2 align-center justify-space-between">
             <p v-show="props.readOnly" style="color: #263238" class="txt-cap2">Наша команда:</p>
             <p v-show="!props.readOnly" style="color: #263238" class="txt-cap2">Участники проекта:</p>
-            <!-- <UiButton v-if="checkOrders && checkOrders.id && checkOrders.id == userID" @click="joinTeam.open()" fit
-            style="height: 36px; padding: 11px 16px" bgColor="smBlue" isSmall> -->
-            <UiButton @click="joinTeam.open()" class="relative" fit style="height: 36px; padding: 11px 16px"
-                bgColor="smBlue" isSmall>
+            <UiButton v-if="checkOrders && checkOrders.id && checkOrders.id == userID" @click="joinTeam.open()" fit
+                style="height: 36px; padding: 11px 16px" bgColor="smBlue" isSmall>
+                <!-- <UiButton @click="joinTeam.open()" class="relative" fit style="height: 36px; padding: 11px 16px"
+                bgColor="smBlue" isSmall> -->
                 <p @click="joinTeam.open()" class="txt-cap2">Заявки
                 <div v-if="teamMembers.length > 0" class="length">{{ teamMembers.length }}</div>
                 </p>
@@ -57,6 +57,26 @@
                     <div v-for="users in props.team">
                         <div v-if="users.relationType === 'PROJECT_USER'"
                             class="projectTeam__item--edit d-flex justify-space-between">
+                            <vue-bottom-sheet max-height="245px" full-screen ref="editState">
+                                <div class="modalList">
+                                    <div @click="$router.push('/' + `user/${users.user.id}`)"
+                                        class="modalList__item flex flex-row">
+                                        <img :src="account" alt="" />
+                                        <p class="txt-body1">Открыть профиль</p>
+
+                                    </div>
+                                    <div @click="delDialog" class="modalList__item flex flex-row">
+                                        <img :src="close" alt="" />
+                                        <p class="txt-body1 error-txt">Удалить человека из проекта</p>
+
+                                    </div>
+                                    <div @click="authorityModal" class="modalList__item flex flex-row">
+                                        <img :src="key" alt="" />
+                                        <p class="txt-body1">Передать полномочия владельца проекта</p>
+
+                                    </div>
+                                </div>
+                            </vue-bottom-sheet>
                             <div class="projectTeam__item__header--edit">
                                 <div class="d-flex">
                                     <img class="mr-7" width="37" height="37"
@@ -80,25 +100,6 @@
                     </div>
                 </div>
             </div>
-            <vue-bottom-sheet max-height="245px" full-screen ref="editState">
-                <div class="modalList">
-                    <div @click="$router.push('/' + `user/5`)" class="modalList__item flex flex-row">
-                        <img :src="account" alt="" />
-                        <p class="txt-body1">Открыть профиль</p>
-
-                    </div>
-                    <div @click="delDialog" class="modalList__item flex flex-row">
-                        <img :src="close" alt="" />
-                        <p class="txt-body1 error-txt">Удалить человека из проекта</p>
-
-                    </div>
-                    <div @click="authorityModal" class="modalList__item flex flex-row">
-                        <img :src="key" alt="" />
-                        <p class="txt-body1">Передать полномочия владельца проекта</p>
-
-                    </div>
-                </div>
-            </vue-bottom-sheet>
 
 
             <div class="d-flex mt-2 justify-space-between align-center">

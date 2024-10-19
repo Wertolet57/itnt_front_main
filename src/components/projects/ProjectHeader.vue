@@ -23,7 +23,7 @@
             <p>{{ props.prjSlogan }}</p>
             <div class="projectHeader__controls">
                 <div class="d-flex justify-space-between mt-2 mb-4">
-                    <UiButton bgColor="blue" @click="isFollowing ? deletefollow() : follow()" style="max-width: 152px">
+                    <UiButton :bgColor="isFollowing ? 'def' : 'blue'" @click="isFollowing ? deletefollow() : follow()" style="max-width: 152px">
                         {{ isFollowing ? 'Отписаться' : 'Подписаться' }}
                     </UiButton>
                     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="5000"
@@ -54,7 +54,7 @@
         <div class="projectHeader__edit" v-if="!props.commentText && !props.readOnly">
             <UiInput label="Название проекта*" v-model="prjObject.name" :required="true" />
             <UiInput label="Слоган" v-model="prjObject.slogan" :required="true" />
-            <UiInput label="id проекта" v-model="prjObject.nickName" :required="true" />
+            <UiInput label="id проекта" v-model="nickName" :required="true" />
         </div>
     </div>
 </template>
@@ -100,6 +100,7 @@ onMounted(async () => {
         console.error('Error loading data:', error);
     }
 });
+const nickName = ref('itnthub' + `${prjObject.nickName}`)
 
 async function uploadImage(event: any) {
     const file = event.target.files[0];

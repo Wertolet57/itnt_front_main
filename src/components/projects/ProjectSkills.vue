@@ -11,27 +11,22 @@
         </div>
     </div>
     <div class="" v-else>
-        <div v-if="props.tags !== null" class="">
-            <div @click="openBottomSheet" class="selected-skills" :class="`skills-${$props.tags?.length}`">
-                <div class="skill-pill" v-for="tag in props.tags">
-                    {{ tag }}
-                </div>
-                <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
-                    <v-icon :size="20" icon="mdi-plus"></v-icon>
-                </div>
+        <div v-if="props.tags" class="selected-skills" :class="`skills-${props.tags.length || selectedSkills.length}`">
+            <div class="skill-pill" v-for="tag in props.tags || selectedSkills" :key="tag">
+                {{ tag }}
+            </div>
+            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
+                <v-icon :size="20" icon="mdi-plus"></v-icon>
             </div>
         </div>
-        <!-- <div v-if="selectedSkills.length">
-            <div @click="openBottomSheet" class="selected-skills" :class="`skills-${selectedSkills.length}`">
-                <div v-for="skill in selectedSkills" :key="skill" class="skill-pill">
-                    {{ skill }} {{ props.tags }}
-
-                </div>
-                <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
-                    <v-icon :size="20" icon="mdi-plus"></v-icon>
-                </div>
+        <div class="" v-else-if="props.isNewProject">
+            <div class="skill-pill" v-if="tags" v-for="tag in props.tags || selectedSkills" :key="tag">
+                {{ tag }}
             </div>
-        </div> -->
+            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
+                <v-icon :size="20" icon="mdi-plus"></v-icon>
+            </div>
+        </div>
         <div v-else @click="openBottomSheet" class="empty">
             <v-icon :size="20" icon="mdi-plus"></v-icon>
         </div>
@@ -39,29 +34,37 @@
             <div v-if="isBottomSheetOpen == true" class="bottom-sheet min-h-[400px] bg-white text-left">
                 <div class="txt-body1 mb-2 mx-4">Выбрано : {{ selectedSkills.length }} </div>
                 <UiInput class="mx-4 mb-2" label="Введите навык для поиска" />
-                <div class="px-4  skill-item" v-for="skill in projectSkills" :key="skill"
+                <!-- <div class="px-4  skill-item" v-for="skill in projectSkill" :key="skill"
                     :class="{ 'selected': selectedSkills.includes(skill), 'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill) }"
                     @click="toggleSkill(skill)">
                     {{ skill }}
+                </div> -->
+                <!-- </div> -->
+                <div class="skill-category" v-for="(skillCategory, index) in projectSkill" :key="index">
+                    <div class="skill-item px-4" v-for="skill in skillCategory" :key="skill.key" :class="{
+        'selected': selectedSkills.includes(skill.key),
+        'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill.key)
+    }" @click="toggleSkill(skill.key)">
+                        {{ skill.value }}
+                    </div>
                 </div>
-                <v-btn @click="addSkills" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
-
+                <v-btn v-if="props.isNewProject" @click="emitAddSkills" class="close-btn mr-2 text-white"
+                    icon="mdi-check" color="#00e676" />
+                <v-btn v-else @click="addSkills" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
             </div>
-
         </transition>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import UiAgree from '../ui-kit/UiAgree.vue'
-import UiInput from '../ui-kit/UiInput.vue'
-
-import projectSkills from "../../helpers/skills.json";
+import UiInput from '../ui-kit/UiInput.vue';
+import projectSkill from '../../helpers/projectSkill';
 import { patchProject, getProjectByID } from '~/API/ways/project';
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router';
 import { onMounted } from 'vue';
-const route = useRoute()
+
+const route = useRoute();
 const isBottomSheetOpen = ref(false);
 const selectedSkills = ref<string[]>([]);
 const props = defineProps({
@@ -69,19 +72,37 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    new: {
+        type: Boolean,
+        default: true
+    },
     tags: {
         type: String,
-    }
-})
+    },
+    isNewProject: {
+        type: Boolean,
+        default: false,
+    },
+});
+const emit = defineEmits(['add-skills']);
+
+const emitAddSkills = () => {
+    emit('add-skills', selectedSkills.value);
+    isBottomSheetOpen.value = false;
+};
+
 const openBottomSheet = () => {
     isBottomSheetOpen.value = true;
 };
+
 const closeBottomSheet = () => {
     isBottomSheetOpen.value = false;
 };
+
 const reverseSkillsMap = Object.fromEntries(
-    Object.entries(projectSkills).map(([key, value]) => [value, key])
+    Object.entries(projectSkill).map(([key, value]) => [value, key])
 );
+
 const toggleSkill = (skill: string) => {
     if (selectedSkills.value.includes(skill)) {
         selectedSkills.value = selectedSkills.value.filter(s => s !== skill);
@@ -89,38 +110,33 @@ const toggleSkill = (skill: string) => {
         selectedSkills.value.push(skill);
     }
 };
+
 const getProject = async () => {
     try {
-        await getProjectByID(route.params.ID)
+        await getProjectByID(route.params.ID);
     } catch (error) {
-
+        console.error(error);
     }
-}
+};
+
 const addSkills = async () => {
     const selectedSkillKeys = selectedSkills.value.map(skill => reverseSkillsMap[skill]);
-
-    //Как строка
-    // const activityFields = selectedSkillKeys.join(',');
-    // const data = {
-    //     id: route.params.ID,
-    //     activityFields: activityFields,
-    // }
-
-    //Как массив
     const data = {
         id: route.params.ID,
         activityFields: selectedSkillKeys,
-    }
+    };
     try {
-        isBottomSheetOpen.value = false
-        await patchProject(data)
-        await getProject()
+        isBottomSheetOpen.value = false;
+        await patchProject(data);
+        await getProject();
     } catch (error) {
-
+        console.error(error);
     }
-}
-onMounted(getProject)
+};
+
+onMounted(getProject);
 </script>
+
 
 <style lang="scss">
 .bottom-sheet {
@@ -237,4 +253,4 @@ onMounted(getProject)
     }
 
 }
-</style>
+</style>../../helpers/skills

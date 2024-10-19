@@ -1,6 +1,6 @@
 <template>
-    <swiper :pagination="{ dynamicBullets: true, }" :modules="modules" class="mySwiper">
-        <swiper-slide class="rounded-[16px]" v-for="(file, index) in filteredProjectFiles" :key="file.id">
+    <swiper v-if="filteredProjectFiles && filteredProjectFiles.length > 0" :pagination="{ dynamicBullets: true, }" :modules="modules" class="mySwiper">
+        <swiper-slide class="rounded-[16px]"  v-for="(file, index) in filteredProjectFiles" :key="file.id">
             <img class="rounded-[16px]" :src="getFileUrl(file.pictureUrl)" alt="Project Image" />
         </swiper-slide>
     </swiper>

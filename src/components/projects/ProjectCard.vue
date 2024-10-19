@@ -66,9 +66,6 @@ import { useProjectStore } from '~/store/projectStore'
 import ProjectSkills from '../projects/ProjectSkills.vue'
 import { getProjectByID, deleteProjectFile } from '~/API/ways/project'
 import { useRoute } from 'vue-router'
-const projTags = [
-    "Финансы", "Техника","Проекты"
-]
 const route = useRoute()
 const { prjObject } = storeToRefs(useProjectStore())
 let data = ref([])
@@ -84,13 +81,6 @@ onMounted(async () => {
     })
 })
 const dialog = ref(false)
-// const greenPart = computed(() => prjObject.value.description.slice(0, 100));
-// const blackPart = computed(() => prjObject.value.description.slice(100));
-
-// // Эта функция вызывается при каждом изменении текста
-// const updateFormattedText = () => {
-//     // Логика может быть пустой, если нет дополнительной обработки
-// };
 const props = defineProps({
     readOnly: {
         type: Boolean,

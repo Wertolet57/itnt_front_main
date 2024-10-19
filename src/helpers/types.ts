@@ -70,3 +70,8 @@ export interface UserPicture {
     id: number;
     pictureUrl: string;
 }
+
+export interface projectSkills{
+    key:string;
+    value:string
+}

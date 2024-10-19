@@ -7,16 +7,15 @@ export default {
 <template>
     <v-app-bar class="px-4 addaptive z-1 relative" :elevation="0" height="46" color="white">
         <v-icon class="mr-3" @click="$router.back()" icon="mdi-arrow-left" />
-        <img v-if="user.pictureUrl === null || user.pictureUrl=== ''" class="" :src="ava">
-        <img v-if="user.pictureUrl !== null || user.pictureUrl !== ''"  v-show="props.showLogo" :src="user.pictureUrl" />
-
         <h2 @click="copyID" v-show="props.showID">{{ chosenId }}</h2>
 
         <h2 v-show="props.routeName">{{ props.routeName }}</h2>
         <v-spacer v-if="search === false" />
-        <div class="ava">
-            <img @click="toggleTopModal" style="padding: 10px" v-if="props.showUserMinify === true"
+        <div @click="toggleTopModal" class="ava cursor-pointer">
+            <img  v-if="fullAvatarUrl == null || fullAvatarUrl == ''" class="defAva" :src="defAva">
+            <img class="img" v-else style="padding: 10px" v-if="props.showUserMinify === true"
                 :src="fullAvatarUrl" />
+            
         </div>
 
         <img @click="toggleUserModal" style="padding: 10px" v-if="props.showControlDots" :src="dots" />
@@ -85,6 +84,7 @@ export default {
 </template>
 
 <script lang="ts" setup>
+import defAva from "../assets/demo/defAva.svg"
 import ava from '../assets/demo/ava-small-header.svg'
 import complain from '../assets/icons/warning-red.svg'
 import plus from '../assets/project_modal/plus.svg'
@@ -233,9 +233,14 @@ function copyID() {
     max-height: 58px;
     padding: 0;
     margin: 0;
-
-    img {
-        width: 62px;
+    .defAva{
+        padding: 10px 0 12px 0;
+        width: 60px;
+        height: 60px;
+        border-radius: 100%;
+    }
+    .img {
+        width: 60px;
         height: 58px;
         border-radius: 100%;
     }

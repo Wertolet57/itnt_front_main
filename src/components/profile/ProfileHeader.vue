@@ -1,11 +1,21 @@
 <template>
     <div v-if="props.readOnly" class="userPics">
         <div class="userPics__bg">
-            <div v-if="props.bgPic === null || props.bgPic === ''" class="" ></div>
-            <img v-else  v-show="props.bgPic" :src="props.bgPic" alt="User background picture">
+            <div v-if="props.bgPic == null || props.bgPic == ''" class=""></div>
+            <img v-else v-show="props.bgPic" :src="props.bgPic" alt="User background picture">
         </div>
-        <div class="userPics__ava">
-            <img v-if="props.avaPic === null || props.avaPic === ''" class="" :src="ava">
+        <div v-if="props.me === true" class="userPics__ava">
+            <div v-if="props.avaPic == null || props.avaPic == ''" class="">
+                <img class="def" :src="ava">
+                <div @click="uploadAva" class="refresh">
+                    <img class="" src="../../assets/demo/refresh.svg" alt="">
+                </div>
+                <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
+            </div>
+            <img v-else v-show="props.avaPic" :src="props.avaPic" alt="User avatar">
+        </div>
+        <div v-if="props.me === false" class="userPics__ava">
+            <img v-if="props.avaPic == null || props.avaPic == ''" class="def" :src="ava">
             <img v-else v-show="props.avaPic" :src="props.avaPic" alt="User avatar">
         </div>
     </div>
@@ -70,13 +80,17 @@
 </template>
 
 <script setup lang="ts">
-import ava from "~/assets/Profile/Photo.svg"
+import ava from "../../assets/demo/defAva.svg"
 import { ref } from 'vue'
 import { postAddUserPicture, postAddBackgroundPicture, deleteUserPicture, getUserByID } from '~/API/ways/user';
 import UiButton from '../ui-kit/UiButton.vue';
 import { onMounted } from "vue";
 const props = defineProps({
     readOnly: {
+        type: Boolean,
+        default: false,
+    },
+    me: {
         type: Boolean,
         default: false,
     },
@@ -126,12 +140,12 @@ const handleFileInputChange = async () => {
     bgModal.value = false
     snackbarVisible.value = true
 }
-const handleFileAva = async() => {
+const handleFileAva = async () => {
     const files = avaFleInput.value?.files;
     if (files && files.length > 0) {
         const selectedFile = files[0];
         const reader = new FileReader();
-        reader.readAsDataURL(selectedFile); 
+        reader.readAsDataURL(selectedFile);
         reader.onload = async () => {
             uploadedAvaImageUrl.value = reader.result as string;
             try {
@@ -170,25 +184,60 @@ const removeBackgroundPicture = async (id: Number) => {
         console.error("Произошла ошибка при удалении изображения", error);
     }
 };
-const getUserByIDApi = async () =>{
+const getUserByIDApi = async () => {
     try {
-        const response  = await getUserByID(Number(localStorage.getItem("userId")))
+        const response = await getUserByID(Number(localStorage.getItem("userId")))
         console.log(response);
-        
+
     } catch (error) {
-        
+
     }
 }
 onMounted(getUserByIDApi)
 </script>
 
 <style lang="scss" scoped>
+.def {
+    position: relative;
+    overflow: hidden;
+    /* Обрезает все, что выходит за границы */
+}
+
 .userPics {
     position: relative;
     margin-bottom: 32px;
     background-size: cover;
     height: auto;
     background-position: center;
+
+    .refresh {
+        background-color: rgba(200, 200, 200, 1);
+        /* Soft grey color with some transparency */
+        width: 80%;
+        height: 18%;
+        border-bottom-left-radius: 100%;
+        border-bottom-right-radius: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        bottom: 0.1px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: none;
+    }
+
+
+    .refresh img {
+        width: 12px;
+        height: 12px;
+        padding: 0;
+        margin-bottom: 2px;
+
+        &:hover {
+            opacity: 0.5;
+        }
+    }
 
     &__bg {
         width: 100%;
@@ -209,6 +258,9 @@ onMounted(getUserByIDApi)
         position: absolute;
         left: 52%;
         top: 33px;
+        overflow: hidden;
+        /* Обрезает все, что выходит за границы */
+
         transform: translateX(-50%);
         width: 104px;
         height: 104px;

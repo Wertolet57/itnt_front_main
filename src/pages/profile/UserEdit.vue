@@ -1,6 +1,6 @@
 <template>
     <Header showUserMinify showID />
-    <ProfileHeader :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <ProfileHeader  :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container>
         <div class="userEdit my-4">
             <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" />
@@ -43,7 +43,7 @@
                     v-model="user.fullDescription" />
             </div>
             <div class="userEdit__components">
-                <UiSkills :skillList="user.name" />
+                <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
                 <ProjectsList showAdder class="mt-12 mb-8" :projects="user.projects" />
             </div>
             <!-- {{ user.interests }} -->
@@ -96,7 +96,21 @@ onMounted(async () => {
         console.error('Error fetching posts:', e);
     }
 });
-
+let userInfo = ref({});
+const fetchUserInfo = async () => {
+    await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
+        try {
+            userInfo.value = response.data.object;
+            console.log(userInfo.value)
+        } catch (e) {
+            console.error('text error:', e);
+        }
+    })
+}
+const updateUserSkills = async (newSkills: any) => {
+    userInfo.value.interests = newSkills;
+    await fetchUserInfo();
+};
 // Функция для загрузки городов по стране
 const fetchCities = async (countryId: number) => {
     try {
