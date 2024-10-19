@@ -13,7 +13,7 @@
     </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { webSocketService } from '../../helpers/websocket.ts';
 
