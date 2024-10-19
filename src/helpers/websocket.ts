@@ -27,7 +27,7 @@ class WebSocketService {
             return;
         }
 
-        const url = `ws://62.217.181.172:8080/chat/${dialogId}/${userId}?token=${encodeURIComponent(token)}`;
+        const url = `wss:/itnt.store/chat/${dialogId}/${userId}?token=${encodeURIComponent(token)}`;
         console.log(`Попытка подключения к WebSocket: ${url}`);
         this.connectionStatus.value = 'connecting';
 
