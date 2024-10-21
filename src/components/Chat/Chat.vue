@@ -1,8 +1,8 @@
 <template>
     <div>
         <div>Статус соединения: {{ connectionStatus }}</div>
-        {{ chatData }}
-        {{ dialogData }}
+        <!-- {{ chatData }}
+        {{ dialogData }} -->
         <ul>
             <li v-for="message in messages" :key="message.id">
                 {{ message.content }}
