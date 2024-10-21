@@ -2,7 +2,7 @@
     <Header showLogo />
     <v-col class="pa-0">
         <v-row class="container pa-0 ma-0" justify="center" align="center">
-            
+
             <div v-if="pageStep === 1" class="button-container">
                 <MazPhoneNumberInput class="w-[100%] my-4" v-model="phone" v-model:country-code="countryCode"
                     show-code-on-list :preferred-countries="['RU', 'US', 'AE', 'CN', 'GB']" :ignored-countries="['AC']"
@@ -13,13 +13,13 @@
 
                 <UiButton v-if="results && results.isValid === false">
                     <v-icon icon="mdi-arrow-up" />
-                    Введите номер
+                    {{ $t('log.put') }}
                 </UiButton>
 
                 <div v-else>
-                    <UiButton @click="sendPhoneInfo" bgColor="blue"> Продолжить </UiButton>
+                    <UiButton @click="sendPhoneInfo" bgColor="blue">{{ $t('log.continue') }}</UiButton>
                     <p class="txt-cap1 color-gray" style="margin-top: 18px">
-                        Нажимая на кнопку вы даёте согласие на обработку данных
+                        {{ $t('log.click') }}
                     </p>
                 </div>
 
@@ -31,7 +31,8 @@
                 </v-col>
             </div>
             <div v-if="pageStep === 2" class="button-container text-center">
-                <p class="code-title text-left ma-0 pl-4">Введите код из смс сообщения:</p>
+                <p class="code-title text-left ma-0 pl-4"> {{ $t('log.sms') }}
+                </p>
                 <div style="
                         display: flex;
                         flex-direction: row;
@@ -50,17 +51,17 @@
                 'blur-bottom-border': !codeError && otpCode.length !== inputIndex + 1
             }" />
                 </div>
-                <v-chip v-show="codeError" class="chip mt-4"> Неверный код </v-chip>
+                <v-chip v-show="codeError" class="chip mt-4"> {{ $t('log.error') }} </v-chip>
                 <v-progress-circular v-if="isLoading" width="2" class="loading mx-auto text-center mt-4" color="active"
                     indeterminate></v-progress-circular>
                 <v-col v-if="!isLoading" class="text-left mt-2">
-                    <p class="text-code ma-0">Не пришла смс в течении {{ formattedTime }} ?</p>
-                    <a @click="sendPhoneInfo" class="cursor-pointer text-code-href ma-0">Отправить снова</a>
+                    <p class="text-code ma-0">{{$t('log.noSms')}}{{ formattedTime }} {{$t('log.minut')}} ?</p>
+                    <a @click="sendPhoneInfo" class="cursor-pointer text-code-href ma-0">{{$t('log.again')}}</a>
                 </v-col>
             </div>
             <!-- OTP-код -->
             <div v-if="pageStep === 3" class="button-container text-center">
-                <p class="code-title text-left ma-0 pl-4">Введите ваш pin-code:</p>
+                <p class="code-title text-left ma-0 pl-4">{{$t('log.pin')}}</p>
                 <div style="
                         display: flex;
                         flex-direction: row;
@@ -203,7 +204,7 @@ onMounted(startTimer);
 const formattedTime = computed(() => {
     const minutes = Math.floor(remainingTime.value / 60);
     const seconds = remainingTime.value % 60;
-    return `${minutes}:${seconds} минут`;
+    return `${minutes}:${seconds}`;
 });
 </script>
 

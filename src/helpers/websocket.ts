@@ -13,7 +13,7 @@ const API = axios.create({
     },
 });
 
-const prefix = '/dialogs'; // Предполагаемый префикс для API диалогов
+const prefix = '/dialogs';
 
 class WebSocketService {
     private socket: WebSocket | null = null;
@@ -27,7 +27,7 @@ class WebSocketService {
             return;
         }
 
-        const url = `wss:/itnt.store/chat/${dialogId}/${userId}?token=${encodeURIComponent(token)}`;
+        const url = `wss:/itnt.store/socket/chat/${dialogId}/${userId}?token=${encodeURIComponent(token)}`;
         console.log(`Попытка подключения к WebSocket: ${url}`);
         this.connectionStatus.value = 'connecting';
 
@@ -37,7 +37,6 @@ class WebSocketService {
             this.socket.onopen = () => {
                 console.log('WebSocket соединение установлено');
                 this.connectionStatus.value = 'open';
-                // Убрано отправление токена, так как он уже в URL
             };
 
             this.socket.onmessage = (event) => {
@@ -81,10 +80,10 @@ class WebSocketService {
     }
 
     // Метод для создания диалога (использует HTTP-запрос)
-    async createDialog(dialogType: string, userId: number) {
+    async createDialog(dialogId: string, userId: number) {
         try {
             const response = await API.post(`${prefix}/`, {
-                dialogType: dialogType,
+                dialogType: dialogId,
                 users: [{ id: userId }],
             });
             return response.data;

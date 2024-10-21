@@ -1,6 +1,25 @@
 {
+    "confirm": "我承认对个人数据的处理，并已阅读",
+    "user_agreement": "用户协议",
     "entry": {
-        "phone": "通过电话号码登录"
+        "login": "使用钱包登录",
+        "why": "为什么需要钱包，去哪里买？",
+        "know": "认识到",
+        "phone": "通过电话号码登录",
+        "never": "尚未在 ITalent 注册？",
+        "register": "注册"
+    },
+    "log": {
+        "put": "输入数字",
+        "continue": "待续",
+        "click": "点击按钮即表示您同意数据处理",
+        "sms": "输入短信中的代码",
+        "error": " 代码不正确",
+        "noSms": "我没有在 ",
+        "minut": "分钟",
+        "again": "再次发送",
+        "pin":"输入您的密码："
+
     },
     "user": {
         "agreement": "用户协议"
@@ -48,5 +67,8 @@
         "invest": "吸引投资",
         "GoTo": "前往项目",
         "comments": "查看评论"
+    },
+    "language": {
+        "interface": "界面语言"
     }
 }

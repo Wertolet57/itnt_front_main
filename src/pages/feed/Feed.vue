@@ -2,21 +2,21 @@
     <Header :routeName="'Центр событий'" showUserMinify />
     <v-col class="pa-0 text-center">
         <v-container class="pa-6">
-            <div class="mb-4 date rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
+            <!-- <div class="mb-4 date rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
 
             <div class="feed__column">
                 <FeedPanels />
                 <FeedCard feedCardType="newProjectStage" />
                 <FeedCard feedCardType="newProjectDiscussed" />
-            </div>
+            </div> -->
         </v-container>
-        <v-container class="pa-6 pt-0">
+        <!-- <v-container class="pa-6 pt-0">
             <div class="date mb-4 rounded-xl d-inline-block">{{ $t('feed.yesterday') }}</div>
             <div class="feed__column">
                 <FeedCard feedCardType="newFile" />
                 <FeedCard feedCardType="newProjectVacancies" />
             </div>
-        </v-container>
+        </v-container> -->
 
         <v-container class="pa-6 pt-0">
 

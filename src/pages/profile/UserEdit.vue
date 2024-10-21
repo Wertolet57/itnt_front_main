@@ -1,12 +1,12 @@
 <template>
     <Header showUserMinify showID />
-    <ProfileHeader  :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <ProfileHeader :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container>
         <div class="userEdit my-4">
-            <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" />
-            <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" />
+            <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" ref="firstNameRef" />
+            <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" ref="lastNameRef" />
             <div class="custom-select">
-                <select v-model="user.country" @change="onCountryChange">
+                <select v-model="user.country" @change="onCountryChange" ref="countryRef">
                     <option disabled>Выберите страну</option>
                     <option v-for="country in countries" :key="country.id" :value="country">
                         {{ country.name }}
@@ -14,7 +14,7 @@
                 </select>
             </div>
             <div class="custom-select">
-                <select class="mt-4" v-model="user.city">
+                <select class="mt-4" v-model="user.city" ref="cityRef">
                     <option disabled>Выберите город</option>
                     <option v-for="city in filteredCities" :key="city.id" :value="city">
                         {{ city.name }}
@@ -38,15 +38,14 @@
                     </label>
                 </div>
             </div>
-            <div clas8s="about">
-                <UiTextArea :rules="[(v) => v.length <= 300 || 'Max 300 characters']" label="О себе"
-                    v-model="user.fullDescription" />
+            <div class="about">
+                <UiTextArea v-model="user.fullDescription" label="О себе"
+                    :rules="[(v) => v.length <= 300 || 'Max 300 characters']" ref="fullDescriptionRef" />
             </div>
             <div class="userEdit__components">
                 <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
                 <ProjectsList showAdder class="mt-12 mb-8" :projects="user.projects" />
             </div>
-            <!-- {{ user.interests }} -->
             <UiAgree @click="changeUser" />
         </div>
 
@@ -96,6 +95,7 @@ onMounted(async () => {
         console.error('Error fetching posts:', e);
     }
 });
+
 let userInfo = ref({});
 const fetchUserInfo = async () => {
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
@@ -106,11 +106,13 @@ const fetchUserInfo = async () => {
             console.error('text error:', e);
         }
     })
-}
+};
+
 const updateUserSkills = async (newSkills: any) => {
     userInfo.value.interests = newSkills;
     await fetchUserInfo();
 };
+
 // Функция для загрузки городов по стране
 const fetchCities = async (countryId: number) => {
     try {
@@ -159,8 +161,25 @@ const onCountryChange = async () => {
     }
 };
 
-// Сохранение изменений пользователя
+// Добавляем функцию прокрутки к пустому инпуту
+function scrollToEmptyInput() {
+    if (!user.value.firstName) {
+        firstNameRef.value.$el.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+    if (!user.value.lastName) {
+        lastNameRef.value.$el.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+}
+
+// Сохранение изменений пользователя с проверкой полей
 const changeUser = async () => {
+    if (!user.value.firstName || !user.value.lastName) {
+        scrollToEmptyInput();
+        return;
+    }
+
     try {
         await patchUser(user.value);
         router.push('/me');
@@ -169,7 +188,7 @@ const changeUser = async () => {
     }
 };
 
-const baseURL ='https://itnt.store/';
+const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return user.value.pictureUrl ? `${baseURL}files/${user.value.pictureUrl}` : '';
@@ -179,6 +198,7 @@ const fullBannerUrl = computed(() => {
     return user.value.backgroundPictureUrl ? `${baseURL}files/${user.value.backgroundPictureUrl}` : '';
 });
 </script>
+
 <style lang="scss" scoped>
 .userInfo {
     display: flex;

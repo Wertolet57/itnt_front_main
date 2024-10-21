@@ -34,9 +34,13 @@ initializeApp(firebaseConfig);
 // const analytics = getAnalytics(firebaseApp);
 
 // Initialize i18n
+function getSavedLocale() {
+  const savedLocale = localStorage.getItem('selectedLanguage');
+  return savedLocale || 'ru'; 
+}
 const i18n = createI18n({
   legacy: false,
-  locale: 'ru',
+  locale: getSavedLocale(),  // Получаем язык из localStorage
   fallbackLocale: 'ru',
   messages,
 });

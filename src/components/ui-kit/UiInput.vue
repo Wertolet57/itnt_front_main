@@ -12,10 +12,10 @@ export default {
         variant="outlined"
         :label="props?.label"
         :placeholder="props?.placeholder"
-        hide-details
-        :v-model="search"
+        hide-details="auto"        :v-model="search"
         :clearable="clearable"
         v-maska:[mask]
+        :rules="validationRules"
         @input="$emit('input', $event.target.value)"
         :append-icon="props.appendIcon ? `mdi-${props.appendIcon}` : ''"
         :required="props.required"
@@ -66,6 +66,10 @@ const checkRequired = () => {
         error.value = false
     }
 }
+const inputValue = ref('')
+const validationRules = [
+    (v:any) => !!v || (props.required ? 'Это поле обязательно для заполнения' : '')
+]
 </script>
 
 <style lang="scss" scoped>

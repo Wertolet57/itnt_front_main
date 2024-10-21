@@ -1,6 +1,24 @@
 {
+    "confirm": "I confirm the processing personal data and have read ",
+    "user_agreement": "user agreement",
     "entry": {
-        "phone": "Log in by phone number"
+        "login": "Log in using your wallet",
+        "why": "Why do you need a wallet and where to get one?",
+        "know": "Learn",
+        "phone": "Log in by phone number",
+        "never": "Haven't registered with the ITalent yet?",
+        "register": "Register"
+    },
+    "log": {
+        "put": "Enter your number",
+        "continue": "Continue",
+        "click": "By clicking on the button, you agree to the processing of data",
+        "sms": "Enter the code from the sms message:",
+        "error": " Incorrect code",
+        "noSms": "No text message within ",
+        "minut": "minut",
+        "again": "Send again",
+        "pin": "Enter your pin-code:"
     },
     "user": {
         "agreement": "user agreement"
@@ -66,5 +84,8 @@
     },
     "location": "Russia, Krasnodar",
     "create": "Create a project",
-    "post": "Publish a project"
+    "post": "Publish a project",
+    "language": {
+        "interface": "Interface Language"
+    }
 }

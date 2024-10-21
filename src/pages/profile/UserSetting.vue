@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import globe from '../../assets/setting/globe.svg'
 import confident from '../../assets/setting/confident.svg'
 import eye from '../../assets/setting/eye.svg'
 import face from '../../assets/setting/face-id.svg'
@@ -87,7 +88,7 @@ const updateUser = async () => {
 const items = [
     { src: vallet, title: 'Кошелёк', route: '/me/vallet', addClass: 'list__class' },
     { src: mail, title: 'Приглашения в iTalent', route: '/me/invite' },
-    // { src: notification, title: 'Уведомления', route: '/me/notification' },
+    { src: globe, title: 'Язык', route: '/me/language' },
     { src: lock, title: 'Безопасность', route: '/me/safety' },
     { src: face, title: 'Приватность', route: '/me/privacy' },
     { src: eye, title: 'Внешний вид', route: '/me/looking' },

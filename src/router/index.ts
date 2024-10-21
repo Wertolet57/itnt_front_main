@@ -10,6 +10,7 @@ import UserNotification from '~/pages/profile/UserNotification.vue'
 import UserSetting from '~/pages/profile/UserSetting.vue'
 import UserInvite from '~/pages/profile/UserInvite.vue'
 import UserVallet from '~/pages/profile/UserVallet.vue'
+import UserLang from '~/pages/profile/UserLang.vue'
 // project
 import ProjectInfo from '~/pages/project/ProjectInfo.vue'
 import ProjectEdit from '~/pages/project/ProjectEdit.vue'
@@ -100,6 +101,10 @@ const routes: Array<routes> = [
     {
         path: '/me/vallet',
         component: UserVallet,
+    },
+    {
+        path: '/me/language',
+        component: UserLang,
     },
     // Проекты
     {

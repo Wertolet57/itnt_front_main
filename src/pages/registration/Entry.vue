@@ -8,21 +8,24 @@
       <!-- {{ o?s }} -->
       <div class="mt-12 pl-2 pr-2">
         <div @click="dialog = !dialog">
-          <UiButton :bgColor="'purple'" :imgSrc="vallet">Войти, используя кошелёк
+          <UiButton :bgColor="'purple'" :imgSrc="vallet">{{ $t('entry.login') }}
           </UiButton>
         </div>
         <p class="button-purse-subtitle ma-0 mt-2 text-center">
-          Зачем нужен кошелёк и где его взять?
+          {{ $t('entry.why') }}
           <br />
-          <router-link class="button-purse-subtitle-href" to="">Узнать</router-link>
+          <router-link class="button-purse-subtitle-href" to=""> {{ $t('entry.know') }}
+          </router-link>
         </p>
         <div style="margin-top: 48px" @click="$router.push('/log')">
           <UiButton bgColor="blue">{{ $t('entry.phone') }}</UiButton>
         </div>
         <p class="button-purse-subtitle ma-0 mt-2 text-center">
-          Еще не регистрировались в ITalent?
+          {{ $t('entry.never') }}
+          <!-- Еще не регистрировались в ITalent? -->
           <br />
-          <router-link class="button-purse-subtitle-href" to="/reg">Регистрация</router-link>
+          <router-link class="button-purse-subtitle-href" to="/reg"> {{ $t('entry.register') }}
+          </router-link>
         </p>
         <v-col class="mt-6">
           <v-row class="social" justify="center">

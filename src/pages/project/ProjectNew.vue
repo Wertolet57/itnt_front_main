@@ -1,9 +1,9 @@
 <template>
     <Header showUserMinify />
     <div class="projectHeader__edit">
-        <UiInput v-model="projectName" label="Название проекта*" :required="true" />
-        <UiInput v-model="projectSlogan" label="Слоган" :required="true" />
-        <UiInput v-model="projectId" label="id проекта" :required="true" />
+        <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
+        <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
+        <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
     </div>
     <v-container>
         <div class="projectCard__editable__tags">
@@ -16,10 +16,11 @@
         <div class="projectCard__editable__info">
             <p>Опишите проект</p>
 
-            <UiInput v-model="projectTitle" label="Заголовок*" />
+            <UiInput v-model="projectTitle" label="Заголовок*" :required="true" ref="projectTitleRef" />
             <div>
                 <UiTextArea v-model="projectDescription" label="Описание проекта*"
-                    :rules="[(v:any) => v.length <= 1024 || 'Max 1024 characters']" counter />
+                    :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']" counter ref="projectDescriptionRef" />
+
                 <UiPrompt :projectCard="true">
                     Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных
                     местах приложения, где пространство ограничено. А полное описание будет отображаться на странице
@@ -51,24 +52,54 @@ import ProjectSkills from "~/components/projects/ProjectSkills.vue"
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { postProject } from '~/API/ways/project'
-// import { useProjectStore } from '~/store/projectStore'
 
-// const prjStore = useProjectStore()
 const snackbarVisible = ref(false)
 const router = useRouter()
 
 const projectName = ref('')
 const projectSlogan = ref('')
 const projectId = ref('itnthub')
-const projectTags = ref([])  // Selected skills
+const projectTags = ref([])
 const projectTitle = ref('')
 const projectDescription = ref('')
-
-const handleAddSkills = (skills:any) => {
+//
+const projectNameRef = ref(null)
+const projectSloganRef = ref(null)
+const projectIdRef = ref(null)
+const projectTitleRef = ref(null)
+const projectDescriptionRef = ref(null)
+function scrollToEmptyInput() {
+    // Проверяем поочередно поля и делаем scroll-to к первому пустому
+    if (!projectName.value) {
+        projectNameRef.value.$el.scrollIntoView({ behavior: 'smooth' })
+        return
+    }
+    if (!projectSlogan.value) {
+        projectSloganRef.value.$el.scrollIntoView({ behavior: 'smooth' })
+        return
+    }
+    if (!projectId.value) {
+        projectIdRef.value.$el.scrollIntoView({ behavior: 'smooth' })
+        return
+    }
+    if (!projectTitle.value) {
+        projectTitleRef.value.$el.scrollIntoView({ behavior: 'smooth' })
+        return
+    }
+    if (!projectDescription.value) {
+        projectDescriptionRef.value.$el.scrollIntoView({ behavior: 'smooth' })
+        return
+    }
+}
+const handleAddSkills = (skills: any) => {
     projectTags.value = skills;
 };
 
 async function postNewProject() {
+    if (!projectName.value || !projectSlogan.value || !projectId.value || !projectTitle.value || !projectDescription.value) {
+        scrollToEmptyInput()
+        return
+    }
     const projectData = {
         name: projectName.value,
         slogan: projectSlogan.value,
