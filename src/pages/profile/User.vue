@@ -23,6 +23,7 @@
             <h1>Что у меня нового:</h1>
             <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
         </div>
+        {{ chatData }}
         <div v-if="posts" v-for="post in posts">
             <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"
                 :authorID="post.authorUser.id" :author="post.authorUser.firstName" feedCardType="newProjectStage" />
@@ -100,6 +101,19 @@ const updateUserSkills = async (newSkills: any) => {
     userInfo.value.interests = newSkills;
     await fetchUserInfo();
 };
+import { getDialogMessages } from "../../API/ways/dialog"
+
+const chatData = ref()
+const getDialog = async () => {
+    try {
+        const response = await getDialogMessages(1)
+        chatData.value = response.data.object
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+onMounted(getDialog)
 const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
