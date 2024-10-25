@@ -1,5 +1,5 @@
 <template>
-    <Header showUserMinify :routeName="'Чаты'" />
+    <Header showUserMinify  :routeName="$t('page.chat')" />
     <GeneralChat />
     <Footer />
 </template>

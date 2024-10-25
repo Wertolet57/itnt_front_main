@@ -1,5 +1,5 @@
 <template>
-    <Header :routeName="'Центр событий'" showUserMinify />
+    <Header :routeName="$t('page.feed')" showUserMinify />
     <v-col class="pa-0 text-center">
         <v-container class="pa-6">
             <!-- <div class="mb-4 date rounded-xl d-inline-block">{{ $t('feed.today') }}</div>

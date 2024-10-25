@@ -1,36 +1,34 @@
 <template>
     <div class="card" style="padding: 15px; padding-bottom: 20px">
         <div class="d-flex mb-2">
-            <p>Публикация новой записи</p>
+            <p>{{ $t("Post.publish") }}</p>
         </div>
         <div class="ui-vacancyPanel__inputs">
-            <UiInput label="Текст записи*" v-model="localDescriptionHeader" />
-            <UiInput label="Что мы предлагаем*" v-model="localDescription" class="mt-[48px]" />
+            <UiInput :label="$t('Post.title')" v-model="localDescriptionHeader" />
+            <UiInput :label="$t('Post.offer')" v-model="localDescription" class="mt-[48px]" />
             <UiButton v-if="!imagePreview" bg-color="def">
-                <label for="fileInput" style="cursor: pointer;">Добавить обложку для записи</label>
+                <label for="fileInput" style="cursor: pointer;">{{ $t("Post.magazine") }}</label>
             </UiButton>
             <input @change="handleFileChange" type="file" id="fileInput" style="display: none;">
-            
-            <!-- <AddPostPhoto class="bg-black p-4" :post-id="36" :read-only="false"/> -->
             <div v-if="imagePreview" class="mt-4">
                 <img class="rounded-t-[12px]" :src="imagePreview" alt="Image preview"
                     style="max-width: 100%; height: auto;" />
             </div>
             <UiButton @click="removeImage" v-if="imagePreview" bg-color="def">
-                Убрать
+                {{ $t('remove')}}
             </UiButton>
             <UiButton v-if="props.userAuth" @click="handlePostBlogByUser" bg-color="smBlue" class="mt-[48px]">
-                Опубликовать
+                {{ $t("Post.post") }}
             </UiButton>
             <UiButton v-if="props.prjAuth" @click="handlePostBlogByProject" bg-color="smBlue" class="mt-[48px]">
-                Опубликовать
+                {{ $t("Post.post") }}
             </UiButton>
         </div>
     </div>
     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
         rounded="lg">
         <div class="flex flex-row justify-between items-center">
-            Пост опубликован
+            {{ $t("Post.published") }}
         </div>
     </v-snackbar>
 </template>

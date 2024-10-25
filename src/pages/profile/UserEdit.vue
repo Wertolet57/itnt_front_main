@@ -3,8 +3,8 @@
     <ProfileHeader :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container>
         <div class="userEdit my-4">
-            <UiInput v-model="user.firstName" class="mb-4" label="Имя" :required="true" ref="firstNameRef" />
-            <UiInput v-model="user.lastName" class="mb-4" label="Фамилия" :required="true" ref="lastNameRef" />
+            <UiInput v-model="user.firstName" class="mb-4" :label="$t('user-edit.name')" :required="true" ref="firstNameRef" />
+            <UiInput v-model="user.lastName" class="mb-4" :label="$t('user-edit.second-name')" :required="true" ref="lastNameRef" />
             <div class="custom-select">
                 <select v-model="user.country" @change="onCountryChange" ref="countryRef">
                     <option disabled>Выберите страну</option>
@@ -27,23 +27,23 @@
                     <label>
                         <input type="radio" v-model="user.openedForProposition" :value="false" />
                         <v-icon icon="mdi-check" v-if="user.openedForProposition === false" class="checkmark" />
-                        <p>Мне не интересно сотрудничество</p>
+                        <p>{{$t('user.not-interested')}}</p>
                     </label>
                 </div>
                 <div class="props__inner" :class="{ 'props__inner--selected': user.openedForProposition === true }">
                     <label>
                         <input type="radio" v-model="user.openedForProposition" :value="true" />
                         <v-icon icon="mdi-check" v-if="user.openedForProposition === true" class="checkmark" />
-                        <p>Я хочу получать предложения о сотрудничестве</p>
+                        <p>{{$t('user.interested')}}</p>
                     </label>
                 </div>
             </div>
             <div class="about">
-                <UiTextArea v-model="user.fullDescription" label="О себе"
+                <UiTextArea v-model="user.fullDescription" :label="$t('user-edit.about')"
                     :rules="[(v) => v.length <= 300 || 'Max 300 characters']" ref="fullDescriptionRef" />
             </div>
             <div class="userEdit__components">
-                <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
+                <UiSkills @update-skills="updateUserSkills" :skillList="user.interests" />
                 <ProjectsList showAdder class="mt-12 mb-8" :projects="user.projects" />
             </div>
             <UiAgree @click="changeUser" />

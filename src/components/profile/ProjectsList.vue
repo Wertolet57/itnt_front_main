@@ -6,13 +6,13 @@ export default {
 <template>
     <div class="list">
         <div :class="props.showAdder ? 'list__head--showAdder' : 'list__head'">
-            <p class="txt-cap2">Участие в проектах:</p>
+            <p class="txt-cap2">{{$t("part")}}</p>
             <div v-if="props.showAdder" class="blue-small-btn">
-                <p class="txt-body1" @click="$router.push('/project/new')">Новый</p>
+                <p class="txt-body1" @click="$router.push('/project/new')">{{$t("new")}}</p>
                 <v-icon icon="mdi-plus" size="x-small" />
             </div>
         </div>
-        <UiSwitch @changeValue="currentProjects = $event" :items="['Текущие', 'Прошлые']" />
+        <UiSwitch @changeValue="currentProjects = $event" :items="[`${$t('now')} `, `${$t('before')} `]" />
         <template v-if="props.projects">
             <template v-for="(project, id) in visibleProjects" :key="id">
                 <ProjectCard :read-only="true" v-if="props.readOnly && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"

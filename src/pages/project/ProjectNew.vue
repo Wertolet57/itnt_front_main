@@ -8,7 +8,7 @@
     <v-container>
         <div class="projectCard__editable__tags">
             <p>Ваш проект в трёх словах (теги)*</p>
-            <ProjectSkills :is-new-project="true" v-model="projectTags" :readOnly="false"
+            <ProjectSkills :tags="projectTags" :is-new-project="true" v-model="projectTags" :readOnly="false"
                 @add-skills="handleAddSkills" />
         </div>
 
@@ -58,7 +58,7 @@ const router = useRouter()
 
 const projectName = ref('')
 const projectSlogan = ref('')
-const projectId = ref('itnthub')
+const projectId = ref('https://itnt.store/2')
 const projectTags = ref([])
 const projectTitle = ref('')
 const projectDescription = ref('')

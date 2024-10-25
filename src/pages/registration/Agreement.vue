@@ -2,7 +2,7 @@
     <v-row class="container pa-0 ma-0" justify="center" align="center">
         <v-col>
             <v-card class="card pl-8 pr-8 pt-3 pb-3">
-                <p class="card-title ma-0">Пользовательское соглашение</p>
+                <p class="card-title ma-0"> {{ $t('user.agreement') }} </p>
                 <div class="card-content mt-2">
                     <p class="card-content-text pr-5 ma-0">
                         к iTalent (временно или навсегда). Будет не круто, поэтому используй приложение с умом и по
@@ -20,7 +20,7 @@
             </v-card>
             <div class="pl-2 pr-2">
                 <UiButton @click="$router.push('/entry')" block x-large class="button-next mt-7">
-                    Я согласен, продолжить
+                    {{ $t('i.agree') }}
                 </UiButton>
                 <UiButton
                     @click="$router.back()"
@@ -28,7 +28,7 @@
                     x-large
                     class="button-prev text-capitalize font-weight-regular mt-7"
                 >
-                    Вернуться
+                {{ $t('back') }}
                 </UiButton>
             </div>
         </v-col>

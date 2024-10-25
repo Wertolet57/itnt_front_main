@@ -15,7 +15,7 @@
             <div class="skill-pill" v-for="tag in props.tags || selectedSkills" :key="tag">
                 {{ tag }}
             </div>
-            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
+            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="w-full select-skill-btn">
                 <v-icon :size="20" icon="mdi-plus"></v-icon>
             </div>
         </div>
@@ -23,8 +23,8 @@
             <div class="skill-pill" v-if="tags" v-for="tag in props.tags || selectedSkills" :key="tag">
                 {{ tag }}
             </div>
-            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="select-skill-btn">
-                <v-icon :size="20" icon="mdi-plus"></v-icon>
+            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="w-full select-skill-btn">
+                <v-icon class="" :size="20" icon="mdi-plus"></v-icon>
             </div>
         </div>
         <div v-else @click="openBottomSheet" class="empty">

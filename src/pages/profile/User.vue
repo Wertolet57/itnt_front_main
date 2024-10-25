@@ -8,7 +8,7 @@
             :country="userInfo.country ? userInfo.country.name : ''" :user-surname="userInfo.lastName"
             :read-only="true" />
         <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
-        <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">Создать проект</UiButton>
+        <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">{{ $t('create') }}</UiButton>
         <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
@@ -20,8 +20,8 @@
         </vue-bottom-sheet>
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
         <div class="my-[48px]">
-            <h1>Что у меня нового:</h1>
-            <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
+            <h1>{{$t('Post.new')}}</h1>
+            <UiInput @click="modalState.open()" :label="$t('Post.day')" />
         </div>
         {{ chatData }}
         <div v-if="posts" v-for="post in posts">

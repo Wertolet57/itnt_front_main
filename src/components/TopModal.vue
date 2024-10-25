@@ -6,7 +6,7 @@ export default {
 
 <template>
     <div class="topModal" v-click-outside="onClickOutside">
-        <UiShortProjectCard />
+        <!-- <UiShortProjectCard /> -->
 
         <div class="modal__list modalList">
             <template v-for="(item, id) in modalItems" :key="id">
@@ -34,7 +34,8 @@ import notification from '~/assets/setting/notification.svg'
 import { modalActionsList } from '~/helpers/types'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '~/store/user'
-import {defineEmits } from 'vue';
+import { defineEmits } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const user = useUserStore()
 const router = useRouter()
@@ -50,35 +51,35 @@ function onModalClick(route: string) {
     user.userObj.topModalState = false
     router.push(route)
 }
-
+const { t } = useI18n();
 const modalItems: modalActionsList[] = [
     {
-        name: 'Настройки аккаунта',
+        name: `${t("setting.setting")}`,
         icon: settings,
         route: '/me/settings',
     },
     {
-        name: 'Редактировать мой профиль',
+        name: `${t("top-modal.edit")}`,
         icon: account,
         route: '/me/edit',
     },
     {
-        name: 'Мои подписки',
+        name: `${t("top-modal.followed")}`,
         icon: subscribe,
         route: '/me/followed',
     },
     {
-        name: 'Поделиться',
+        name: `${t("top-modal.share")}`,
         icon: share,
-        route: '/me/edit',
+        route: '/me/share',
     },
     {
-        name: 'Уведомления',
+        name: `${t("top-modal.notification")}`,
         icon: notification,
         route: '/me/notification',
     },
     {
-        name: 'Выйти из аккаунта',
+        name: `${t("top-modal.quit")}`,
         icon: warning,
         func: () => {
             try {

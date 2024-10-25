@@ -13,41 +13,41 @@
   <v-col>
     <!-- Step 1 -->
     <div v-if="pageStep === 1" class="screening__first">
-      <UiInput v-model="user.firstName" placeholder="Представьтесь" label="Как другим участникам вас называть?"
+      <UiInput v-model="user.firstName" :placeholder="$t('screening.say')"   :label="$t('screening.name')" 
         prepend-icon="account-outline" />
-      <UiButton :is-disabled="user.firstName?.length < 2" @click="nextStep" bgColor="blue">Продолжить</UiButton>
+      <UiButton :is-disabled="user.firstName?.length < 2" @click="nextStep" bgColor="blue">{{$t('log.continue')}}</UiButton>
     </div>
 
     <!-- Step 2 -->
     <div v-if="pageStep === 2">
-      <p class="text-center">{{ user.firstName }}, хотите выглядеть особенно?</p>
+      <p class="text-center">{{ user.firstName }},{{ $t('screening.look') }}</p>
       <div class="back w-full upload-wrapper mx-auto">
         <!-- <v-file-input @change="handleFileAva" accept="image/*" class="input-file bg-black" /> -->
-        <img @click="uploadAva" v-if="userInfo.pictureUrl == null || ''" src="@/assets/img/regSteps/addProfilePic.svg" class="rounded-circle cursor-pointer mx-auto" />
+        <img @click="uploadAva" v-if="userInfo.pictureUrl == null || ''" src="@/assets/img/regSteps/addProfilePic.svg"
+          class="rounded-circle cursor-pointer mx-auto" />
         <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
         <img v-if="userInfo.pictureUrl !== null || ''" :src="fullAvatarUrl" class="rounded-circle img mx-auto" />
       </div>
-      <UiButton @click="nextStep" class="mt-6" bgColor="blue">{{ user.pictureUrl ? 'Продолжить' : 'Выбрать аватар' }}
+      <UiButton @click="nextStep" class="mt-6" bgColor="blue">{{ userInfo.pictureUrl ? `${$t('log.continue')}` : `${$t('chose.avatar')}` }}
       </UiButton>
-      <UiButton @click="nextStep" class="mt-4" bgColor="def">Пропустить</UiButton>
+      <UiButton @click="nextStep" class="mt-4" bgColor="def">{{ $t('skip')}}</UiButton>
     </div>
 
     <!-- Step 3 -->
     <div v-if="pageStep === 3">
-      <p class="text-center">Откуда вы?</p>
-      <v-select v-model="user.country" :items="countryList" label="Страна" />
-      <v-select v-model="user.city" :items="cityList" :disabled="!user.country" label="Выберите город" />
-      <UiButton @click="nextStep" class="mt-6" bgColor="blue">Продолжить</UiButton>
-      <UiButton @click="nextStep" class="mt-4" bgColor="def">Пропустить</UiButton>
+      <p class="text-center">{{$t('screening.from')}}</p>
+      <v-select v-model="user.country" :items="countryList" :label="$t('screening.country')" />
+      <v-select v-model="user.city" :items="cityList" :disabled="!user.country" :label="$t('screening.city')" />
+      <UiButton @click="nextStep" class="mt-6" bgColor="blue">{{$t('log.continue')}}</UiButton>
+      <UiButton @click="nextStep" class="mt-4" bgColor="def">{{ $t('skip')}}</UiButton>
     </div>
 
     <!-- Step 4 -->
     <div v-if="pageStep === 4">
-      <UiPrompt class="mb-4">Если пользователи и владельцы проектов будут сразу понимать, какими навыками обладает собеседник -
-        общаться станет удобнее.</UiPrompt>
+      <UiPrompt class="mb-4">{{$t('screening.speecker')}}</UiPrompt>
       <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
-      <UiButton @click="saveProfile" class="mt-6" bgColor="blue">Продолжить</UiButton>
-      <UiButton @click="saveProfile" class="mt-6" bgColor="def">Пропустить</UiButton>
+      <UiButton @click="saveProfile" class="mt-6" bgColor="blue">{{$t('log.continue')}}</UiButton>
+      <UiButton @click="saveProfile" class="mt-6" bgColor="def">{{ $t('skip')}}</UiButton>
     </div>
 
     <!-- Loading and Checkmark -->
@@ -78,14 +78,14 @@ const isLoading = ref(false);
 const userInfo = ref({ interests: [] });
 const showCheckmark = ref(false);
 const user = ref({
-    id: localStorage.getItem('userId'),
-    city: '',
-    country: '',
-    firstName: '',
-    lastName: '',
-    nickName: '',
-    fullDescription: '',
-});const countryList = ref([]);
+  id: localStorage.getItem('userId'),
+  city: '',
+  country: '',
+  firstName: '',
+  lastName: '',
+  nickName: '',
+  fullDescription: '',
+}); const countryList = ref([]);
 const cityList = ref([]);
 
 // Fetch country list on mount
@@ -163,10 +163,10 @@ const getUserByIDApi = async () => {
 };
 onMounted(getUserByIDApi);
 
-const baseURL ='https://itnt.store/';
+const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
-    return userInfo.value.pictureUrl ? `${baseURL}files/${userInfo.value.pictureUrl}` : '';
+  return userInfo.value.pictureUrl ? `${baseURL}files/${userInfo.value.pictureUrl}` : '';
 });
 </script>
 

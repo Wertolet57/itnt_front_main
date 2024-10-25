@@ -1,8 +1,8 @@
 <template>
     <Header search />
     <v-container style="padding: 0 20px">
-        <UiSwitch @changeValue="searchPageSwitchState = $event" :items="['Проекты', 'Люди']" />
-        <UiInput @keyup.enter="" v-model="searchQuery" placeholder="Поиск..." append-inner-icon="mdi-magnify" />
+        <UiSwitch @changeValue="searchPageSwitchState = $event" :items="[`${$t('search.proj')} `,`${$t('search.human')} `]" />
+        <UiInput @keyup.enter="" v-model="searchQuery" :placeholder="$t('search.search')" append-inner-icon="mdi-magnify" />
         <!-- Детальный поиск -->
         <div :class="detailsValue === true ? 'details--opened' : 'details'" class="card">
             <div @click="detailsValue = !detailsValue" class="details__head">
@@ -13,8 +13,8 @@
 
             <div v-if="searchPageSwitchState === 0" class="details__body" v-show="detailsValue === true">
                 <div class="details__body__inputs">
-                    <UiInput label="Теги" />
-                    <v-select menu-icon="mdi-chevron-down" variant="outlined" label="Страна" rounded="lg"
+                    <UiInput :label="$t('tags')" />
+                    <v-select menu-icon="mdi-chevron-down" variant="outlined" :label="$t('screening.country')" rounded="lg"
                         class="mb-2 mt-[28px]" color="active"
                         :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
                         hide-details></v-select>
@@ -34,14 +34,14 @@
             </div>
             <div v-if="searchPageSwitchState === 1" class="details__body" v-show="detailsValue === true">
                 <div class="details__body__inputs">
-                    <UiInput label="Теги" />
-                    <UiInput class="mt-[28px]" label="Город" />
+                    <UiInput :label="$t('tags')" />
+                    <UiInput class="mt-[28px]" :label="$t('screening.city2')" />
                 </div>
 
                 <div class="details__body__switchs">
                     <div class="details__body__switchs__item">
-                        <p class="txt-body1">Открыт к предложениям?</p>
-                        <p class="txt-body1 color-blue" @click="searchUsersByTegs">Открыт</p>
+                        <p class="txt-body1">{{$t('search.opened')}}</p>
+                        <p class="txt-body1 color-blue" @click="searchUsersByTegs">{{$t('search.open')}}</p>
                     </div>
                 </div>
 

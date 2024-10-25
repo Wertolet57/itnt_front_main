@@ -83,7 +83,7 @@
           <v-icon @click="dialog = false" icon color="#9E9E9E">mdi-close</v-icon>
         </v-row>
       </v-col>
-      <p class="dialog-title ma-0 text-center">Выбор кошелька</p>
+      <p class="dialog-title ma-0 text-center">{{ $t('wallet') }}</p>
       <div class="card">
         <div class="card__item" :class="item.addClass" v-for="(item, index) in walletItems" :key="index"
           :style="{ borderColor: item.color }">
@@ -93,7 +93,7 @@
       </div>
       <v-col>
         <v-row justify="center">
-          <a class="dialog-href" href="#">Мне нужна помощь</a>
+          <a class="dialog-href" href="#">{{ $t("need-help") }}</a>
         </v-row>
       </v-col>
     </v-card>

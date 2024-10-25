@@ -7,7 +7,7 @@
             </div>
 
             <div v-if="props.proposition" class="userInfo__status">
-                <p class="userInfo__status__title txt-body1">Открыт к предложениям</p>
+                <p class="userInfo__status__title txt-body1">{{ $t('open') }}</p>
                 <img src="@/assets/icons/footer/message.svg" alt="Открыт к предложениям" />
             </div>
 

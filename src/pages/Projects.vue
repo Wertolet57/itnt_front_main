@@ -1,14 +1,14 @@
 <template>
-    <Header showUserMinify :routeName="'Топ проектов'" />
+    <Header showUserMinify  :routeName="$t('page.top')" />
     <v-container grid-list-xs>
         <UiPrompt v-show="projectsType === 0">{{ $t('prompts.topProjects.fresh') }} </UiPrompt>
         <UiPrompt v-show="projectsType === 1">
             {{ $t('prompts.topProjects.top') }}
         </UiPrompt>
-        <UiSwitch @change-value="projectsType = $event" :items="['Свежее', 'Топ']" />
+        <UiSwitch @change-value="projectsType = $event" :items="[`${$t('prompts.topProjects.freshSwitch')} `, `${$t('prompts.topProjects.topSwitch')}`]" />
 
         <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event"
-            :items="['Неделя', 'Месяц', 'Год']" />
+            :items="[`${$t('prompts.topProjects.week')} `,`${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]" />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">

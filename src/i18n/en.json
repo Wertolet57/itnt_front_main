@@ -9,6 +9,9 @@
         "never": "Haven't registered with the ITalent yet?",
         "register": "Register"
     },
+    "tags": "Tags",
+    "wallet": "Wallet selection",
+    "need-help": "I need help",
     "log": {
         "put": "Enter your number",
         "continue": "Continue",
@@ -18,10 +21,23 @@
         "noSms": "No text message within ",
         "minut": "minut",
         "again": "Send again",
-        "pin": "Enter your pin-code:"
+        "pin": "Enter your pin-code:",
+        "send": "Send code"
+    },
+    "screening": {
+        "speecker": "If users and project owners understand at a glance what skills the interlocutor has, communication will become more convenient.",
+        "country": "Country",
+        "city": "Select a city",
+        "city2": "City",
+        "say": "Introduce yourselves",
+        "name": "What should other participants call you?",
+        "look": " do you want to look special?",
+        "from": "Where are you from?"
     },
     "user": {
-        "agreement": "user agreement"
+        "not-interested":"I'm not interested in co-operation",
+        "interested":"I want to receive offers of co-operation",
+        "agreement": "User agreement"
     },
     "continue": "Continue",
     "i": {
@@ -35,6 +51,11 @@
     "prompts": {
         "title": "Hint",
         "topProjects": {
+            "freshSwitch": "Fresh",
+            "topSwitch": "Тоp",
+            "week": "Week",
+            "month": "Month",
+            "year": "Year",
             "top": "In this section, you can see which projects users found most interesting. \n\n By giving “Fire” and showing any activity, you help projects move up the rating.",
             "fresh": "Projects, after creation, first of all fall into this section"
         }
@@ -54,10 +75,15 @@
         "cancel": "Cancel"
     },
     "search": {
+        "search": "Search",
+        "proj": "Projects",
+        "human": "Users",
         "searchDetail": "Detailed search",
         "vacancee": "Are there any open vacancies?",
         "NoNeed": "It doesn't matter",
         "Insearch": "Looking for investments?",
+        "opened": "Open for proposals?",
+        "open": "Yes",
         "Yes": "Yes"
     },
     "feed": {
@@ -67,6 +93,7 @@
         "GoTo": "Go to the project",
         "comments": "Look into the comments",
         "today": "Today",
+        "dis": "Discuss this post",
         "yesterday": "Yesterday"
     },
     "feedPanels": {
@@ -82,10 +109,67 @@
         "newProjectPhotos": "Photos have been updated in the project:",
         "newFile": "Attachment added:"
     },
+    "new": "New",
+    "now": "Current",
+    "before": "Past",
+    "part": "Project Participation:",
     "location": "Russia, Krasnodar",
     "create": "Create a project",
     "post": "Publish a project",
     "language": {
         "interface": "Interface Language"
+    },
+    "remove": "Remove",
+    "Post": {
+        "complaint": "Report an offence",
+        "publish": "Publishing a new record",
+        "delete": "Delete record",
+        "edit": "Edit",
+        "day": "Tell us what you remember from the day",
+        "published": "The post Published",
+        "new": "What I've got new:",
+        "title": "Title",
+        "magazine": "Add a cover for the record",
+        "offer": "What we offer",
+        "post": "Publish"
+    },
+    "setting":{
+        "id":"User ID",
+        "tel":"Phone number",
+        "setting":"Account settings",
+        "invite":"Invitations to iTalent",
+        "language":"Language",
+        "safety":"Safety",
+        "privacy":"Privacy",
+        "looking":"Appearance",
+        "support":"Support",
+        "policy":"Privacy policy",
+        "wallet":"Wallet"
     }
+    ,
+    "top-modal":{
+        "edit":"Edit my profile",
+        "followed":"My subscriptions",
+        "share":"Share",
+        "notification":"Notifications",
+        "quit":"Log out"
+    },
+    "open":"Open for proposals ",
+    "user-modal":{
+        "follow":"Subscribe",
+        "complaint":"Complain",
+        "block":"Block"
+    },
+    "open-profile":"Open profile",
+    "user-edit":{
+        "name":"First Name",
+        "second-name":"Last Name",
+        "about":"About me"
+    },
+    "page":{
+        "feed":"Event Center",
+        "chat":"Chat rooms",
+        "top":"Top projects"
+    }
+
 }

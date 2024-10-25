@@ -3,7 +3,7 @@
         <div class="searchUserCard__head">
             <div class="d-flex align-center">
                 <img @click="$router.push('/user/' + props.userInfoSet.id)" class="mr-3 cursor-pointer" width="37"
-                    height="37" src="../../assets/demo/ava-small-header.svg" />
+                    height="37" src="../../assets/demo/defAva.svg" />
                 <div>
                     <div @click="$router.push('/user/' + props.userInfoSet.id)"
                         class="d-flex cursor-pointer align-center">
@@ -18,15 +18,14 @@
 
         <div class="searchUserCard__body">
             <div class="searchUserCard__body__skills">
-                <div v-for="(skill, id) in demoSkills" :key="id">
-                    <div class="searchUserCard__body__skills__item txt-body1">{{ skill }}</div>
+                <div v-for="(skill, id) in  props.userInfoSet.interests" :key="id">
+                    <div class="searchUserCard__body__skills__item txt-body1">{{ skill.name }}</div>
                 </div>
             </div>
 
             <div class="searchUserCard__body__info">
                 <p class="txt-body1">
-                    Я сюда припёрся, чтобы нормально постартапить! Ждал нормального стартапа с нормальными мужиками.©
-                    Легенда
+                    {{ props.userInfoSet.fullDescription }}
                 </p>
             </div>
         </div>
@@ -72,18 +71,18 @@
 import project from "~/assets/icons/footer/account.svg"
 import share from "~/assets/icons/share-blue.svg"
 import warning from "~/assets/icons/warning-red.svg"
-// import defAva from "~/assets/demo/projectsmallphoto.svg"
 // import statistic from "~/assets/modal_icon/statistic.svg"
 import follow from "~/assets/modal_icon/follow.svg"
 import UiTextArea from "~/components/ui-kit/UiTextArea.vue"
 import UiButton from "~/components/ui-kit/UiButton.vue"
 
-import { ref } from 'vue'
+import { ref,computed } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { modalActionsList } from '~/helpers/types'
 import { useRouter } from 'vue-router'
 import { postAddComplaint } from '~/API/ways/user.ts'
+import { useI18n } from 'vue-i18n';
 const modalState = ref(false)
 const complainState = ref(false)
 const complaint = ref('')
@@ -101,16 +100,17 @@ const props = defineProps({
 const sendComplaint = async () => {
     await postAddComplaint(props.userInfoSet.id, Number(localStorage.getItem('userId')), complaint.value,)
 }
+const { t } = useI18n();
 const modalItems: modalActionsList[] = [
     {
-        name: 'Открыть профиль',
+        name: `${t('open-profile')}`,
         icon: project,
         func: () => {
             router.push('/user/' + props.userInfoSet.id)
         },
     },
     {
-        name: 'Подписаться',
+        name: `${t('user-modal.follow')}`,
         icon: follow,
         // func: async () => {
         //     try {
@@ -122,7 +122,7 @@ const modalItems: modalActionsList[] = [
         // }
     },
     {
-        name: 'Поделиться',
+        name: `${t("top-modal.share")}`,
         icon: share,
         func: () => {
             try {
@@ -137,15 +137,20 @@ const modalItems: modalActionsList[] = [
         },
     },
     {
-        name: 'Заблокирвать',
+        name: `${t('user-modal.block')}`,
         icon: share,
     },
     {
-        name: 'Пожаловаться',
+        name: `${t('user-modal.complaint')}`,
         icon: warning,
     },
 ]
-const demoSkills = ['User Experience Designer (UX)', 'Team Lead', 'Product Owner']
+const baseURL = 'https://itnt.store/';
+
+const fullAvatarUrl = computed(() => {
+    return props.userInfoSet.value.pictureUrl ? `${baseURL}files/${props.userInfoSe.value.pictureUrl}` : '';
+});
+
 </script>
 
 <style scoped lang="scss">

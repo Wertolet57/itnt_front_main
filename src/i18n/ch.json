@@ -9,6 +9,9 @@
         "never": "尚未在 ITalent 注册？",
         "register": "注册"
     },
+    "tags": "标签",
+    "wallet": "选择钱包",
+    "need-help": "我需要帮助。",
     "log": {
         "put": "输入数字",
         "continue": "待续",
@@ -18,10 +21,22 @@
         "noSms": "我没有在 ",
         "minut": "分钟",
         "again": "再次发送",
-        "pin":"输入您的密码："
-
+        "pin": "输入您的密码：",
+        "send": "发送代码"
+    },
+    "screening": {
+        "speecker": "如果用户和项目负责人能一目了然地了解对话者所掌握的技能，沟通就会变得更加方便。",
+        "country": "国家",
+        "city": "选择城市",
+        "city2": "城市",
+        "say": "自我介绍",
+        "name": "其他与会者该如何称呼您？",
+        "look": "你想显得与众不同吗？",
+        "from": "你從哪裡來？"
     },
     "user": {
+        "not-interested": "我对合作不感兴趣",
+        "interested": "我希望收到合作意向",
         "agreement": "用户协议"
     },
     "continue": "继续",
@@ -36,6 +51,11 @@
     "prompts": {
         "title": "提示",
         "topProjects": {
+            "freshSwitch": "新鲜",
+            "topSwitch": "返回顶部",
+            "week": "周数",
+            "month": "月份",
+            "year": "年份",
             "top": "在这个部分，你可以看到哪些项目最受用户欢迎。\n\n通过点亮“火焰”和展示任何活动，你帮助项目在排名中向上移动。",
             "fresh": "项目创建后，首先会出现在这个部分"
         }
@@ -55,10 +75,15 @@
         "cancel": "取消"
     },
     "search": {
+        "search": "搜索",
+        "proj": "项目",
+        "human": "用户",
         "searchDetail": "详细搜索",
         "vacancee": "有开放职位吗？",
         "NoNeed": "不重要",
         "Insearch": "正在寻找投资吗？",
+        "opened": "愿意接受建议吗？",
+        "open": "开放",
         "Yes": "是"
     },
     "feed": {
@@ -66,9 +91,69 @@
         "feedBack": "我们正在收集测试者的反馈，以改进产品并发布应用程序。开放投资。",
         "invest": "吸引投资",
         "GoTo": "前往项目",
+        "dis": "讨论本帖",
         "comments": "查看评论"
     },
+    "new": "新",
+    "now": "当前",
+    "before": "过去",
+    "part": "参与项目：",
+    "location": "Russia, Krasnodar",
+    "create": "创建项目",
+    "post": "发布项目",
     "language": {
         "interface": "界面语言"
+    },
+    "remove": "取出来",
+    "Post": {
+        "complaint": "举报犯罪",
+        "publish": "发布新记录",
+        "delete": "删除记录",
+        "edit": "编辑",
+        "day": "告诉我们您对这一天的印象",
+        "published": "该职位已发布",
+        "new": "我的新鲜事",
+        "title": "标题",
+        "magazine": "为记录添加封面",
+        "offer": "我们提供的服务",
+        "post": "出版"
+    },
+    "setting": {
+        "id": "用户 ID",
+        "tel": "电话",
+        "setting": "账户设置",
+        "invite": "邀请参加 iTalent",
+        "language": "语言",
+        "safety": "安全",
+        "privacy": "隐私权",
+        "looking": "外观",
+        "support": "联系开发人员",
+        "policy": "保密政策",
+        "wallet": "钱包"
+    },
+    "top-modal": {
+        "edit": "编辑我的个人资料",
+        "followed": "我的订阅",
+        "share": "分享",
+        "notification": "通知",
+        "quit": "注销账户"
+    },
+    "open":"欢迎提出建议 ",
+    "user-modal":{
+        "follow":"订阅",
+        "complaint":"上诉",
+        "block":"锁定"
+    },
+    "open-profile":"打开简介",
+    "user-edit":{
+        "name":"名称",
+        "second-name":"姓氏",
+        "about":"关于我"
+    },
+    "page":{
+        "feed":"活动中心",
+        "chat":"聊天",
+        "top":"顶级项目"
     }
+
 }

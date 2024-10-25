@@ -42,7 +42,7 @@
         <div v-if="props.userType == 'user'" class="feedCard__footer">
             <UiButton bgColor="def" class="feedCard__footer__button"
                 @click="$router.push(`${blogData.id}` + '/postComment')" fit>
-                <p class="txt-cap1">Обсудить этот пост</p>
+                <p class="txt-cap1">{{$t("feed.dis")}}</p>
             </UiButton>
             <div class="d-flex align-center">
                 <UiButton @click="shareBlog" bgColor="def" class="mr-3" :imgSrc="share"
@@ -57,17 +57,17 @@
                 <template v-if="userType === 'user'">
                     <div @click="complaint" class="modal__list__item">
                         <img src="@/assets/icons/warning-red.svg" alt="" />
-                        <p class="txt-body1 text-[#FF3D00]">Сообщить о нарушении</p>
+                        <p class="txt-body1 text-[#FF3D00]">{{$t('Post.complaint')}}</p>
                     </div>
                 </template>
                 <template v-else>
                     <div @click="props.delete" class="modal__list__item">
                         <img :src="trash" alt="" />
-                        <p class="txt-body1">Удалить запись</p>
+                        <p class="txt-body1">{{$t('Post.delete')}}</p>
                     </div>
                     <div @click="$router.push(`post/${blogData.id}`)" class="modal__list__item">
                         <img :src="edit_icon" alt="" />
-                        <p class="txt-body1">Редактировать</p>
+                        <p class="txt-body1">{{$t('Post.edit')}}</p>
                     </div>
                 </template>
             </div>

@@ -3,7 +3,7 @@
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <div class="card">
             <div class="card__title">
-                Настройки аккаунта
+                {{ t("setting.setting") }}
             </div>
             <div class="card__item" v-if="edit === true">
                 <div class="w-full mb-[8px]" v-for="(item, index) in cardItems" :key="index">
@@ -51,8 +51,10 @@ import vallet from '../../assets/setting/vallet.svg'
 
 import UiInput from '../../components/ui-kit/UiInput.vue'
 import Header from '../../components/Header.vue'
-import { getUserByID , patchUser} from '../../API/ways/user'
+import { getUserByID, patchUser } from '../../API/ways/user'
 import { onMounted, ref, } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 let edit = ref(false)
 const editable = () => {
@@ -65,9 +67,9 @@ onMounted(async () => {
         try {
             data.value = response.data.object
             cardItems.value = [
-                { title: 'Телефон', text: data.value?.login },
-                { title: 'E-mail', text: 'Настройки аккаунта' },
-                { title: 'id пользователя', text: '@' + data.value?.id },
+                { title:`${t("setting.tel")}`, text: data.value?.login },
+                { title: 'E-mail', text: '' },
+                { title: `${t("setting.id")}`, text: '@' + data.value?.id },
             ];
         } catch (e) {
             console.error('text error:', e)
@@ -76,7 +78,7 @@ onMounted(async () => {
 })
 const updateUser = async () => {
     const data = {
-        id:localStorage.getItem("userId"),
+        id: localStorage.getItem("userId"),
         login: cardItems.value[0].text,
     };
 
@@ -86,14 +88,14 @@ const updateUser = async () => {
     })
 }
 const items = [
-    { src: vallet, title: 'Кошелёк', route: '/me/vallet', addClass: 'list__class' },
-    { src: mail, title: 'Приглашения в iTalent', route: '/me/invite' },
-    { src: globe, title: 'Язык', route: '/me/language' },
-    { src: lock, title: 'Безопасность', route: '/me/safety' },
-    { src: face, title: 'Приватность', route: '/me/privacy' },
-    { src: eye, title: 'Внешний вид', route: '/me/looking' },
-    { src: support, title: 'Связаться с разработчиками', route: '/me/support' },
-    { src: confident, title: 'Политика конфеденциальности', route: '/me/privacy-policy' },
+    { src: vallet, title: `${t("setting.wallet")}`, route: '/me/vallet', addClass: 'list__class' },
+    { src: mail, title: `${t("setting.invite")}`, route: '/me/invite' },
+    { src: globe, title: `${t("setting.language")}`, route: '/me/language' },
+    { src: lock, title: `${t("setting.safety")}`, route: '/me/safety' },
+    { src: face, title: `${t("setting.privacy")}`, route: '/me/privacy' },
+    { src: eye, title: `${t("setting.looking")}`, route: '/me/looking' },
+    { src: support, title: `${t("setting.support")}`, route: '/me/support' },
+    { src: confident, title: `${t("setting.policy")}`, route: '/me/privacy-policy' },
 ]
 
 </script>
