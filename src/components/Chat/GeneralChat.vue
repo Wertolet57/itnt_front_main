@@ -1,8 +1,6 @@
 <template>
     <ChatFolders />
-    <button @click="createDialogAPI">create</button>
     <div class="" @click="showSheet = false">
-
         <div @click="$router.push(`/messenger/chat/1`)" class="card shadow-none">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
@@ -129,7 +127,7 @@ import UiInput from '~/components/ui-kit/UiInput.vue'
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import { getUserSearch } from '~/API/ways/user'
-import { getDialog, createDialog } from '~/API/ways/dialog';
+import { getDialog } from '~/API/ways/dialog';
 const router = useRouter()
 const showSheet = ref(false)
 
@@ -138,19 +136,6 @@ const openUser = (id: any) => {
 
     router.push(`/messenger/chat/${id}`);
 };
-const createDialogAPI = async () => {
-    try {
-        const response = await createDialog('GROPE', 1)
-        console.log(response)
-    }
-    catch (error) {
-        console.error('Error fetching users:', error);
-    }
-}
-const handleUserClick = async (id: any) => {
-    const dialogResponse = await createDialogAPI();
-    openUser(id);
-}
 const showDialog = async () => {
     try {
         const response = await getDialog();

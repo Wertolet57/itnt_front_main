@@ -1,5 +1,5 @@
 <template>
-  <div class="comments-section mx-4 mb-[100px]">
+  <div class=" comments-section mx-4 mb-[100px]">
     <div class="form  py-4">
       <div v-if="replyingTo !== null" class="replying-to">
         <p>Ответ на: {{ replyingTo.message }}</p>
@@ -11,16 +11,24 @@
       </div>
     </div>
 
-    <!-- Отображение комментариев -->
     <div v-for="comment in comments" :key="comment.id" class="comment">
-      <div class="comment-content">
-        <p>{{ comment.message }}</p>
-        <div class="comment-meta">
+      <div class=" comment-content">
+        <div class="comment-content__header">
+          <img :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+          <div :class="['title', { 'title-center': !comment.user.nickName }]">
+            <p class="bold-title">{{ comment.user.firstName }}</p>
+            <p v-if="comment.user.nickName" class="gray-title">{{ comment.user.nickName }}</p>
+          </div>
+
+        </div>
+        <div class="comment-content__body">
+          <p>{{ comment.message }}</p>
+
+        </div>
+        <div class="comment-content__footer">
           <span>{{ comment.insertDate }}</span>
           <button @click="replyTo(comment)">Ответить</button>
         </div>
-
-        <!-- Отображение ответов (если они есть) -->
         <div v-if="comment.parentNode && comment.parentNode.length > 0" class="replies">
           <div v-for="reply in comment.parentNode" :key="reply.id" class="reply">
             <p>{{ reply.message }}</p>
@@ -38,6 +46,7 @@
 import { ref, onMounted } from 'vue';
 import { addComment, getPostComments } from '../../API/ways/post';
 import chat from '../../assets/icons/chat.svg';
+import defAva from "../../assets/demo/defAva.svg"
 
 const props = defineProps({
   postId: {
@@ -102,7 +111,7 @@ const loadComments = async () => {
     console.error('Ошибка при загрузке комментариев:', error);
   }
 };
-
+const baseURL = 'https://itnt.store/files';
 onMounted(loadComments);
 </script>
 
@@ -183,6 +192,69 @@ onMounted(loadComments);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+}
+
+.title-center {
+  justify-content: center;
+}
+
+.comment-content {
+  &__header {
+    display: flex;
+    flex-direction: row;
+
+    img {
+      border: 3px solid rgb(199, 237, 255);
+      border-radius: 100%;
+      width: 40px;
+    }
+
+    .title {
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+
+      .bold-title {
+        color: rgb(38, 50, 56);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 18px;
+        letter-spacing: 1%;
+        text-align: left;
+      }
+
+      .gray-title {
+        color: rgb(158, 158, 158);
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 14px;
+        letter-spacing: 1%;
+        text-align: left;
+      }
+    }
+  }
+
+  &__body {
+    margin-top: 12px;
+    color: rgb(38, 50, 56);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 1%;
+    text-align: left;
+  }
+
+  &__footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: rgb(158, 158, 158);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 1%;
+    text-align: left;
+  }
 }
 
 .reply {
