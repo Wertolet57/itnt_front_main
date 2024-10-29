@@ -9,7 +9,12 @@ export default {
         <div class="card__head">
             <div class="card__head__main">
                 <h2 class="flex flex-row items-start ">
-                    {{ props.projectInfoSet.rating }}
+                    <span  v-if="props.fresh === true">
+                     {{ props.listID }}
+                    </span>
+                   <span v-else>
+                       {{ props.projectInfoSet.rating }}
+                   </span>
                     <img v-if="props.status === 'up'" class="mt-[7px] ml-[2px] mr-[5px]" src="../../assets/rating/up.svg">
                     <img v-if="props.status === 'down'" class="mt-[7px] ml-[2px]  mr-[5px]" src="../../assets/rating/down.svg">
                     <img v-if="props.fresh === true" class="mt-[7px] ml-[2px]  mr-[5px]" src="../../assets/rating/new.svg">

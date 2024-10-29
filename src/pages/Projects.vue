@@ -1,14 +1,15 @@
 <template>
-    <Header showUserMinify  :routeName="$t('page.top')" />
+    <Header showUserMinify :routeName="$t('page.top')" />
     <v-container grid-list-xs>
         <UiPrompt v-show="projectsType === 0">{{ $t('prompts.topProjects.fresh') }} </UiPrompt>
         <UiPrompt v-show="projectsType === 1">
             {{ $t('prompts.topProjects.top') }}
         </UiPrompt>
-        <UiSwitch @change-value="projectsType = $event" :items="[`${$t('prompts.topProjects.freshSwitch')} `, `${$t('prompts.topProjects.topSwitch')}`]" />
+        <UiSwitch @change-value="projectsType = $event"
+            :items="[`${$t('prompts.topProjects.freshSwitch')} `, `${$t('prompts.topProjects.topSwitch')}`]" />
 
         <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event"
-            :items="[`${$t('prompts.topProjects.week')} `,`${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]" />
+            :items="[`${$t('prompts.topProjects.week')} `, `${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]" />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
@@ -29,7 +30,7 @@
         <div v-if="projectsType === 0" v-for="(project, id) in projectByFresh" :key="id" class="mt-6">
             <RatingProjectCard :fresh="true" :listID="++id" :projectInfoSet="project" />
         </div>
-        <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
+         <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div> -->
 
@@ -98,6 +99,8 @@ let projectByFresh = ref()
 onMounted(async () => {
     await getProjectFresh().then((response) => {
         try {
+            projectByFresh.value = response.data.object
+
             console.log(response)
         } catch (e) {
             console.error('text error:', e)
