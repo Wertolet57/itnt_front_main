@@ -12,26 +12,26 @@
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
-                    <RatingProjectCard :projectInfoSet="project" />
+                    <RatingProjectCard :status="'down'" :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 1" class="">
                 <div v-for="(project, id) in projectByMonth" :key="id" class="mt-6">
-                    <RatingProjectCard :projectInfoSet="project" />
+                    <RatingProjectCard :fresh="true" :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 2" class="">
                 <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
-                    <RatingProjectCard :projectInfoSet="project" />
+                    <RatingProjectCard :status="'up'" :projectInfoSet="project" />
                 </div>
             </div>
         </div>
         <div v-if="projectsType === 0" v-for="(project, id) in projectByFresh" :key="id" class="mt-6">
-            <RatingProjectCard :listID="++id" :projectInfoSet="project" />
+            <RatingProjectCard :fresh="true" :listID="++id" :projectInfoSet="project" />
         </div>
-        <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
+        <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
-        </div>
+        </div> -->
 
     </v-container>
     <Footer />

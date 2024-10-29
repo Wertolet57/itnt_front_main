@@ -7,7 +7,10 @@
                 {{ message.content }}
             </li>
         </ul>
-        <!-- {{ datas }} -->
+        <div class="" v-if="messages">
+
+            {{ messages }}
+        </div>
         <div class="input-container">
             <div class="inner-input">
                 <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Введите сообщение..."
@@ -44,7 +47,6 @@ const connectToWebSocket = () => {
         console.error('DialogId или UserId не установлены');
     }
 };
-
 const getDialog = async () => {
     try {
         messages.value = await getDialogMessages(currentDialogId.value);
@@ -52,24 +54,24 @@ const getDialog = async () => {
         console.error('Error fetching messages:', error);
     }
 };
-const datas =ref()
-const getDialogList = async () => {
-    try {
-        datas.value = await getDialogByID(currentDialogId.value);
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-    }
-};
-const createNewDialog = async () => {
-    try {
-        const newDialog = await webSocketService.createDialog('personal', userId.value);
-        currentDialogId.value = newDialog.id;
-        webSocketService.disconnect();
-        connectToWebSocket();
-    } catch (error) {
-        console.error('Не удалось создать новый диалог', error);
-    }
-};
+// const datas =ref()
+// const getDialogList = async () => {
+//     try {
+//         datas.value = await getDialogByID(currentDialogId.value);
+//     } catch (error) {
+//         console.error('Error fetching messages:', error);
+//     }
+// };
+// const createNewDialog = async () => {
+//     try {
+//         const newDialog = await webSocketService.createDialog('personal', userId.value);
+//         currentDialogId.value = newDialog.id;
+//         webSocketService.disconnect();
+//         connectToWebSocket();
+//     } catch (error) {
+//         console.error('Не удалось создать новый диалог', error);
+//     }
+// };
 
 const sendMessage = () => {
     if (newMessage.value.trim() && currentDialogId.value && connectionStatus.value === 'open') {
@@ -87,7 +89,7 @@ onMounted(() => {
     const fullPath = window.location.origin + route.fullPath;
     lastPart.value = fullPath.split('/').pop();
     getDialog();
-    getDialogList();
+    // getDialogList();
 });
 
 onUnmounted(() => {

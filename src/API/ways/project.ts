@@ -179,7 +179,7 @@ export const getProjectComments = (projectID: number) => {
     return API.get(`${prefix}/projectComments?projectId=${projectID}`)
 }
 export const getProjectFollowers = (projectID: number) => {
-    return API.get(`${prefix}/projectComments?projectId=${projectID}`)
+    return API.get(`${prefix}/projectFollowers?projectId=${projectID}`)
 }
 
 //search

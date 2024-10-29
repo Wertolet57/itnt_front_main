@@ -10,28 +10,21 @@
                 <FeedCard feedCardType="newProjectDiscussed" />
             </div> -->
         </v-container>
-        <!-- <v-container class="pa-6 pt-0">
-            <div class="date mb-4 rounded-xl d-inline-block">{{ $t('feed.yesterday') }}</div>
-            <div class="feed__column">
-                <FeedCard feedCardType="newFile" />
-                <FeedCard feedCardType="newProjectVacancies" />
-            </div>
-        </v-container> -->
-
         <v-container class="pa-6 pt-0">
-
+            
             <div class="feed__column">
             </div>
             <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
                 <div v-if="post.authorProject">
                     <ProjectBlog :authorType="'project'" :blog-data="post" :authorID="post.authorProject.id"
-                        :author="post.authorProject.name" user-type="user" feedCardType="newProjectStage" />
+                    :author="post.authorProject.name" user-type="user" feedCardType="newProjectStage" />
                 </div>
                 <div v-else-if="post.authorUser">
                     <ProjectBlog :authorType="'user'" :blog-data="post" :authorID="post.authorUser.id"
-                        :author="post.authorUser.firstName || post.authorUser.id || 'Неизвестный пользователь'"
-                        user-type="user" feedCardType="newProjectStage" />
+                    :author="post.authorUser.firstName || post.authorUser.id || 'Неизвестный пользователь'"
+                    user-type="user" feedCardType="newProjectStage" />
                 </div>
+                <v-skeleton-loader  :elevation="5" type="image, list-item-two-line,list-item-two-line"></v-skeleton-loader>
             </div>
         </v-container>
     </v-col>

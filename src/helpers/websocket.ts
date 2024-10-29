@@ -79,7 +79,6 @@ class WebSocketService {
         }
     }
 
-    // Метод для создания диалога (использует HTTP-запрос)
     async createDialog(dialogId: string, userId: number) {
         try {
             const response = await API.post(`${prefix}/`, {
