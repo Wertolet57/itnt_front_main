@@ -16,9 +16,18 @@
                 </div>
             </div>
         </vue-bottom-sheet>
+        <v-bottom-sheet inset v-model="isBottomSheetOpen" :click-to-close="true" :background-scrollable="false">
+            <div class="min-h-[350px]">
+                <div class="searchTeammateModal__items">
+                    <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
+                        v-model:description="postData.description" :author-project="postData.authorProject"
+                        @postSuccess="closeBottomSheet" :author-user="postData.authorUser" card />
+                </div>
+            </div>
+        </v-bottom-sheet>
         <div v-if="data && data.owner && data.owner.id == userID" class="my-[48px] ">
             <h1 class="font-medium">Что у нас нового:</h1>
-            <UiInput @click="modalState.open()" label="Расскажите, чем запомнился день" />
+            <UiInput @click="openBottomSheet" label="Расскажите, чем запомнился день" />
         </div>
         <div class="mt-8 mb-2" v-else>
             <h1 class="font-medium">Блог проекта:</h1>
@@ -69,11 +78,15 @@ const setNewOwners = async () => {
 let data = ref({})
 const route = useRoute()
 const modalState = ref(null);
-const closeModal = () => {
-    if (modalState.value) {
-        modalState.value.close();
-    }
+const isBottomSheetOpen = ref(false);
+const closeBottomSheet =async () => {
+  isBottomSheetOpen.value = false;
+  await getPosts()
 };
+const openBottomSheet =async () => {
+  isBottomSheetOpen.value = true;
+};
+
 onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
@@ -84,7 +97,7 @@ onMounted(async () => {
     })
 })
 let posts = ref()
-onMounted(async () => {
+const getPosts = async ()=>{
     try {
         const response = await getProjectPosts(Number(route.params.ID));
         posts.value = response.data.object
@@ -92,7 +105,8 @@ onMounted(async () => {
     } catch (e) {
         console.error('error:', e);
     }
-});
+}
+onMounted(getPosts);
 const postData = ref({
     descriptionHeader: '',
     description: '',

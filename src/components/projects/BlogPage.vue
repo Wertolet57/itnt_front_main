@@ -4,7 +4,7 @@
     <div class="mx-4 text-md font-medium" >Коментарии к проекту:</div>
     <ProjectHeader :commentText="true" :prjAva="fullAvatarUrl" :prj-name="data.name" :prjID="data.id"
       :prj-slogan="data.slogan" />
-    <CommentSection :postId="2" :userId="5" />
+    <CommentSection :prjID="prjByID" :userId="userID" />
   </div>
 </template>
 
@@ -19,7 +19,8 @@ import { getProjectByID } from '~/API/ways/project.ts'
 const baseURL ='https://itnt.store/';
 let data = ref({})
 const route = useRoute()
-
+const userID = localStorage.getItem("userId")
+const prjByID = route.params.ID
 onMounted(async () => {
   await getProjectByID(route.params.ID).then((response) => {
     try {

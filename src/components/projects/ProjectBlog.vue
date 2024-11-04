@@ -123,7 +123,7 @@ const shareBlog = () => {
         navigator.share({
             title: 'ITNT',
             text: 'Откройте для себя ITNT.',
-            url: `http://62.113.105.220/${props.blogData.id}/postComment`,
+            url: `https://itnt.store/#/${props.blogData.id}/postComment`,
         })
     } catch (error) {
         console.error('Ошибка при попытке поделиться:', error)

@@ -27,7 +27,7 @@
 <script lang="ts" setup>
 import Header from '~/components/Header.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { getDialogMessages, getDialogByID } from "../../API/ways/dialog";
+import { getDialogMessages, getDialogByID, sendMessage } from "../../API/ways/dialog";
 import { webSocketService } from '../../helpers/websocket.ts';
 import { useRoute } from 'vue-router';
 import chat from '../../assets/icons/chat.svg';
@@ -72,7 +72,18 @@ const getDialog = async () => {
 //         console.error('Не удалось создать новый диалог', error);
 //     }
 // };
-
+const sendMessageAPI =async ()=>{
+    try {
+        const data ={
+            "id": 1,
+            "messageText": "string",
+            "readStatus": true,
+        }
+        const response = await sendMessage(1,data)
+    } catch (error) {
+        
+    }
+}
 const sendMessage = () => {
     if (newMessage.value.trim() && currentDialogId.value && connectionStatus.value === 'open') {
         webSocketService.sendMessage(currentDialogId.value, newMessage.value);

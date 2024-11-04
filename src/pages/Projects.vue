@@ -18,12 +18,12 @@
             </div>
             <div v-if="topProjectsData === 1" class="">
                 <div v-for="(project, id) in projectByMonth" :key="id" class="mt-6">
-                    <RatingProjectCard :fresh="true" :projectInfoSet="project" />
+                    <RatingProjectCard :status="'up'" :projectInfoSet="project" />
                 </div>
             </div>
             <div v-if="topProjectsData === 2" class="">
                 <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
-                    <RatingProjectCard :status="'up'" :projectInfoSet="project" />
+                    <RatingProjectCard  :projectInfoSet="project" />
                 </div>
             </div>
         </div>

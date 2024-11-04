@@ -8,7 +8,8 @@ export default {
     <div v-if="!isHidden" class="project-card">
         <div class="">
             <v-icon v-if="props.readOnly === true" class="hidden" />
-            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" color="#263238" class="absolute  p-0 m-0" />
+            <v-icon v-if="props.readOnly === false" @click="modalState.open()" icon="mdi-dots-vertical" color="#263238"
+                class="absolute  p-0 m-0" />
             <div class="project-card__info">
                 <img class="" v-if="projects && projects.isAnonymous && projects.isAnonymous === true" width="41"
                     height="38" src="../../assets/icons/anonProject.svg" />
@@ -18,9 +19,10 @@ export default {
                     <p class="project-card__info__position">{{ props.projectInfo.project.slogan }}</p>
                 </div>
             </div>
-            <img @click="router.push('/project/' + props.projectInfo.project.id)"
-                v-if="fullAvatarUrl !== `${baseURL}files/string` && fullAvatarUrl !== `${baseURL}files/`"
-                class="project-card__img cursor-pointer" :src="fullAvatarUrl" alt=" " />
+            <div class="project-card__img">
+                <img @click="router.push('/project/' + props.projectInfo.project.id)"
+                class=" cursor-pointer" :src="displayAvatarUrl" alt="Project Image" />
+            </div>
         </div>
     </div>
     <div v-else class="">
@@ -63,7 +65,7 @@ export default {
 </template>
 
 <script setup lang="ts">
-
+import defPrjImg from '../../assets/defPrj.svg'
 import anonimus from "~/assets/project_modal/annonimus.svg"
 // import hidden from "~/assets/Profile/hideProjectCard.svg"
 import hide from "~/assets/project_modal/hide.svg"
@@ -153,12 +155,16 @@ const modalItems: modalActionsList[] = [
         },
     },
 ]
-const baseURL ='https://itnt.store/';
-
-const fullAvatarUrl = computed(() => {
-    return `${baseURL}files/${props.projectInfo.project.avatarUrl}`;
-})
-
+const baseURL = 'https://itnt.store/';
+const fullAvatarUrl = props.projectInfo.project.avatarUrl;
+// const fullAvatarUrl = computed(() => {
+//     return `${baseURL}files/${props.projectInfo.project.avatarUrl}`;
+// })
+const displayAvatarUrl = computed(() => {
+    return fullAvatarUrl && fullAvatarUrl !== `${baseURL}files/string` && fullAvatarUrl !== `${baseURL}files/`
+        ? fullAvatarUrl
+        : defPrjImg;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -215,10 +221,14 @@ const fullAvatarUrl = computed(() => {
         right: -18px;
         top: -18px;
         overflow: hidden;
-        width: 96px;
-        height: 96px;
         border-radius: 100%;
         border: 6px #E1F5FE solid;
+        background-color: white;
+        img{
+            width: 96px;
+            height: 96px;
+            
+        }
     }
 
     &__anominus {

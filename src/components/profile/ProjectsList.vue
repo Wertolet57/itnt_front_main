@@ -6,18 +6,20 @@ export default {
 <template>
     <div class="list">
         <div :class="props.showAdder ? 'list__head--showAdder' : 'list__head'">
-            <p class="txt-cap2">{{$t("part")}}</p>
+            <p class="txt-cap2">{{ $t("part") }}</p>
             <div v-if="props.showAdder" class="blue-small-btn">
-                <p class="txt-body1" @click="$router.push('/project/new')">{{$t("new")}}</p>
+                <p class="txt-body1" @click="$router.push('/project/new')">{{ $t("new") }}</p>
                 <v-icon icon="mdi-plus" size="x-small" />
             </div>
         </div>
         <UiSwitch @changeValue="currentProjects = $event" :items="[`${$t('now')} `, `${$t('before')} `]" />
         <template v-if="props.projects">
             <template v-for="(project, id) in visibleProjects" :key="id">
-                <ProjectCard :read-only="true" v-if="props.readOnly && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                <ProjectCard :read-only="true"
+                    v-if="props.readOnly === true && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
                     :projectInfo="project" />
-                    <ProjectCard v-if="props.readOnly === false && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                <ProjectCard  :read-only="false"
+                    v-if="props.readOnly === false && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
                     :projectInfo="project" />
             </template>
 
@@ -60,9 +62,15 @@ const showAllProjects = ref(false);
 
 const filteredProjects = computed(() => {
     if (!props.projects) return [];
-    return props.projects.filter(project =>
-        project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden
-    );
+    const uniqueProjects = new Set();
+    return props.projects.filter(project => {
+        const isUnique = !uniqueProjects.has(project.id) && 
+                         project.relationType !== 'PROJECT_FOLLOWER' &&
+                         !project.isAnon &&
+                         !project.isHiden;
+        if (isUnique) uniqueProjects.add(project.id);
+        return isUnique;
+    });
 });
 
 const visibleProjects = computed(() => {

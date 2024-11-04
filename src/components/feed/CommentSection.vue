@@ -93,6 +93,7 @@ const submitComment = async () => {
     console.error('Ошибка при отправке комментария:', error);
   } finally {
     replyingTo.value = null;
+    await loadComments(); // Перезагрузка комментариев
   }
 };
 const replyTo = (comment) => {

@@ -21,8 +21,14 @@
     </div>
 
     <div v-else class="userPics">
-        <div class="userPics__bg">
-            <img @click="openBgModal" v-show="props.bgPic" :src="props.bgPic" />
+        <div v-if="props.bgPic" class="userPics__bg">
+            <img @click="openBgModal" :src="props.bgPic" />
+        </div>
+        <div v-else class="userPics__upload">
+            <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
+            <button class=" userPics__btn" @click="uploadBg">
+                <img src="/src/assets/Profile/icons.svg" alt="">
+            </button>
         </div>
 
         <v-dialog v-model="bgModal" width="100%">
@@ -40,8 +46,15 @@
             </v-card>
         </v-dialog>
 
-        <div class="userPics__ava">
-            <img @click="openAvaModal" v-show="props.avaPic" :src="props.avaPic" />
+        <div v-if="props.avaPic" class="userPics__ava">
+            <img @click="openAvaModal" :src="props.avaPic" />
+        </div>
+        <div v-else class="userPics__ava">
+            <img class="def" :src="ava">
+            <div @click="uploadAva" class="refresh">
+                <img class="" src="../../assets/demo/refresh.svg" alt="">
+            </div>
+            <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
         </div>
         <v-dialog v-model="avaModal" width="100%">
             <v-card class="ui-skills__search p-4">
@@ -63,19 +76,7 @@
                 Изображение добавлено
             </div>
         </v-snackbar>
-        <!-- <div v-if="!uploadedBgImageUrl" class="userPics__upload">
-            <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
-            <button class="userPics__btn" @click="uploadBg">
-                <img src="/src/assets/Profile/icons.svg" alt="">
-            </button>
-        </div> -->
 
-        <!-- <div v-if="!uploadedAvaImageUrl" class="userPics__ava">
-            <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
-            <button class="" @click="uploadAva">
-                <img v-if="!props.avaPic" :src="ava" alt="">
-            </button>
-        </div> -->
     </div>
 </template>
 
@@ -131,12 +132,12 @@ const handleFileInputChange = async () => {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 const response = await postAddBackgroundPicture(formData);
-                await getUserByIDApi()
             } catch (error) {
                 console.error('error:', error);
             }
         };
     }
+    await getUserByIDApi()
     bgModal.value = false
     snackbarVisible.value = true
 }
@@ -152,11 +153,11 @@ const handleFileAva = async () => {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 const response = await postAddUserPicture(formData, true);
-                await getUserByIDApi()
             } catch (error) {
                 console.error('error:', error);
             }
         };
+        await getUserByIDApi()
     }
     avaModal.value = false
     snackbarVisible.value = true
@@ -281,16 +282,14 @@ onMounted(getUserByIDApi)
     &__upload {
         align-items: end;
         justify-content: end;
-        // width: 100%;
-        padding: 0px 20px;
-        // height: 120px;
+        padding: 10px 20px;
         display: flex;
+        height: 120px;
     }
 
     &__uploadEdit {
         width: 100vw;
-        height: 120px;
-        display: hidden;
+        display: flex;
 
         img {
             height: 100px;

@@ -1,6 +1,6 @@
 <template>
     <Header showID :showUserMinify="true" />
-    <ProfileHeader  :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <ProfileHeader :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
 
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
@@ -9,21 +9,20 @@
             :read-only="true" />
         <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">{{ $t('create') }}</UiButton>
-        <vue-bottom-sheet :click-to-close="true" :background-scrollable="false" ref="modalState">
+        <v-bottom-sheet inset v-model="isBottomSheetOpen" :click-to-close="true" :background-scrollable="false">
             <div class="min-h-[350px]">
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
                         v-model:description="postData.description" :author-project="postData.authorProject"
-                        @postSuccess="closeModal" :author-user="postData.authorUser" card />
+                        @postSuccess="closeBottomSheet" :author-user="postData.authorUser" card />
                 </div>
             </div>
-        </vue-bottom-sheet>
+        </v-bottom-sheet>
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
         <div class="my-[48px]">
-            <h1>{{$t('Post.new')}}</h1>
-            <UiInput @click="modalState.open()" :label="$t('Post.day')" />
+            <h1>{{ $t('Post.new') }}</h1>
+            <UiInput @click="openBottomSheet" :label="$t('Post.day')" />
         </div>
-        {{ chatData }}
         <div v-if="posts" v-for="post in posts">
             <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"
                 :authorID="post.authorUser.id" :author="post.authorUser.firstName" feedCardType="newProjectStage" />
@@ -51,12 +50,14 @@ import { isAuth } from '~/helpers/routerHandler'
 import { delPost } from "../../API/ways/post"
 import { onMounted, ref, computed } from 'vue';
 let posts = ref();
-const closeModal = async () => {
-    if (modalState.value) {
-        modalState.value.close();
-    }
-    await getPosts()
-}
+const isBottomSheetOpen = ref(false);
+const closeBottomSheet =async () => {
+  isBottomSheetOpen.value = false;
+  await getPosts()
+};
+const openBottomSheet =async () => {
+  isBottomSheetOpen.value = true;
+};
 const getPosts = async () => {
     try {
         const data = await getUserPosts(Number(localStorage.getItem('userId')));
@@ -101,20 +102,7 @@ const updateUserSkills = async (newSkills: any) => {
     userInfo.value.interests = newSkills;
     await fetchUserInfo();
 };
-import { getDialogMessages } from "../../API/ways/dialog"
-
-const chatData = ref()
-const getDialog = async () => {
-    try {
-        const response = await getDialogMessages(1)
-        chatData.value = response.data.object
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-onMounted(getDialog)
-const baseURL ='https://itnt.store/';
+const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return userInfo.value.pictureUrl ? `${baseURL}files/${userInfo.value.pictureUrl}` : '';

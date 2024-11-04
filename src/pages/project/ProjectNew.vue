@@ -19,7 +19,7 @@
             <UiInput v-model="projectTitle" label="Заголовок*" :required="true" ref="projectTitleRef" />
             <div>
                 <UiTextArea v-model="projectDescription" label="Описание проекта*"
-                    :rules="[(v) => v.length <= 1024 || 'Max 1024 characters']" counter ref="projectDescriptionRef" />
+                    :rules="[(v) => v.length <= 900 || 'Max 1024 characters']" counter ref="projectDescriptionRef" />
 
                 <UiPrompt :projectCard="true">
                     Текст, выделенный зелёным цветом, будет отображаться на мини-карточке проекта в разных

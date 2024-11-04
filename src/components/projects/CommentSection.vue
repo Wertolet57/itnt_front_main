@@ -1,105 +1,55 @@
 <template>
-  <div class="comments-section mb-[90px]">
-    <div class="form py-4">
+  <div class=" comments-section mx-4 mb-[100px]">
+    <div class="form  py-4">
       <div v-if="replyingTo !== null" class="replying-to">
-        <div class="flex flex-row">
-          <img :src="reply" alt="">
-          <img class="mx-3" width="" height="" src="../../assets/demo/ava-small-header.svg" />
-          {{ getCommentById(replyingTo)?.message }}
-        </div>
+        <p>Ответ на: {{ replyingTo.message }}</p>
         <button @click="cancelReply" class="cancel-reply">✕</button>
       </div>
       <div class="text-comment">
         <textarea v-model="commentText" :placeholder="replyingTo === null ? 'Ваш комментарий' : 'Ваш ответ'"></textarea>
-        <button v-if="replyingTo !== null" @click="submitReply"><img :src="chat" alt=""></button>
-        <button v-else @click="submitComment"><img :src="chat" alt=""></button>
+        <button @click="submitComment"><img :src="chat" alt="Отправить"></button>
       </div>
     </div>
 
-    <div v-for="comment in comments" :key="comment?.id" class="mx-4">
-      <div v-if="comment.deep === 0" class="comment">
-        <div class="feedCard__head mb-[12px]">
-          <div class="d-flex align-center">
-            <span class="image-border">
-              <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
-            </span>
-            <div>
-              <div class="d-flex">
-                <div class="flex-col">
-                  <p class="txt-body3">Загружаем</p>
-                  <p style="color: #9e9e9e" class="txt-cap1">Вдохновитель Dribbble</p>
-                </div>
-              </div>
-            </div>
+    <div v-for="comment in comments" :key="comment.id" class="comment">
+      <div class=" comment-content">
+        <div class="comment-content__header">
+          <img :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+          <div :class="['title', { 'title-center': !comment.user.nickName }]">
+            <p class="bold-title">{{ comment.user.firstName }}</p>
+            <p v-if="comment.user.nickName" class="gray-title">{{ comment.user.nickName }}</p>
           </div>
+
         </div>
-        <p>{{ comment?.message }}</p>
-        <div style="color: #9e9e9e" class="mt-[12px] flex flex-row justify-between txt-cap1">
+        <div class="comment-content__body">
+          <p>{{ comment.message }}</p>
+
+        </div>
+        <div class="comment-content__footer">
           <span>{{ comment.insertDate }}</span>
-          <button @click="replyTo(comment?.id)">Ответить</button>
+          <button @click="replyTo(comment)">Ответить</button>
         </div>
-
-        <div v-if="replyingTo === comment?.id">
-          <form @submit.prevent="submitReply(comment)">
-            <textarea v-model="replyText" placeholder="Ответить на комментарий"></textarea>
-            <button type="submit">Отправить ответ</button>
-          </form>
-        </div>
-
-        <div v-for="reply in comment?.childNodes" :key="reply?.id" class="reply">
-          <p>{{ reply?.message }}</p>
-        </div>
-      </div>
-      <div v-if="comment.deep !== 0" class="flex items-center flex-row">
-        <span class="circle">
-        </span>
-        <div class="comment-reply w-full">
-          <div class="feedCard__head mb-[12px]">
-            <div class="d-flex align-center">
-              <span class="image-border">
-                <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
-              </span>
-              <div>
-                <div class="d-flex">
-                  <div class="flex-col">
-                    <p class="txt-body3">Загружаем</p>
-                    <p style="color: #9e9e9e" class="txt-cap1">Вдохновитель Dribbble</p>
-                  </div>
-                </div>
-              </div>
+        <div v-if="comment.parentNode && comment.parentNode.length > 0" class="replies">
+          <div v-for="reply in comment.parentNode" :key="reply.id" class="reply">
+            <p>{{ reply.message }}</p>
+            <div class="reply-meta">
+              <span>{{ reply.insertDate }}</span>
             </div>
           </div>
-          <p>{{ comment?.message }}</p>
-          <div style="color: #9e9e9e" class="mt-[12px] flex flex-row justify-between txt-cap1">
-            <span>{{ comment.insertDate }}</span>
-            <button @click="replyTo(comment?.id)">Ответить</button>
-          </div>
-
-          <!-- <div v-if="replyingTo === comment?.id">
-            <form @submit.prevent="submitReply(comment)">
-              <textarea v-model="replyText" placeholder="Ответить на комментарий"></textarea>
-              <button type="submit">Отправить ответ</button>
-            </form>
-          </div>
-
-          <div v-for="reply in comment?.childNodes" :key="reply?.id" class="reply">
-            <p>{{ reply?.message }}</p>
-          </div> -->
         </div>
       </div>
-
     </div>
-
   </div>
 </template>
 
 <script setup>
-import reply from '../../assets/reply.svg'
+import { ref, onMounted } from 'vue';
+import { addComment, getProjectComments } from '../../API/ways/project';
 import chat from '../../assets/icons/chat.svg';
-import { ref, onMounted, computed } from 'vue';
-import {addComment , getProjectComments} from '../../API/ways/project'
+import defAva from "../../assets/demo/defAva.svg"
+
 const props = defineProps({
-  postId: {
+  prjID: {
     type: Number,
     required: true
   },
@@ -113,86 +63,37 @@ const comments = ref([]);
 const commentText = ref('');
 const replyingTo = ref(null);
 
-const getCommentById = (id) => {
-  return comments.value.find(comment => comment.id === id);
-};
-
 const submitComment = async () => {
-  if (!commentText.value.trim()) return;
-
-  const newComment = {
-    message: commentText.value,
-    post: {
-      id: props.postId,
-    },
-    user: {
-      id: props.userId,
-    },
-    childNodes: [],
-    deep: replyingTo.value === null ? 0 : 1,
-    // parentNode:[],
-  };
+  if (!commentText.value.trim()) return; // Prevent submitting empty comments
 
   try {
-    const response = await addComment(newComment);
-    if (replyingTo.value === null) {
-      if (Array.isArray(comments.value)) {
-        comments.value.push(response.data);
-      } else {
-        console.error('comments.value is not an array:', comments.value);
-        comments.value = [response.data];
+    const response = await addComment(props.prjID, props.userId, commentText.value);
+
+    if (replyingTo.value) {
+      const parentComment = comments.value.find(comment => comment.id === replyingTo.value.id);
+      if (parentComment) {
+        if (!Array.isArray(parentComment.parentNode)) {
+          parentComment.parentNode = [];
+        }
+        parentComment.parentNode.push(response.data); // Push the new reply into parentNode
       }
     } else {
-      const parentComment = getCommentById(replyingTo.value);
-      if (parentComment) {
-        if (!Array.isArray(parentComment.childNodes)) {
-          parentComment.childNodes = [];
-        }
-        parentComment.childNodes.push(response.data);
-      }
+      comments.value.push(response.data); // Push the new top-level comment
     }
-    commentText.value = '';
-    replyingTo.value = null;
+
+    // Clear the input field after successfully submitting the comment
+    commentText.value = ''; // Reset the comment text
   } catch (error) {
     console.error('Ошибка при отправке комментария:', error);
+  } finally {
+    replyingTo.value = null; // Reset replying state
+    await loadComments(); // Reload comments to reflect changes
   }
 };
-const submitReply = async () => {
-  if (!commentText.value.trim() || replyingTo.value === null) return;
 
-  const newReply = {
-    message: commentText.value,
-    post: {
-      id: props.postId,
-    },
-    user: {
-      id: props.userId,
-    },
-    deep: 1
-  };
 
-  try {
-    const response = await addComment(newReply);
-    const parentComment = getCommentById(replyingTo.value);
-    if (parentComment) {
-      if (!Array.isArray(parentComment.childNodes)) {
-        parentComment.childNodes = [];
-      }
-      parentComment.childNodes.push(response.data);
-      // Обновляем родительский комментарий в основном массиве
-      const index = comments.value.findIndex(c => c.id === parentComment.id);
-      if (index !== -1) {
-        comments.value[index] = { ...parentComment };
-      }
-    }
-    commentText.value = '';
-    replyingTo.value = null;
-  } catch (error) {
-    console.error('Ошибка при отправке ответа:', error);
-  }
-};
-const replyTo = (commentId) => {
-  replyingTo.value = commentId;
+const replyTo = (comment) => {
+  replyingTo.value = comment;
 };
 
 const cancelReply = () => {
@@ -201,21 +102,17 @@ const cancelReply = () => {
 
 const loadComments = async () => {
   try {
-    const response = await getProjectComments(route.params.ID);
-    if (Array.isArray(response.data.object)) {
-      comments.value = response.data.object;
-    } else {
-      console.error('Полученные данные не являются массивом:', response.data);
-      comments.value = [];
-    }
+    const response = await getProjectComments(props.prjID);
+    comments.value = Array.isArray(response.data.object) ? response.data.object : [];
   } catch (error) {
     console.error('Ошибка при загрузке комментариев:', error);
-    comments.value = [];
   }
 };
-
+const baseURL = 'https://itnt.store/files';
 onMounted(loadComments);
 </script>
+
+
 
 <style scoped lang="scss">
 .form {
@@ -231,13 +128,14 @@ onMounted(loadComments);
 
   .replying-to {
     margin: 0px 8px;
-    padding: 8px ;
+    padding: 8px;
     // border-radius: 8px;
     font-size: 0.9em;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #9E9E9E;
+
     .cancel-reply {
       background: none;
       border: none;
@@ -291,6 +189,69 @@ onMounted(loadComments);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+}
+
+.title-center {
+  justify-content: center;
+}
+
+.comment-content {
+  &__header {
+    display: flex;
+    flex-direction: row;
+
+    img {
+      border: 3px solid rgb(199, 237, 255);
+      border-radius: 100%;
+      width: 40px;
+    }
+
+    .title {
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+
+      .bold-title {
+        color: rgb(38, 50, 56);
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 18px;
+        letter-spacing: 1%;
+        text-align: left;
+      }
+
+      .gray-title {
+        color: rgb(158, 158, 158);
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 14px;
+        letter-spacing: 1%;
+        text-align: left;
+      }
+    }
+  }
+
+  &__body {
+    margin-top: 12px;
+    color: rgb(38, 50, 56);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 1%;
+    text-align: left;
+  }
+
+  &__footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: rgb(158, 158, 158);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 1%;
+    text-align: left;
+  }
 }
 
 .reply {

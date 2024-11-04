@@ -6,16 +6,16 @@
             <UiInput v-model="user.firstName" class="mb-4" :label="$t('user-edit.name')" :required="true" ref="firstNameRef" />
             <UiInput v-model="user.lastName" class="mb-4" :label="$t('user-edit.second-name')" :required="true" ref="lastNameRef" />
             <div class="custom-select">
-                <select v-model="user.country" @change="onCountryChange" ref="countryRef">
-                    <option disabled>Выберите страну</option>
+                <select placeholder="123" v-model="user.country" @change="onCountryChange" ref="countryRef">
+                    <option  disabled value="">Выберите страну</option>
                     <option v-for="country in countries" :key="country.id" :value="country">
                         {{ country.name }}
                     </option>
                 </select>
             </div>
-            <div class="custom-select">
+            <div class="custom-select mb-6">
                 <select class="mt-4" v-model="user.city" ref="cityRef">
-                    <option disabled>Выберите город</option>
+                    <option disabled value="">Выберите город</option>
                     <option v-for="city in filteredCities" :key="city.id" :value="city">
                         {{ city.name }}
                     </option>
@@ -247,17 +247,19 @@ const fullBannerUrl = computed(() => {
 }
 
 .custom-select select {
-    appearance: none;
-    width: 100%;
-    font-size: 1.15rem;
-    padding: 0.675em 0px 0.675em 1em;
-    background-color: none;
-    border: 1px solid #caced1;
-    border-radius: 8px;
-    color: #000;
-    cursor: pointer;
+  appearance: none;
+  width: 100%;
+  font-size: 1.15rem;
+  padding: 0.8em 0px 0.8em 1em;
+  background-color: #fafafa;
+  border: 1px solid #caced1;
+  border-radius: 8px;
+  color: #000; 
+  cursor: pointer;
 }
-
+.custom-select option:disabled {
+  color: #9e9e9e;
+}
 .props {
     display: flex;
     flex-direction: row;

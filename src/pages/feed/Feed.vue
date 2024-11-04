@@ -24,7 +24,7 @@
                     :author="post.authorUser.firstName || post.authorUser.id || 'Неизвестный пользователь'"
                     user-type="user" feedCardType="newProjectStage" />
                 </div>
-                <v-skeleton-loader  :elevation="5" type="image, list-item-two-line,list-item-two-line"></v-skeleton-loader>
+                <!-- <v-skeleton-loader  :elevation="5" type="image, list-item-two-line,list-item-two-line"></v-skeleton-loader> -->
             </div>
         </v-container>
     </v-col>

@@ -9,20 +9,23 @@ export default {
         <div class="card__head">
             <div class="card__head__main">
                 <h2 class="flex flex-row items-start ">
-                    <span  v-if="props.fresh === true">
-                     {{ props.listID }}
+                    <span v-if="props.fresh === true">
+                        {{ props.listID }}
                     </span>
-                   <span v-else>
-                       {{ props.projectInfoSet.rating }}
-                   </span>
-                    <img v-if="props.status === 'up'" class="mt-[7px] ml-[2px] mr-[5px]" src="../../assets/rating/up.svg">
-                    <img v-if="props.status === 'down'" class="mt-[7px] ml-[2px]  mr-[5px]" src="../../assets/rating/down.svg">
-                    <img v-if="props.fresh === true" class="mt-[7px] ml-[2px]  mr-[5px]" src="../../assets/rating/new.svg">
+                    <span v-else>
+                        {{ props.projectInfoSet.rating }}
+                    </span>
+                    <img v-if="props.status === 'up'" class="mt-[7px] ml-[2px] mr-[5px]"
+                        src="../../assets/rating/up.svg">
+                    <img v-if="props.status === 'down'" class="mt-[7px] ml-[2px]  mr-[5px]"
+                        src="../../assets/rating/down.svg">
+                    <img v-if="props.fresh === true" class="mt-[7px] ml-[2px]  mr-[5px]"
+                        src="../../assets/rating/new.svg">
                 </h2>
                 <img v-if="props.projectInfoSet.avatarUrl === null || props.projectInfoSet.avatarUrl == 'string'"
                     @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="defAva"
                     class="cursor-pointer w-[37px] rounded-[100%]" />
-                <img v-else  @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
+                <img v-else @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
                     class="cursor-pointer w-[37px] h-[37px] rounded-[100%]" />
                 <div class="">
                     <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body3 cursor-pointer">{{
@@ -31,9 +34,12 @@ export default {
                     <div class="flex flex-wrap gap-4">
                         <div v-for="tag in getRussianTags(props.projectInfoSet.activityFields)" :key="tag"
                             class="flex flex-row">
-                            <p style="color: #9e9e9e" class="txt-cap1">{{ tag }}</p>
+                            <p style="color: #9e9e9e" class="txt-cap1">
+                                {{ truncateTag(tag) }}
+                            </p>
                         </div>
                     </div>
+
 
                 </div>
             </div>
@@ -95,30 +101,25 @@ export default {
                 </div>
             </div>
         </div>
-        {{followers}}
+        {{ followers }}
     </v-card>
 
     <vue-bottom-sheet max-height="270px" full-screen ref="modalState">
         <div class="modal">
             <div class="modal__list">
-                <!-- <div v-for="(item, id) in modalItems" @click="item?.func" :key="id" class="modal__list__item">
-                    <img :src="item.icon" alt="" />
-                    <p :class="item.name === 'Пожаловаться' && 'error-txt'" class="txt-body1">{{ item.name }}</p>
-                </div> -->
-                <div  class="modal__list__item">
+                <div class="modal__list__item">
                     <img :src="project" alt="" />
-                    <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body1 error-txt">Открыть проект</p>
+                    <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body1 ">Открыть
+                        проект</p>
                 </div>
                 <div class="modal__list__item">
                     <img :src="follow" alt="" />
-                    <!-- <UiButton :bgColor="isFollowing ? 'def' : 'blue'" @click="isFollowing ? deletefollow() : follow()" style="max-width: 152px">
-                        {{ isFollowing ? 'Отписаться' : 'Подписаться' }}
-                    </UiButton> -->
-                    <!-- <p @click="complainState.open()" class="txt-body1 error-txt">Пожаловаться</p> -->
+                    <p @click="isFollowing ? deletefollow() : Follow()" class="txt-body1"> {{ isFollowing ? 'Отписаться'
+                        : 'Подписаться' }}</p>
                 </div>
                 <div class="modal__list__item">
                     <img :src="share" alt="" />
-                    <p @click="Share" class="txt-body1 error-txt">Поделиться</p>
+                    <p @click="Share" class="txt-body1 ">Поделиться</p>
                 </div>
                 <div class="modal__list__item">
                     <img :src="warning" alt="" />
@@ -176,18 +177,20 @@ import follow from "~/assets/modal_icon/follow.svg"
 import { ref, computed, onMounted } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
-import { addFollow, addComplaint, getProjectFollowers } from "~/API/ways/project"
+import { addFollow, delFollow, addComplaint, getProjectFollowers } from "~/API/ways/project"
 import { useRouter } from 'vue-router'
 const skillsMap = Object.fromEntries(projectSkill.manageSkills.map(skill => [skill.key, skill.value]));
 
 function getRussianTags(activityFields) {
     return activityFields.map(tag => skillsMap[tag] || tag);
 }
+function truncateTag(tag) {
+    return tag.length > 15 ? `${tag.slice(0, 15)}...` : tag;
+}
 const router = useRouter()
 const complainState = ref(false)
 const modalState = ref(false)
 const dialog = ref(false)
-const userId = ref(localStorage.getItem('userId'))
 const props = defineProps({
     projectInfoSet: {
         type: Object || Array,
@@ -209,16 +212,16 @@ const complaint = ref('')
 const sendComplaint = async () => {
     await addComplaint(props.projectInfoSet.id, Number(localStorage.getItem('userId')), complaint.value,)
 }
-// const followers= ref()
-// const getFollowers = async ()=>{
-//     try {
-//         const response = await getProjectFollowers(props.projectInfoSet.id)
-//         followers.value = response.data
-//     } catch (error) {
-        
-//     }
-// }
-// onMounted(getFollowers)
+const followers = ref()
+const getFollowers = async () => {
+    try {
+        const response = await getProjectFollowers(props.projectInfoSet.id)
+        followers.value = response.data
+    } catch (error) {
+
+    }
+}
+onMounted(getFollowers)
 function Share() {
     if (navigator.share) {
         navigator.share({
@@ -226,13 +229,33 @@ function Share() {
             text: 'Откройте для себя ITNT.',
             url: 'http://62.113.105.220/project/' + props.projectInfoSet.id,
         })
-        .then(() => console.log('Shared successfully'))
-        .catch((error) => console.log('Share failed:', error));
+            .then(() => console.log('Shared successfully'))
+            .catch((error) => console.log('Share failed:', error));
     } else {
         console.log('Web Share API не поддерживается этим браузером');
     }
 }
-
+const userID = localStorage.getItem("userId");
+const snackbarVisible = ref(false);
+const isFollowing = ref(false);
+async function Follow() {
+    try {
+        await addFollow(Number(props.projectInfoSet.id));
+        isFollowing.value = true;
+        snackbarVisible.value = true;
+    } catch (error) {
+        console.error('Error following project:', error);
+    }
+}
+async function deletefollow() {
+    try {
+        await delFollow(Number(props.projectInfoSet.id), userID);
+        isFollowing.value = false;
+        snackbarVisible.value = true;
+    } catch (error) {
+        console.error('Error following project:', error);
+    }
+}
 const baseURL = 'https://itnt.store/';
 
 const isExternalUrl = (url: string | null) => {
