@@ -3,7 +3,7 @@
     <ProfileHeader :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" readOnly />
     <v-container class="pa-6" style="padding: 0 20px; margin-bottom: 48px">
         <div v-if="!hasData">
-            <ProfileInfo :user-id="lastPart" :proposition="data.openedForProposition" :profile="true"
+            <ProfileInfo :userId="data.id" :proposition="data.openedForProposition" :profile="true"
                 :userName="data.firstName" :userSurname="data.lastName" :userDescription="data.fullDescription" />
             <p class="text-center text-[18px] font-[16px]">Пользователь ещё не поделился подробной информацией о себе
                 исвоих навыках.</p>

@@ -11,49 +11,49 @@
         </div>
     </div>
     <div class="" v-else>
-        <div v-if="props.tags" class="selected-skills" :class="`skills-${props.tags.length || selectedSkills.length}`">
-            <div class="skill-pill" v-for="tag in props.tags || selectedSkills" :key="tag">
-                {{ tag }}
-            </div>
-            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="w-full select-skill-btn">
-                <v-icon :size="20" icon="mdi-plus"></v-icon>
-            </div>
-        </div>
-        <div class="" v-else-if="props.isNewProject">
-            <div class="skill-pill" v-if="tags" v-for="tag in props.tags || selectedSkills" :key="tag">
-                {{ tag }}
-            </div>
-            <div v-if="selectedSkills.length < 3" @click="openBottomSheet" class="w-full select-skill-btn">
-                <v-icon class="" :size="20" icon="mdi-plus"></v-icon>
-            </div>
-        </div>
-        <div v-else @click="openBottomSheet" class="empty">
-            <v-icon :size="20" icon="mdi-plus"></v-icon>
-        </div>
-        <transition name="bottom-sheet">
-            <div v-if="isBottomSheetOpen == true" class="bottom-sheet min-h-[400px] bg-white text-left">
-                <div class="txt-body1 mb-2 mx-4">Выбрано : {{ selectedSkills.length }} </div>
-                <UiInput class="mx-4 mb-2" label="Введите навык для поиска" />
-                <!-- <div class="px-4  skill-item" v-for="skill in projectSkill" :key="skill"
-                    :class="{ 'selected': selectedSkills.includes(skill), 'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill) }"
-                    @click="toggleSkill(skill)">
-                    {{ skill }}
+        <v-card class="ui-skills shadow-sm p-4">
+            <div class="ui-skills__head">
+                <p class="txt-cap2">{{ $t('me.skills') }}</p>
+                <div @click="openBottomSheet" class="ui-skills__btn cursor-pointer">
+                    <p class="txt-body1">{{ $t('me.add') }}</p>
+                    <v-icon icon="mdi-plus" size="x-small" />
+                </div>
+                <!-- <div v-if="deleteMode === true" @click="cancelDelete" class="ui-skills__btn cursor-pointer">
+                    <p class="txt-body1">{{ $t('me.cancel') }}</p>
+                </div>
+                <div v-if="props.skillList.length > 0 && deleteMode === false" @click="toggleDeleteTrue"
+                    class="ui-skills__trash cursor-pointer">
+                    <img src="../../assets/icons/trash.svg" alt="trash icon" />
+                </div>
+                <div v-if="props.skillList.length > 0 && deleteMode === true" @click="deleteSkills"
+                    class="ui-skills__trash cursor-pointer">
+                    <img src="../../assets/icons/trash.svg" alt="trash icon" />
                 </div> -->
-                <!-- </div> -->
-                <div class="skill-category" v-for="(skillCategory, index) in projectSkill" :key="index">
-                    <div class="skill-item px-4" v-for="skill in skillCategory" :key="skill.key" :class="{
+            </div>
+            <div class="ui-skills__list justify-between">
+                <div v-for="skill in props.tags"  class="ui-skills__skill">
+                    {{ skill }}
+                </div>
+            </div>
+        </v-card>
+    </div>
+    <transition name="bottom-sheet">
+        <div v-if="isBottomSheetOpen == true" class="bottom-sheet min-h-[400px] bg-white text-left">
+            <div class="txt-body1 mb-2 mx-4">Выбрано : {{ selectedSkills.length }} </div>
+            <UiInput class="mx-4 mb-2" label="Введите навык для поиска" />
+            <div class="skill-category" v-for="(skillCategory, index) in projectSkill" :key="index">
+                <div class="skill-item px-4" v-for="skill in skillCategory" :key="skill.key" :class="{
         'selected': selectedSkills.includes(skill.key),
         'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill.key)
     }" @click="toggleSkill(skill.key)">
-                        {{ skill.value }}
-                    </div>
+                    {{ skill.value }}
                 </div>
-                <v-btn v-if="props.isNewProject" @click="emitAddSkills" class="close-btn mr-2 text-white"
-                    icon="mdi-check" color="#00e676" />
-                <v-btn v-else @click="addSkills" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
             </div>
-        </transition>
-    </div>
+            <v-btn v-if="props.isNewProject" @click="emitAddSkills" class="close-btn mr-2 text-white" icon="mdi-check"
+                color="#00e676" />
+            <v-btn v-else @click="addSkills" class="close-btn mr-2 text-white" icon="mdi-check" color="#00e676" />
+        </div>
+    </transition>
 </template>
 
 <script lang="ts" setup>
@@ -253,4 +253,4 @@ onMounted(getProject);
     }
 
 }
-</style>../../helpers/skills
+</style>

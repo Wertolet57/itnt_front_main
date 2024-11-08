@@ -17,7 +17,7 @@ export default {
                 :src="fullAvatarUrl" />
             
         </div>
-
+        <img class="cursor-pointer" @click="toggleProjectModal" style="padding: 10px" v-if="props.showControlDotsProject" :src="dots"/>
         <img @click="toggleUserModal" style="padding: 10px" v-if="props.showControlDots" :src="dots" />
 
         <img @click="modalState.open()" style="padding: 10px" v-if="props.chat" :src="dots" />
@@ -78,7 +78,8 @@ export default {
             <v-icon icon="mdi-magnify" />
         </div>
     </v-app-bar>
-    <UserModal @close="user.userObj.userModalState = false" v-if="user.userObj.userModalState === true" />
+    <UserProject :project="project" @close="closeUserProjectModal" v-if="showUserProjectModal"/>
+    <UserModal :userID="lastPart" @close="user.userObj.userModalState = false" v-if="user.userObj.userModalState === true" />
 
     <TopModal @close="isModalOpen = false" v-if="user.userObj.topModalState === true" />
 </template>
@@ -102,6 +103,8 @@ import { useUserStore } from '~/store/user'
 import { ref, computed, onMounted } from 'vue'
 import { getUserByID, postAddComplaint } from '~/API/ways/user'
 import { sendProposition } from '~/API/ways/notifications'
+import { getProjectByID } from '~/API/ways/project'
+import UserProject from "../components/UserProject.vue"
 const lastPart = ref(null);
 const router = useRoute()
 const selectedProject = ref('');
@@ -187,6 +190,17 @@ onMounted(async () => {
         }
     })
 })
+const project = ref()
+onMounted(async () => {
+    await getProjectByID(router.params.ID).then((response) => {
+        try {
+            project.value = response.data.object
+        } catch (e) {
+            console.error('Error:', e)
+        }
+    })
+})
+
 const baseURL ='https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
@@ -198,9 +212,14 @@ function toggleTopModal() {
 function toggleUserModal() {
     user.userObj.userModalState = !user.userObj.userModalState
 }
-function toggleProjectModal() {
-    user.userObj.userModalState = !user.userObj.userModalState
+const showUserProjectModal = ref(false)
+function closeUserProjectModal() {
+    showUserProjectModal.value = false
 }
+function toggleProjectModal() {
+    showUserProjectModal.value = !showUserProjectModal.value
+}
+
 const chosenId = computed(() => {
     return '@' + (router.params.ID ? router.params.ID : localStorage.getItem('userId'))
 })

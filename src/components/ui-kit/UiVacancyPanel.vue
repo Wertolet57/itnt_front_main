@@ -35,12 +35,15 @@ export default {
 
         <vue-bottom-sheet ref="modalState">
             <div class="ui-vacancyPanel__modal px-4">
-                <p>Запрос на вступление в проект</p>
+                <p class='font-medium text-lg'>Запрос на вступление в проект</p>
 
                 <div class="ui-vacancyPanel__modal__info">
-                    <div>
-                        <p>{{ props.project }}</p>
-                        <p>{{ props.data.offer }}</p>
+                    <div class="flex flex-row  my-[14px]">
+                        <img :src="defPrjImg" class="box-shadow mr-[16px] rounded-[50%]">
+                        <div class="flex flex-col">
+                            <p class="font-medium">{{ props.project }}</p>
+                            <p class="font-medium text-[#9E9E9E]">{{ props.data.offer }}</p>
+                        </div>
                     </div>
 
                     <UiTextArea label="Сопроводительное письмо*" v-model="propMessage" />
@@ -98,6 +101,7 @@ export default {
 <script lang="ts" setup>
 import delate from "~/assets/demo/delate.svg"
 import archieve from "~/assets/demo/archieve.svg"
+import defPrjImg from '../../assets/defPrj.svg'
 
 import UiButton from './UiButton.vue'
 import UiInput from './UiInput.vue'
@@ -309,4 +313,12 @@ const editableModalItems: modalActionsList[] = [
     background: #ffffff;
     border: #c7edff 1px solid !important;
 }
+.box-shadow {
+    background-color: white; /* Цвет фона бокса */
+    border-radius: 50%; /* Для круглой формы */
+    box-shadow: 0 0 0px rgba(0, 0, 0, 0.1),
+                0 0 20px rgba(0, 0, 0, 0.1),
+                0 0 0px rgba(0, 0, 0, 0.1);
+}
+
 </style>

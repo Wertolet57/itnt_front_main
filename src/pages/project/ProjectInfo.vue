@@ -1,5 +1,5 @@
 <template>
-    <Header showID show-user-minify />
+    <Header showControlDotsProject showID show-user-minify />
     <ProjectHeader :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
     <v-container>
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />

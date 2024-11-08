@@ -13,9 +13,9 @@
         </div>
         <div class="input-container">
             <div class="inner-input">
-                <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Введите сообщение..."
+                <input v-model="newMessage" @keyup.enter="sendMessageAPI" placeholder="Введите сообщение..."
                     :disabled="connectionStatus !== 'open'" />
-                <button @click="sendMessage" :disabled="connectionStatus !== 'open'">
+                <button @click="sendMessageAPI" :disabled="connectionStatus !== 'open'">
                     <img :src="chat" alt="Send" />
                 </button>
             </div>
@@ -72,26 +72,33 @@ const getDialog = async () => {
 //         console.error('Не удалось создать новый диалог', error);
 //     }
 // };
-const sendMessageAPI =async ()=>{
+const sendMessageAPI = async () => {
     try {
-        const data ={
-            "id": 1,
-            "messageText": "string",
-            "readStatus": true,
+        const data = {
+            // dialog:{
+            //     dialogType: "GROPE",
+                
+            // }s
+            messageText: "string",
+            readStatus: false,
+            // "id": 1,
+            user:{
+                id:localStorage.getItem("userId")
+            }
         }
-        const response = await sendMessage(1,data)
+        await sendMessage(1, data)
     } catch (error) {
-        
+
     }
 }
-const sendMessage = () => {
-    if (newMessage.value.trim() && currentDialogId.value && connectionStatus.value === 'open') {
-        webSocketService.sendMessage(currentDialogId.value, newMessage.value);
-        newMessage.value = '';
-    } else if (connectionStatus.value !== 'open') {
-        console.error('Невозможно отправить сообщение: соединение не открыто');
-    }
-};
+// const sendMessage = () => {
+//     if (newMessage.value.trim() && currentDialogId.value && connectionStatus.value === 'open') {
+//         webSocketService.sendMessage(currentDialogId.value, newMessage.value);
+//         newMessage.value = '';
+//     } else if (connectionStatus.value !== 'open') {
+//         console.error('Невозможно отправить сообщение: соединение не открыто');
+//     }
+// };
 
 onMounted(() => {
     currentDialogId.value = 1;

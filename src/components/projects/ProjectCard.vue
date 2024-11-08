@@ -11,8 +11,8 @@
             </v-dialog>
             <ProjectSkills :tags="tags" :read-only="true" />
             <div class="projectCard__info">
-                <p class="projectCard__info__title txt-body1">{{ props?.prjDescHead }}</p>
-                <p class="projectCard__info__title txt-body2 flex-wrap">
+                <p class="projectCard__info__title text-xl font-semibold ">{{ props?.prjDescHead }}</p>
+                <p class="projectCard__info__title font-normal text-md flex-wrap">
                     {{ props?.prjDescBody }}
                 </p>
             </div>

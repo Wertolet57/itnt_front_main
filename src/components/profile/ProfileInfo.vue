@@ -6,9 +6,25 @@
                 <p class="txt-body1">{{ props.country }} {{ props.city }}</p>
             </div>
 
-            <div v-if="props.proposition" class="userInfo__status">
+            <div v-if="props.proposition"
+                 class="userInfo__status">
                 <p class="userInfo__status__title txt-body1">{{ $t('open') }}</p>
                 <img src="@/assets/icons/footer/message.svg" alt="Открыт к предложениям" />
+            </div>
+            <div v-show="props.proposition && props.profile" @click="router.push(`/messenger/chat/${currentUserId}`)" class="send">
+                <button >
+                    <div class="svg-wrapper-1">
+                        <div class="svg-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="none" d="M0 0h24v24H0z"></path>
+                                <path fill="currentColor"
+                                    d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span>Send</span>
+                </button>
             </div>
 
             <div v-if="readOnly" class="userInfo__body mb-[24px]">
@@ -16,7 +32,8 @@
             </div>
         </div>
 
-        <div v-if="props.profile" @click="toggleFollow" class="bg-white cursor-pointer p-[10px] max-h-[48px] rounded-[12px] shadow-md">
+        <div v-if="props.profile" @click="toggleFollow"
+            class="bg-white cursor-pointer p-[10px] max-h-[48px] rounded-[12px] shadow-md">
             <img :src="isFollowed ? star : follow" :alt="isFollowed ? 'Отписаться' : 'Подписаться'" />
         </div>
 
@@ -36,7 +53,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute , useRouter} from 'vue-router';
 import { addFollow, delFollow, getFollowed } from "@/API/ways/user";
 import follow from "@/assets/modal_icon/follow.svg";
 import star from "@/assets/modal_icon/star-filled.svg";
@@ -56,6 +73,7 @@ const props = defineProps({
 });
 
 const route = useRoute();
+const router = useRouter();
 const list = ref(Arr);
 const snackbarVisible = ref(false);
 const snackbarMessage = ref('');
@@ -149,5 +167,64 @@ watch(currentUserId, (newVal) => {
             color: $primary;
         }
     }
+}
+
+.send {
+    button {
+        outline:none;
+        font-family: inherit;
+        font-size: 20px;
+        background: $primary;
+        color: white;
+        padding: 0.3em 0.8em;
+        padding-left: 0.9em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    button span {
+        display: block;
+        margin-left: 0.3em;
+        transition: all 0.3s ease-in-out;
+    }
+
+    button svg {
+        display: block;
+        transform-origin: center center;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    button:hover .svg-wrapper {
+        animation: fly-1 0.6s ease-in-out infinite alternate;
+    }
+
+    button:hover svg {
+        transform: translateX(1.2em) rotate(45deg) scale(1.1);
+    }
+
+    button:hover span {
+        transform: translateX(5em);
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+    @keyframes fly-1 {
+        from {
+            transform: translateY(0.1em);
+        }
+
+        to {
+            transform: translateY(-0.1em);
+        }
+    }
+
 }
 </style>

@@ -34,14 +34,15 @@
     </div>
 
     <div v-if="props.readOnly === true">
-    
         <div class="m-2">
             <p>
                 <span class="font-medium">Презентация</span>
                 <span class="text-[#9E9E9E] ml-[8px]">{{ filteredProjectFiles.length }} / 10</span>
             </p>
         </div>
-        <div v-if="filteredProjectFiles.length > 0" class="photo-upload grid grid-cols-4">
+
+        <!-- Change this condition to `v-if="filteredProjectFiles.length < 10"` -->
+        <div class="photo-upload grid grid-cols-4">
             <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class="last relative">
                 <img @click="toggleDelete" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
                     class="slider__image" />
@@ -51,6 +52,8 @@
                     </span>
                 </div>
             </div>
+
+            <!-- This will render the upload icon when there are fewer than 10 images -->
             <div v-if="filteredProjectFiles.length < 10" class="upload-wrapper">
                 <label for="new-upload" class="file-upload-label" @click="openDialog(filteredProjectFiles.length)">
                     <input id="new-upload" type="file" @change="handleFileChange($event, filteredProjectFiles.length)"
@@ -61,9 +64,7 @@
                 </label>
             </div>
         </div>
-
     </div>
-
 
 </template>
 
@@ -186,7 +187,7 @@ onMounted(() => {
 onUpdated(() => {
     setLastCloseClass();
 });
-const baseURL ='https://itnt.store/files/';
+const baseURL = 'https://itnt.store/files/';
 
 const isExternalUrl = (url: string | null) => {
     return url?.startsWith('http') || url?.startsWith(',');
@@ -205,71 +206,74 @@ const filteredProjectFiles = computed(() =>
 
 
 <style scoped lang="scss">
-.last{
-    :last-child{
+.last {
+    :last-child {
         .close {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    right: -5px;
-    bottom: 2px;
-    padding: 2px;
-    background-color: white;
-    border-radius: 50%;
-
-    &__button {
-        padding: 0;
-        width: 100%;
-        height: 100%;
-
-        img {
-            padding: 0px;
-            background-color: #FFEBEE;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            right: -5px;
+            bottom: 2px;
+            padding: 2px;
+            background-color: white;
             border-radius: 50%;
-            width: 100%;
-            height: 100%;
-        }
-    }
-    @media (min-width: 768px) {
-        right: -8px;
-        bottom: -8px;
-        width: 20%;
-        height: auto;
 
-        &__button {
-            padding: 0;
-            width: 150%;
-            height: 150%;
-
-            img {
-                padding: 0px;
+            &__button {
+                padding: 0;
                 width: 100%;
                 height: 100%;
+
+                img {
+                    padding: 0px;
+                    background-color: #FFEBEE;
+                    border-radius: 50%;
+                    width: 100%;
+                    height: 100%;
+                }
             }
-        }
-    }
 
-    @media (min-width: 1024px) {
-        right: -8px;
-        bottom: -8px;
-        width: 20%;
-        height: auto;
-        &__button {
-            padding: 0;
-            width: 200%;
-            height: 200%;
+            @media (min-width: 768px) {
+                right: -8px;
+                bottom: -8px;
+                width: 20%;
+                height: auto;
 
-            img {
-                padding: 0px;
-                width: 100%;
-                height: 100%;
+                &__button {
+                    padding: 0;
+                    width: 150%;
+                    height: 150%;
+
+                    img {
+                        padding: 0px;
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+
+            @media (min-width: 1024px) {
+                right: -8px;
+                bottom: -8px;
+                width: 20%;
+                height: auto;
+
+                &__button {
+                    padding: 0;
+                    width: 200%;
+                    height: 200%;
+
+                    img {
+                        padding: 0px;
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
             }
         }
     }
 }
-    }
-}
+
 .photo-upload {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -302,6 +306,7 @@ const filteredProjectFiles = computed(() =>
             height: 100%;
         }
     }
+
     @media (min-width: 768px) {
         right: -8px;
         bottom: -8px;
@@ -326,6 +331,7 @@ const filteredProjectFiles = computed(() =>
         bottom: -8px;
         width: 20%;
         height: auto;
+
         &__button {
             padding: 0;
             width: 200%;

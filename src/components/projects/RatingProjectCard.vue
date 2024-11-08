@@ -23,10 +23,10 @@ export default {
                         src="../../assets/rating/new.svg">
                 </h2>
                 <img v-if="props.projectInfoSet.avatarUrl === null || props.projectInfoSet.avatarUrl == 'string'"
-                    @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="defAva"
+                    @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="defPrjImg"
                     class="cursor-pointer w-[37px] rounded-[100%]" />
                 <img v-else @click="$router.push('/project/' + props.projectInfoSet.id)" alt="" :src="fullAvatarUrl"
-                    class="cursor-pointer w-[37px] h-[37px] rounded-[100%]" />
+                    class="cursor-pointer w-[37px] h-[37px] rounded-[100%] shadow-md" />
                 <div class="">
                     <p @click="$router.push('/project/' + props.projectInfoSet.id)" class="txt-body3 cursor-pointer">{{
                         props.projectInfoSet.name }}</p>
@@ -165,6 +165,7 @@ export default {
 </template>
 
 <script setup lang="ts">
+import defPrjImg from '../../assets/defPrj.svg'
 import Swiper from '../projects/Swiper.vue'
 import { projectSkill } from "../../helpers/projectSkill";
 import project from "~/assets/project_modal/project.svg"
@@ -272,7 +273,7 @@ const filteredProjectFiles = computed(() => {
 });
 
 const fullAvatarUrl = computed(() => {
-    return props.projectInfoSet.avatarUrl ? `${baseURL}files/${props.projectInfoSet.avatarUrl}` : `${defAva}`;
+    return props.projectInfoSet.avatarUrl ? `${baseURL}files/${props.projectInfoSet.avatarUrl}` : `${defPrjImg}`;
 });
 
 </script>

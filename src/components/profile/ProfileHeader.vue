@@ -131,7 +131,7 @@ const handleFileInputChange = async () => {
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                const response = await postAddBackgroundPicture(formData);
+                await postAddBackgroundPicture(formData);
             } catch (error) {
                 console.error('error:', error);
             }
@@ -152,7 +152,7 @@ const handleFileAva = async () => {
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                const response = await postAddUserPicture(formData, true);
+                await postAddUserPicture(formData, true);
             } catch (error) {
                 console.error('error:', error);
             }
@@ -180,7 +180,7 @@ const removeBackgroundPicture = async (id: Number) => {
         await deleteUserPicture(id);
         console.log("Изображение успешно удалено");
 
-        searchModalState.value = false; // Закрывает модальное окно после удаления
+        // searchModalState.value = false;
     } catch (error) {
         console.error("Произошла ошибка при удалении изображения", error);
     }

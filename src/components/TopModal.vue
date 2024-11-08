@@ -21,8 +21,7 @@ export default {
 </template>
 
 <script setup lang="ts">
-
-import UiShortProjectCard from './ui-kit/UiShortProjectCard.vue'
+// import UiShortProjectCard from './ui-kit/UiShortProjectCard.vue'
 import settings from "~/assets/icons/settings-blue.svg";
 import account from "~/assets/icons/account-blue.svg";
 import subscribe from "~/assets/icons/subscribe-blue.svg";
