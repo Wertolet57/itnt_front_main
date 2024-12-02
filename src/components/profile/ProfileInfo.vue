@@ -27,7 +27,7 @@
                 </button>
             </div>
 
-            <div v-if="readOnly" class="userInfo__body mb-[24px]">
+            <div v-if="props.profile || readOnly" class="userInfo__body mb-[24px]">
                 <div class="txt-body1">{{ props.userDescription }}</div>
             </div>
         </div>

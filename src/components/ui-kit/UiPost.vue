@@ -6,25 +6,28 @@
         <div class="ui-vacancyPanel__inputs">
             <UiInput :label="$t('Post.title')" v-model="localDescriptionHeader" />
             <UiInput :label="$t('Post.offer')" v-model="localDescription" class="mt-[48px]" />
+
             <UiButton v-if="!imagePreview" bg-color="def">
                 <label for="fileInput" style="cursor: pointer;">{{ $t("Post.magazine") }}</label>
             </UiButton>
-            <input @change="handleFileChange" type="file" id="fileInput" style="display: none;">
+            <input @change="handleFileChange" type="file" id="fileInput" style="display: none;" ref="fileInput"
+                accept="image/*">
+
             <div v-if="imagePreview" class="mt-4">
                 <img class="rounded-t-[12px]" :src="imagePreview" alt="Image preview"
                     style="max-width: 100%; height: auto;" />
             </div>
-            <UiButton @click="removeImage" v-if="imagePreview" bg-color="def">
-                {{ $t('remove')}}
+
+            <UiButton v-if="imagePreview" @click="removeImage" bg-color="def" class="mt-2">
+                {{ $t('remove') }}
             </UiButton>
-            <UiButton v-if="props.userAuth" @click="handlePostBlogByUser" bg-color="smBlue" class="mt-[48px]">
-                {{ $t("Post.post") }}
-            </UiButton>
-            <UiButton v-if="props.prjAuth" @click="handlePostBlogByProject" bg-color="smBlue" class="mt-[48px]">
+
+            <UiButton @click="handlePostBlog" bg-color="smBlue" class="mt-[48px]">
                 {{ $t("Post.post") }}
             </UiButton>
         </div>
     </div>
+
     <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
         rounded="lg">
         <div class="flex flex-row justify-between items-center">
@@ -36,15 +39,21 @@
 <script lang="ts" setup>
 import UiButton from './UiButton.vue';
 import UiInput from './UiInput.vue';
-import { addPostProject, addPostUser } from "~/API/ways/post";
-// import {addPostFile} from "../../API/ways/post"
-import AddPostPhoto from "../AddPostPhoto.vue"
 import { ref, computed } from 'vue';
+import { postProject } from "~/API/ways/post";
+
+interface Data {
+    description: string;
+    descriptionHeader: string;
+    authorProject: { id: number };
+    authorUser: { id: number };
+}
 
 const snackbarVisible = ref(false);
-const image = ref<string | null>(null);
+const backgroundFile = ref<File | null>(null);
 const imagePreview = ref<string | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
+
 const props = defineProps({
     descriptionHeader: String,
     description: String,
@@ -52,77 +61,73 @@ const props = defineProps({
     authorProject: String,
     prjAuth: {
         type: Boolean,
-        default: false,
+        default: false
     },
     edit: {
         type: Boolean,
-        default: false,
+        default: false
     },
     userAuth: {
         type: Boolean,
-        default: false,
+        default: false
     }
 });
+
 const emit = defineEmits(['update:descriptionHeader', 'update:description', 'postSuccess']);
+
 const localDescriptionHeader = computed({
     get: () => props.descriptionHeader,
-    set: (value) => emit('update:descriptionHeader', value),
+    set: (value) => emit('update:descriptionHeader', value)
 });
+
 const localDescription = computed({
     get: () => props.description,
-    set: (value) => emit('update:description', value),
+    set: (value) => emit('update:description', value)
 });
 
 const handleFileChange = (event: Event) => {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
+        backgroundFile.value = file;
         const reader = new FileReader();
         reader.onload = (e) => {
-            image.value = file.name;
             imagePreview.value = e.target?.result as string;
         };
         reader.readAsDataURL(file);
     }
 };
-
-const handlePostBlogByUser = async () => {
+const handlePostBlog = async () => {
     try {
-        const data = await addPostUser(
-            localDescription.value,
-            localDescriptionHeader.value,
-            props.authorUser,
-            image.value,
-            image.value
+        const background = backgroundFile.value || new File(['content'], 'background.jpg', { type: 'image/jpeg' });
+        const files: File[] = backgroundFile.value
+            ? [background, background]
+            : [
+                new File(['file1'], 'file1.jpg', { type: 'image/jpeg' }),
+                new File(['file2'], 'file2.jpg', { type: 'image/jpeg' })
+            ];
 
-        );
+        const postData: Data = {
+            description: localDescription.value || 'My Project Description',
+            descriptionHeader: localDescriptionHeader.value || 'My Project Header',
+            authorProject: { id: 0 },
+            authorUser: { id: 91 },
+        };
+
+        await postProject(background, files, postData);
+
         emit('postSuccess');
         snackbarVisible.value = true;
-        console.log('Post added successfully:', data);
+        console.log('Post added successfully');
     } catch (error) {
         console.error('Error adding post:', error);
     }
 };
-const handlePostBlogByProject = async () => {
-    try {
-        const data = await addPostProject(
-            localDescription.value,
-            localDescriptionHeader.value,
-            props.authorProject,
-            image.value,
-            image.value
 
-        );
-        emit('postSuccess');
-        snackbarVisible.value = true;
-        console.log('Post added successfully:', data);
-    } catch (error) {
-        console.error('Error adding post:', error);
-    }
-};
 const removeImage = () => {
     imagePreview.value = null;
+    backgroundFile.value = null;
     if (fileInput.value) {
-        fileInput.value.value = ''; // Сброс инпута
+        fileInput.value.value = '';
     }
 };
 </script>

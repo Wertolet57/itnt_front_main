@@ -14,7 +14,7 @@
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
                         v-model:description="postData.description" :author-project="postData.authorProject"
-                        @postSuccess="closeBottomSheet" :author-user="postData.authorUser" card />
+                        :author-user="postData.authorUser" @postSuccess="closeBottomSheet" card />
                 </div>
             </div>
         </v-bottom-sheet>
@@ -50,13 +50,19 @@ import { isAuth } from '~/helpers/routerHandler'
 import { delPost } from "../../API/ways/post"
 import { onMounted, ref, computed } from 'vue';
 let posts = ref();
+const postData = ref({
+    descriptionHeader: '',
+    description: '',
+    authorProject: null,
+    authorUser: localStorage.getItem('userId'), 
+});
 const isBottomSheetOpen = ref(false);
-const closeBottomSheet =async () => {
-  isBottomSheetOpen.value = false;
-  await getPosts()
+const closeBottomSheet = async () => {
+    isBottomSheetOpen.value = false;
+    await getPosts()
 };
-const openBottomSheet =async () => {
-  isBottomSheetOpen.value = true;
+const openBottomSheet = async () => {
+    isBottomSheetOpen.value = true;
 };
 const getPosts = async () => {
     try {
@@ -74,12 +80,6 @@ const deletePost = async (postID: number) => {
         console.error('Ошибка при удалении поста:', error)
     }
 }
-const postData = ref({
-    descriptionHeader: '',
-    description: '',
-    authorProject: null,
-    authorUser: localStorage.getItem('userId'),
-});
 onMounted(getPosts);
 const modalState = ref(null);
 

@@ -2,10 +2,34 @@
 import { API } from '../main.ts'
 // import ComplaintData from "~/helpers/types"
 
-const prefix = '/project'
-export const postProject = (prjInfo: Object) => {
-    return API.post(`${prefix}/`, prjInfo)
+interface ProjectData {
+    name: string;
+    slogan: string;
+    nickName: string;
+    activityFields: string[];
+    descriptionHeader: string;
+    description: string;
+    projectStage: string;
+    projectRegistrationPlaces: string;
 }
+
+const prefix = '/project'
+export const postProject = async (projectInfo: ProjectData, avatar: File | Blob, presentation: File | Blob): Promise<any> => {
+    const formData = new FormData();
+
+    formData.append('projectSaveRequestDto', JSON.stringify(projectInfo));
+    formData.append('avatar', avatar);
+    formData.append('presentation', presentation);
+    
+    return API.post('/project/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            // 'Authorization': `Bearer ${token}`
+        }
+    });
+};
+
+
 export const patchProject = (prjInfo: Object) => {
     return API.patch(`${prefix}/`, prjInfo)
 }
@@ -197,6 +221,6 @@ export const searcgProjects = (params: any) => {
     return API.get(`${prefix}?${queryParams}`);
 }
 
-export const getProjectPosts = (projectId : Number)=>{
+export const getProjectPosts = (projectId: Number) => {
     return API.get(`${prefix}/${projectId}/posts`)
 }

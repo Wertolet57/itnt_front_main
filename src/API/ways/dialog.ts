@@ -4,11 +4,11 @@ const prefix = '/dialog'
 const sendMessage = (dialogId: number, project: Object) => {
     return API.post(`${prefix}/${dialogId}/message`, project);
 };
-const createDialog = (dialogType: String, userId: any) => {
+const createDialog = (Id: any) => {
     return API.post(`${prefix}/`, {
-        'dialogType': dialogType,
+        "dialogType": "GROPE",
         'users': [{
-            'id': userId
+            'id': Id
         }
         ],
     });

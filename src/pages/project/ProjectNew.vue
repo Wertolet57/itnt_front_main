@@ -1,9 +1,19 @@
 <template>
     <Header showUserMinify />
     <div class="projectHeader__edit">
+        <div class="avatar-uploader">
+            <div class="avatar-circle" @click="triggerFileInput">
+                <img v-if="avatarPreview" :src="avatarPreview" alt="Аватар" />
+                <img src="@/assets/img/regSteps/addProfilePic.svg" v-else/>
+            </div>
+            <input ref="fileInput" type="file" accept="image/*" @change="onAvatarChange" class="hidden-input" />
+        </div>
         <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
         <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
         <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
+    </div>
+    <div class="mx-4">
+
     </div>
     <v-container>
         <div class="projectCard__editable__tags">
@@ -49,6 +59,7 @@ import UiInput from '~/components/ui-kit/UiInput.vue'
 import UiPrompt from '~/components/ui-kit/UiPrompt.vue'
 import UiTextArea from '~/components/ui-kit/UiTextArea.vue'
 import ProjectSkills from "~/components/projects/ProjectSkills.vue"
+// import ProjectAddPhoto from "../../components/projects/ProjectAddPhoto.vue"
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { postProject } from '~/API/ways/project'
@@ -58,10 +69,23 @@ const router = useRouter()
 
 const projectName = ref('')
 const projectSlogan = ref('')
-const projectId = ref('https://itnt.store/2')
+const projectId = ref('https://itnt.store/')
 const projectTags = ref([])
 const projectTitle = ref('')
 const projectDescription = ref('')
+const avatarFile = ref(null);
+const avatarPreview = ref('');
+const fileInput = ref(null);
+const triggerFileInput = () => {
+    fileInput.value.click();
+};
+function onAvatarChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+        avatarFile.value = file;
+        avatarPreview.value = URL.createObjectURL(file);
+    }
+}
 //
 const projectNameRef = ref(null)
 const projectSloganRef = ref(null)
@@ -69,7 +93,6 @@ const projectIdRef = ref(null)
 const projectTitleRef = ref(null)
 const projectDescriptionRef = ref(null)
 function scrollToEmptyInput() {
-    // Проверяем поочередно поля и делаем scroll-to к первому пустому
     if (!projectName.value) {
         projectNameRef.value.$el.scrollIntoView({ behavior: 'smooth' })
         return
@@ -104,7 +127,7 @@ async function postNewProject() {
         name: projectName.value,
         slogan: projectSlogan.value,
         nickName: projectId.value,
-        // tags: projectTags.value,  // Используем выбранные навыки здесь
+        // tags: projectTags.value, 
         activityFields: projectTags.value,
         descriptionHeader: projectTitle.value,
         description: projectDescription.value,
@@ -113,7 +136,7 @@ async function postNewProject() {
     }
 
     try {
-        const response = await postProject(projectData)
+        const response = await postProject(projectData, avatarFile.value, avatarFile.value)
         console.log(response)
         snackbarVisible.value = true
 
@@ -129,6 +152,44 @@ console.log(projectTags)
 
 
 <style lang="scss" scoped>
+.avatar-uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatar-circle {
+    width: 15vw;
+    height: 15vh;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.avatar-circle:hover {
+    border-color: #aaa;
+}
+
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-circle span {
+    font-size: 2rem;
+    color: #aaa;
+}
+
+.hidden-input {
+    display: none;
+}
+
 .projectHeader {
     width: 100%;
     padding-top: 18px;

@@ -1,6 +1,44 @@
 import { API } from '../main'
-// import ComplaintData from "~/helpers/types"
+
+
 const prefix = '/main'
+interface Data {
+    description: string;
+    descriptionHeader: string;
+    authorProject: { id: number };
+    authorUser: { id: number };
+}
+
+export const postProject = async (
+    background: File | Blob,
+    files: File[],
+    postData: Data
+): Promise<any> => {
+    const formData = new FormData();
+    if (background) {
+        formData.append('background', background);
+    } else {
+        console.warn('Background is missing');
+    }
+    if (files && files.length > 0) {
+        files.forEach((file) => {
+            formData.append('files', file);
+        });
+    } else {
+        console.warn('Files array is empty');
+    }
+    formData.append('postSaveRequestDto', JSON.stringify(postData));
+
+    return API.post(`${prefix}/addPost`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            // 'Authorization': `Bearer ${token}`
+        },
+    });
+};
+
+
+
 
 export const addPostUser = (description: String, descriptionHeader: String, authorUser: any, backgroundPictureUrl: String, pictureUrl: String) => {
     let requestBody = {

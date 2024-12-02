@@ -1,44 +1,54 @@
 <template>
     <div>
         <Header :showUserMinify="true" :routeName="lastPart" :chat="true" />
-        <!-- <div>Статус соединения: {{ connectionStatus }}</div> -->
-        <ul>
-            <li v-for="message in messages" :key="message.id">
-                {{ message.content }}
-            </li>
-        </ul>
-        <div class="" v-if="messages">
-
-            {{ messages }}
-        </div>
-        <div class="input-container">
-            <div class="inner-input">
-                <input v-model="newMessage" @keyup.enter="sendMessageAPI" placeholder="Введите сообщение..."
-                    :disabled="connectionStatus !== 'open'" />
-                <button @click="sendMessageAPI" :disabled="connectionStatus !== 'open'">
-                    <img :src="chat" alt="Send" />
-                </button>
+        <div class="chat-container">
+            <div class="messages-container">
+                <div v-if="messages.length > 0" class="date-container">
+                    <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
+                </div>
+                <div v-for="message in messages" :key="index" class="message my-message ">
+                    <!-- :class="['message', message.isMine ? 'my-message' : 'other-message']"> -->
+                    <div class="message-content">{{ message.messageText }}</div>
+                    <div class="message-info flex items-center">
+                        <span class="message-time text-[9E9E9E] mr-[8px] ">{{ message.timestamp ? formatDate(message.timestamp) : '00:00' }}</span>
+                        <!-- <span v-if="message.isMine" class="message-status">
+                            <img :src="message.read ? delivered : chat" alt="">
+                        </span> -->
+                        <span class="message-status">
+                            <img :src="delivered" alt="">
+                            <!-- <img :src="message.readStatus ? delivered : chat" alt=""> -->
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="input-container">
+                <div class="inner-input">
+                    <input v-model="newMessage" @keyup.enter="sendMessageAPI" placeholder="Введите сообщение..."
+                        :disabled="connectionStatus !== 'open'" />
+                    <button @click="sendMessageAPI" :disabled="connectionStatus !== 'open'">
+                        <img :src="chat" alt="Send" />
+                    </button>
+                </div>
             </div>
         </div>
-        <!-- <button @click="createNewDialog" :disabled="connectionStatus === 'connecting'">Создать новый диалог</button> -->
     </div>
 </template>
 
 <script lang="ts" setup>
 import Header from '~/components/Header.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import { getDialogMessages, getDialogByID, sendMessage } from "../../API/ways/dialog";
+import { getDialogMessages, sendMessage } from "../../API/ways/dialog";
 import { webSocketService } from '../../helpers/websocket.ts';
 import { useRoute } from 'vue-router';
 import chat from '../../assets/icons/chat.svg';
-
+import delivered from '~/assets/chat/delivered.svg';
 const newMessage = ref('');
-const messages = webSocketService.messages;
+const messages = ref([]);
 const currentDialogId = ref<number | null>(null);
 const connectionStatus = webSocketService.connectionStatus;
 const userId = ref(localStorage.getItem("userId"));
 const route = useRoute();
-const lastPart = ref(null);
+const lastPart = ref<string | null>(null);
 
 const connectToWebSocket = () => {
     if (currentDialogId.value && userId.value) {
@@ -47,67 +57,50 @@ const connectToWebSocket = () => {
         console.error('DialogId или UserId не установлены');
     }
 };
-const getDialog = async () => {
+
+const getDialog = async (id: string) => {
     try {
-        messages.value = await getDialogMessages(currentDialogId.value);
+        const response = await getDialogMessages(id);
+        messages.value = response.data.object;
     } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error('Ошибка при получении сообщений:', error);
     }
 };
-// const datas =ref()
-// const getDialogList = async () => {
-//     try {
-//         datas.value = await getDialogByID(currentDialogId.value);
-//     } catch (error) {
-//         console.error('Error fetching messages:', error);
-//     }
-// };
-// const createNewDialog = async () => {
-//     try {
-//         const newDialog = await webSocketService.createDialog('personal', userId.value);
-//         currentDialogId.value = newDialog.id;
-//         webSocketService.disconnect();
-//         connectToWebSocket();
-//     } catch (error) {
-//         console.error('Не удалось создать новый диалог', error);
-//     }
-// };
+
 const sendMessageAPI = async () => {
     try {
         const data = {
-            // dialog:{
-            //     dialogType: "GROPE",
-                
-            // }s
-            messageText: "string",
+            dialogType: "GROPE",
+            messageText: newMessage.value.trim(),
             readStatus: false,
-            // "id": 1,
-            user:{
-                id:localStorage.getItem("userId")
+            // messageDate: new Date().toISOString(),
+            user: {
+                id: userId.value
             }
+        };
+        if (lastPart.value) {
+            await sendMessage(lastPart.value, data);
+            newMessage.value = '';
         }
-        await sendMessage(1, data)
     } catch (error) {
-
+        console.error('Ошибка при отправке сообщения:', error);
     }
-}
-// const sendMessage = () => {
-//     if (newMessage.value.trim() && currentDialogId.value && connectionStatus.value === 'open') {
-//         webSocketService.sendMessage(currentDialogId.value, newMessage.value);
-//         newMessage.value = '';
-//     } else if (connectionStatus.value !== 'open') {
-//         console.error('Невозможно отправить сообщение: соединение не открыто');
-//     }
-// };
-
+};
+const formatDate = (isoDate:any) => {
+    const date = new Date(isoDate);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 onMounted(() => {
-    currentDialogId.value = 1;
-    connectToWebSocket();
-
     const fullPath = window.location.origin + route.fullPath;
     lastPart.value = fullPath.split('/').pop();
-    getDialog();
-    // getDialogList();
+
+    if (lastPart.value) {
+        currentDialogId.value = parseInt(lastPart.value, 10); 
+        connectToWebSocket();
+        getDialog(lastPart.value); 
+    } else {
+        console.error('Не удалось получить ID чата из строки пути');
+    }
 });
 
 onUnmounted(() => {
@@ -121,6 +114,7 @@ watch(connectionStatus, (newStatus) => {
 });
 </script>
 
+
 <style scoped lang="scss">
 .v-application .v-card,
 .v-application .v-list-item,
@@ -129,38 +123,99 @@ watch(connectionStatus, (newStatus) => {
     background: none;
 }
 
+.v-application .v-card {
+    box-shadow: none !important;
+    background: none;
+}
+
+.v-application .v-list-item {
+    box-shadow: none !important;
+    background: none;
+}
+
+.v-application .v-card-text {
+    box-shadow: none !important;
+    background: none;
+}
+
+.chat-message {
+    background: none;
+    display: unset !important;
+    white-space: break-spaces;
+}
+
 .chat-screen {
     height: calc(100vh - 140px);
     overflow-y: auto;
-}
-
-.sent-message,
-.received-message {
     display: flex;
-    margin-bottom: 10px;
+    flex-direction:column;
+    justify-content: start;
 }
 
-.sent-message {
-    justify-content: flex-end;
+.date {
+    display: flex;
+    justify-content: center;
+    width: 100px;
+    background: rgba(224, 224, 224, 0.5);
+    font-size: 13px !important;
+    letter-spacing: 0.01em !important;
+    padding: 6px 20px;
+    line-height: 14px;
 }
 
-.received-message {
-    justify-content: flex-start;
+.chat-container {
+    height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
-.flex-none,
-.flex-none-sent {
-    flex: unset;
-    border: 1px solid rgba(133, 207, 171, 0.15);
+.date-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.messages-container {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.message {
+    max-width: 100%;
+    min-width: 10%;
+    margin-bottom: 15px;
+    border: .1px solid #E0E0E0;
+   
+}
+.message-content{
+    padding: 10px 15px 6px 14px;
+}
+.my-message {
     border-radius: 12px 12px 2px 12px;
+    background-color: #E1F5FE;
+    align-self: flex-end;
 }
 
-.radius-sent {
-    border-radius: 12px 2px 12px 12px;
-}
-
-.radius-recieved {
+.other-message {
     border-radius: 12px 12px 12px 2px;
+    background-color: #ffffff;
+    align-self: flex-start;
+}
+
+.message-info {
+    padding: 0px 6px 2px 0px;
+    font-size: 0.8em;
+    color: #888;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .input-container {

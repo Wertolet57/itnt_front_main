@@ -1,80 +1,31 @@
 <template>
     <ChatFolders />
-    <div class="" @click="showSheet = false">
-        <div @click="$router.push(`/messenger/chat/1`)" class="card shadow-none">
+    <div v-if="chatData" v-for="chat in chatData" class="">
+        <div @click="$router.push(`/messenger/chat/${ chat.id }`)" class="card shadow-none cursor-pointer">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
             </span>
             <div class="flex flex-col flex-1">
                 <div class="flex flex-row justify-between flex-1">
-                    <p class="card__name">Евгений Анисимов</p>
+                    <p class="card__name">{{  chat.id }}</p>
                     <div class="flex flex-row items-center gap-[6px]">
                         <img :src="delivered" alt="">
                         <p class="card__time">15:12</p>
                     </div>
                 </div>
-                <p class="card__message"><span class="card__message__you">Вы:</span> Это не критично, давай через
+                <!-- <p class="card__message"><span class="card__message__you">Вы:</span> Это не критично, давай через
                     недельку вернёмся к этому
                     вопросу👍
-                </p>
+                </p> -->
             </div>
-        </div>
-        <div @click="$router.push(`/messenger/chat/2`)"  class="card shadow-none">
-            <span class="card__v2">
-                <v-chip class="card__v2__chip">
-                    27
-                </v-chip>
-                <img width="40" src="../../assets/demo/ava-small-header.svg" />
-            </span>
-            <div class="flex flex-col flex-1">
-                <div class="flex flex-row justify-between flex-1">
-                    <p class="card__name">Николай Аверин</p>
-                    <div class="flex flex-row items-center gap-[6px]">
-                        <img :src="send" alt="">
-                        <p class="card__time">15:12</p>
-                    </div>
-                </div>
-                <p class="card__message">Приветствую! Есть супер-предложение, хотел обсудить с вами. Если вкратце, то...
-                </p>
-            </div>
-        </div>
-        <div @click="$router.push(`/messenger/chat/3`)" class="card shadow-none">
-            <span class="card__image  border-chatThird">
-                <img :src="avatar" alt="User Avatar" />
-            </span>
-            <div class="flex flex-col flex-1">
-                <div class="flex flex-row justify-between flex-1">
-                    <p class="card__name">Евгений Анисимов</p>
-                    <div class="flex flex-row items-center gap-[6px]">
-                        <img :src="seen" alt="">
-                        <p class="card__time">15:12</p>
-                    </div>
-                </div>
-                <p class="card__message"><span class="card__message__you">Вы:</span> Это не критично, давай через
-                    недельку вернёмся к этому
-                    вопросу👍
-                </p>
-            </div>
-        </div>
-        <div @click="$router.push(`/messenger/chat/4`)" class="card shadow-none">
-            <span class="card__image  border-chatThird">
-                <img :src="avatar" alt="User Avatar" />
-            </span>
-            <div class="flex flex-col flex-1">
-                <div class="flex flex-row justify-between flex-1">
-                    <p class="card__name">Евгений Анисимов</p>
-                    <div class="flex flex-row items-center gap-[6px]">
-                        <p class="card__time">15:12</p>
-                    </div>
-                </div>
-                <p class="card__message"><span class="card__message__you">Вы:</span> Это не критично, давай через
-                    недельку вернёмся к этому
-                    вопросу👍
-                </p>
-            </div>
-        </div>
+        </div>        
     </div>
-
+    <!-- <div v-if="chatData" v-for="chat in chatDataId" class="">
+        <button>
+            {{ chat.id }}
+        </button>
+        
+    </div> -->
     <div class="absolute bottom-20 right-6 bg-marine  rounded-[12px]">
         <button @click="showSheet = true" class="p-[10px]"><img :src="plus" alt=""></button>
         <transition name="bottom-sheet">
@@ -86,7 +37,7 @@
                     <div class="mt-4 date rounded-xl d-inline-block">Пользователи из ваших контактов:</div>
                     <div class="searchTeammateModal__items">
                         <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center"
-                         @click="() => handleUserClick(user.id)">
+                         @click="() => openUser(user.id)">
                             <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
                             <div>
                                 <div class="d-flex align-center">
@@ -99,7 +50,7 @@
                     <div class="mt-4 date rounded-xl d-inline-block">Взаимная подписка:</div>
                     <div class="searchTeammateModal__items">
                         <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center"
-                        @click="() => handleUserClick(user.id)">
+                        @click="() => openUser(user.id)">
                             <img class="mr-3" width="37" height="37" src="../../assets/demo/ava-small-header.svg" />
                             <div>
                                 <div class="d-flex align-center">
@@ -118,8 +69,8 @@
 <script setup lang="ts">
 
 import avatar from '~/assets/Profile/Photo.svg'
-import send from '~/assets/chat/send.svg'
-import seen from '~/assets/chat/seen.svg'
+// import send from '~/assets/chat/send.svg'
+// import seen from '~/assets/chat/seen.svg'
 import delivered from '~/assets/chat/delivered.svg'
 import ChatFolders from './ChatFolders.vue'
 import plus from '~/assets/modal_icon/plus.svg'
@@ -127,19 +78,37 @@ import UiInput from '~/components/ui-kit/UiInput.vue'
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import { getUserSearch } from '~/API/ways/user'
-import { getDialog } from '~/API/ways/dialog';
+import { getDialog , getDialogMessages ,createDialog} from '~/API/ways/dialog';
 const router = useRouter()
 const showSheet = ref(false)
 
 let showPopup = ref(false)
 const openUser = (id: any) => {
-
+    newDialog(id)
     router.push(`/messenger/chat/${id}`);
 };
+const newDialog = async (user:number) => {
+    try {
+        const response = await createDialog(user);
+        console.log('response', response)
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+};
+const chatData = ref()
 const showDialog = async () => {
     try {
         const response = await getDialog();
-        // console.log('response', response)
+        chatData.value = response.data.object
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+};
+const chatDataId = ref()
+const showDialogById = async () => {
+    try {
+        const response = await getDialogMessages(46);
+        chatDataId.value = response.data.object
     } catch (error) {
         console.error('Error fetching users:', error);
     }
@@ -182,6 +151,7 @@ const fetchUsers = async () => {
 };
 onMounted(fetchUsers);
 onMounted(showDialog);
+onMounted(showDialogById)
 </script>
 
 
