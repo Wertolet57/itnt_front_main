@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-    <v-bottom-navigation class="small__screen" :elevation="10" grow>
+    <v-bottom-navigation class="" :elevation="10" grow>
         <v-footer>
             <div class="footer__row">
                 <div class="footer__item" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
@@ -15,14 +15,6 @@ export default {
             </div>
         </v-footer>
     </v-bottom-navigation>
-    <div class="big__screen">
-        <div class="footer__column">
-            <div class="footer__item2" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
-                :class="route.name === $route.path && 'footer__item2--active'">
-                <img width="22" height="22" :src="route?.icon" :alt="route.icon" />
-            </div>
-        </div>
-    </div>
 </template>
 
 <script setup lang="ts">
