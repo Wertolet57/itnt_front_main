@@ -85,10 +85,8 @@ const showSheet = ref(false)
 let showPopup = ref(false)
 const openUser = async (userId: number) => {
   try {
-    // Вызов метода создания диалога
     const response = await createDialog(userId);
 
-    // Проверка наличия chat.id в ответе
     const chatId = response?.data?.object?.id;
     if (chatId) {
       console.log('Созданный chat.id:', chatId);
