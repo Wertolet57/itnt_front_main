@@ -83,18 +83,34 @@ const router = useRouter()
 const showSheet = ref(false)
 
 let showPopup = ref(false)
-const openUser = (id: any) => {
-    newDialog(id)
-    router.push(`/messenger/chat/${id}`);
-};
-const newDialog = async (user:number) => {
-    try {
-        const response = await createDialog(user);
-        console.log('response', response)
-    } catch (error) {
-        console.error('Error fetching users:', error);
+const openUser = async (userId: number) => {
+  try {
+    // Вызов метода создания диалога
+    const response = await createDialog(userId);
+
+    // Проверка наличия chat.id в ответе
+    const chatId = response?.data?.object?.id;
+    if (chatId) {
+      console.log('Созданный chat.id:', chatId);
+      router.push(`/messenger/chat/${chatId}`);
+    } else {
+      console.error('Не удалось получить chat.id. Проверьте структуру ответа:', response);
     }
+  } catch (error) {
+    console.error('Ошибка при создании диалога:', error);
+  }
 };
+
+
+
+// const newDialog = async (user:number) => {
+//     try {
+//         const response = await createDialog(user);
+//         console.log('response', response)
+//     } catch (error) {
+//         console.error('Error fetching users:', error);
+//     }
+// };
 const chatData = ref()
 const showDialog = async () => {
     try {

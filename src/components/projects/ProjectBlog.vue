@@ -1,5 +1,6 @@
 <template>
     <div v-if="blogData" class="feedCard mb-4">
+        <img :src="backgroundUrl" alt="">
         <div :class="{ 'feedCard__head-empty': withoutBg, 'feedCard__head': !withoutBg }" :style="headStyle">
             <div class="d-flex align-center">
                 <div>
@@ -145,6 +146,11 @@ const getPost = async () => {
         console.error('Ошибка при получении поста:', error)
     }
 }
+const baseURL = 'https://itnt.store/';
+
+const backgroundUrl = computed(() => {
+    return props.blogData.backgroundPictureUrl ? `${baseURL}post-backgrounds/${props.blogData.backgroundPictureUrl}` : '';
+});
 onMounted(getPost)
 </script>
 <style scoped lang="scss">

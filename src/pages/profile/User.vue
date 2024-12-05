@@ -27,22 +27,7 @@
             <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"
                 :authorID="post.authorUser.id" :author="post.authorUser.firstName" feedCardType="newProjectStage" />
         </div>
-        <div class="">
-            <div class="image-gallery">
-                <!-- Отображение загруженных изображений -->
-                <div v-for="(image, index) in previewImages" :key="index" class="image-item">
-                    <img :src="image" alt="Uploaded image" />
-                    <button class="delete-btn" @click="removeImage(index)">×</button>
-                </div>
 
-                <!-- Кнопка добавления нового изображения -->
-                <div v-if="previewImages.length < maxImages" class="add-item" @click="handleAddImage">
-                    <span>+</span>
-                </div>
-                <!-- Кнопка отправки -->
-                <button @click="submitImages" class="submit-btn">Отправить</button>
-            </div>
-        </div>
     </v-container>
     <Footer />
 </template>
@@ -51,7 +36,6 @@
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
-import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import UiPost from '~/components/ui-kit/UiPost.vue'
 import UiButton from '~/components/ui-kit/UiButton.vue'
@@ -126,47 +110,6 @@ const fullAvatarUrl = computed(() => {
 const fullBannerUrl = computed(() => {
     return userInfo.value.backgroundPictureUrl ? `${baseURL}files/${userInfo.value.backgroundPictureUrl}` : '';
 });
-const maxImages = 10;
-const files = ref([]);
-const previewImages = ref([]);
-
-const handleAddImage = () => {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = (event) => {
-    const file = event.target.files[0];
-    if (file && files.value.length < maxImages) {
-      files.value.push(file);
-      const reader = new FileReader();
-      reader.onload = (e) => previewImages.value.push(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-  input.click();
-};
-
-const removeImage = (index:any) => {
-  previewImages.value.splice(index, 1);
-  files.value.splice(index, 1);
-};
-
-const submitImages = async () => {
-  try {
-    const background = files.value[0] || null;
-    const otherFiles = files.value.slice(1); 
-    const postData = {
-      description: 'Описание проекта',
-      descriptionHeader: 'Заголовок проекта',
-      authorProject: { id: 1 },
-      authorUser: { id: 1 },
-    };
-    const response = await postProject(background, otherFiles, postData);
-    console.log('Успешно отправлено:', response);
-  } catch (error) {
-    console.error('Ошибка при отправке:', error);
-  }
-};
 </script>
 
 <style scoped>
@@ -230,98 +173,5 @@ select {
     background-repeat: no-repeat;
     background-position: right 10px top 50%;
     background-size: 16px;
-}
-.image-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: flex-start;
-  padding: 20px;
-  background-color: #f7f8fa;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.image-item {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.image-item:hover {
-  transform: scale(1.05);
-}
-
-.image-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.delete-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background 0.3s;
-}
-
-.delete-btn:hover {
-  background: rgba(255, 0, 0, 0.8);
-}
-
-.add-item {
-  width: 100px;
-  height: 100px;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background: #f9f9f9;
-  color: #aaa;
-  font-size: 32px;
-  transition: background 0.3s, color 0.3s;
-}
-
-.add-item:hover {
-  background: #e0e0e0;
-  color: #555;
-}
-
-.submit-btn {
-  margin-top: 20px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s, transform 0.2s;
-}
-
-.submit-btn:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
 }
 </style>
