@@ -40,10 +40,18 @@ class WebSocketService {
             };
 
             this.socket.onmessage = (event) => {
+                console.log('Сырой ответ:', event.data);
                 try {
                     const message = JSON.parse(event.data);
                     console.log('Получено сообщение:', message);
-                    this.messages.value.push(message);
+
+                    this.messages.value.push({
+                        dialogId: message.dialogId,
+                        type: message.dialogType,
+                        text: message.messageText,
+                        readStatus: message.readStatus,
+                        userId: message.user.id,
+                    });
                 } catch (error) {
                     console.error('Ошибка обработки входящего сообщения:', error);
                 }

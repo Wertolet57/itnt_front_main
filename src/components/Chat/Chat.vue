@@ -70,41 +70,39 @@ const getDialog = async (id: string) => {
         console.error('Ошибка при получении сообщений:', error);
     }
 };
-
-const sendMessageAPI = async () => {
+const sendMessageAPI = async (messageData:Object) => {
     try {
-        const data = {
-            dialogType: "GROPE",
-            messageText: newMessage.value.trim(),
-            readStatus: false,
-            // messageDate: new Date().toISOString(),
-            user: {
-                id: userId.value
-            }
-        };
         if (lastPart.value) {
-            await sendMessage(lastPart.value, data);
-            newMessage.value = '';
+            await sendMessage(lastPart.value, messageData);
         }
     } catch (error) {
-        console.error('Ошибка при отправке сообщения:', error);
+        console.error('Ошибка при отправке сообщения через API:', error);
     }
 };
 const sendMessageWebSocket = () => {
     if (newMessage.value.trim() && currentDialogId.value) {
-        webSocketService.sendMessage(currentDialogId.value, {
+        const messageData = {
             dialogType: "GROPE",
             messageText: newMessage.value.trim(),
             readStatus: false,
             user: {
                 id: userId.value
             }
-        });
+        };
+
+        // Отправка через WebSocket
+        webSocketService.sendMessage(currentDialogId.value, messageData);
+
+        // Отправка через API
+        sendMessageAPI(messageData);
+
+        // Очистка поля ввода
         newMessage.value = '';
     } else {
         console.error('Сообщение пустое или DialogId не установлен');
     }
 };
+
 
 const formatDate = (isoDate: any) => {
     const date = new Date(isoDate);

@@ -1,19 +1,11 @@
 <template>
     <Header :routeName="$t('page.feed')" showUserMinify />
     <v-col class="pa-0 text-center">
-        <v-container class="pa-6">
-            <!-- <div class="mb-4 date rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
-
-            <div class="feed__column">
-                <FeedPanels />
-                <FeedCard feedCardType="newProjectStage" />
-                <FeedCard feedCardType="newProjectDiscussed" />
-            </div> -->
-        </v-container>
-        <v-container class="pa-6 pt-0">
-            
-            <div class="feed__column">
-            </div>
+        <v-container class="pa-6 pt-0 mt-3">
+            <div class="mb-4" v-for="event in events">
+                    <!-- {{event.eventType}} -->
+                    <FeedCard :post="event" :feedCardType="event.eventType" />
+                </div>
             <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
                 <div v-if="post.authorProject">
                     <ProjectBlog :authorType="'project'" :blog-data="post" :authorID="post.authorProject.id"
@@ -38,9 +30,10 @@ import { getPost } from '~/API/ways/post';
 import Footer from '~/components/Footer.vue';
 import FeedCard from '~/components/feed/FeedCard.vue';
 import Header from '~/components/Header.vue';
+import {getEvents} from '../../API/ways/post'
 // import FeedPost from '~/components/feed/FeedPost.vue';
-import FeedPanels from '~/components/feed/FeedPanels.vue';
 let posts = ref();
+let events = ref();
 const getPosts = async () => {
     try {
         const data = await getPost();
@@ -49,8 +42,17 @@ const getPosts = async () => {
         console.error(error);
     }
 };
+const getEvent = async () => {
+    try {
+        const data = await getEvents();
+        events.value = data.data.object.content;
+    } catch (error) {
+        console.error(error);
+    }
+};
 console.log(posts, 'postes');
 onMounted(getPosts);
+onMounted(getEvent);
 </script>
 
 <style lang="scss" scoped>

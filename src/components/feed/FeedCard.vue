@@ -6,14 +6,15 @@
                 <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
                 <div>
                     <div class="d-flex align-center">
-                        <p class="txt-body3">Save and Brave</p>
+                        <p class="txt-body3">{{props.post?.createdBy.login}}</p>
                         <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
-                        <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
+                        <span style="color: #9e9e9e" class="txt-cap1">{{ formatDate(props.post?.created) }}</span>
                     </div>
 
-                    <p class="feedCard__head__subtitle txt-cap1">
-                        {{ feedCardSubtitle }}
-                        <span v-if="props.feedCardType === 'newProjectStage'" class="color-blue">MVP</span>
+                    <p class="feedCard__head__subtitle txt-cap1">                     
+                            {{ feedCardSubtitle }}
+
+                        <span v-if="props.feedCardType === 'NEW_STAGE'" class="color-blue">{{ props.post?.relatedProject.projectStage}}</span>
                     </p>
                 </div>
             </div>
@@ -26,9 +27,9 @@
             <p> {{ postDesc }}</p>
 
             <!-- Новый этап проекта -->
-            <div v-if="props.feedCardType === 'newProjectStage'">
+            <div v-if="props.feedCardType === 'NEW_STAGE'">
                 <p class="txt-cap1">
-                    {{ $t('feed.feedBack') }}
+                      {{ props.post?.description }}
                 </p>
             </div>
             <!-- !Новый этап проекта -->
@@ -48,27 +49,27 @@
             </div>
 
             <!-- Проекту требуются специалисты -->
-            <div v-if="props.feedCardType === 'newProjectVacancies'">
-                <UiVacancyPanel readOnly :data="demoVacancy" />
-                <UiVacancyPanel readOnly :data="demoVacancy" />
+            <div v-if="props.feedCardType === 'NEW_VACANCY'">
+                <!-- {{ props.post?.relatedProject?.vacancy }} -->
+                <div class="" v-for="vacancy in props.post?.relatedProject?.vacancy">
+                    <UiVacancyPanel readOnly :data="vacancy" />
+                </div>
             </div>
 
             <!-- Проект активно обсуждается -->
-            <div v-if="props.feedCardType === 'newProjectDiscussed'">
-            </div>
+            <div v-if="props.feedCardType === 'PROJECT_ACTIVITY'"></div>
         </div>
 
         <!-- footer -->
-
         <div class="feedCard__footer">
             <UiButton bgColor="def" class="feedCard__footer__button" fit>
-                <p @click="$router.push('project/' + 1)" v-if="props.feedCardType != 'newProjectDiscussed'"
+                <p @click="$router.push('project/' + props.post?.relatedProject?.id)" v-if="props.feedCardType != 'PROJECT_ACTIVITY'"
                     class="txt-cap1">{{ $t('feed.GoTo') }}</p>
-                <p @click="$router.push('/' + 1 + '/blogComment')" v-else class="txt-cap1">{{ $t('feed.comments') }}</p>
+                <p @click="$router.push('/' +  props.post?.relatedProject?.id + '/blogComment')" v-else class="txt-cap1">{{ $t('feed.comments') }}</p>
             </UiButton>
             <!-- <UiButton bgColor="def"></UiButton> -->
             <div class="d-flex align-center">
-                <UiButton @click="sharePost" v-if="props.feedCardType != 'newProjectDiscussed'" bgColor="def"
+                <UiButton @click="sharePost" v-if="props.feedCardType != 'PROJECT_ACTIVITY'" bgColor="def"
                     class="mr-3" :imgSrc="share" style="padding: 10px 13px 9px 14px" onlyIcon />
 
                 <Fire :id="1" />
@@ -89,7 +90,8 @@
 
 <script lang="ts" setup>
 import warning from "~/assets/icons/warning-red.svg"
-
+import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
+import { ru } from 'date-fns/locale';
 // import chat from "~/assets/icons/chat-black.svg"
 import share from "~/assets/icons/share-black.svg";
 import Fire from '../Fire.vue'
@@ -99,13 +101,8 @@ import { computed, ref } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { modalActionsList } from '~/helpers/types'
-// import { postAddUserPicture } from "~/API/ways/user";
 const modalState = ref(false)
 const modalItems: modalActionsList[] = [
-    // {
-    //     name: 'Статистика проекта',
-    //     icon: statistic,
-    // },
     {
         name: 'Сообщить о нарушении',
         icon: warning,
@@ -149,31 +146,62 @@ const props = defineProps({
 const feedCardSubtitle = computed(() => {
     if (props.feedCardType === 'newProjectDiscussed') {
         return 'Проект активно обсуждается'
-    } else if (props.feedCardType === 'newProjectVacancies') {
+    } else if (props.feedCardType === 'NEW_VACANCY') {
         return 'Проекту требуются специалисты'
-    } else if (props.feedCardType === 'newProjectStage') {
+    } else if (props.feedCardType === 'NEW_STAGE') {
         return ' Перешли на новый этап:'
     } else if (props.feedCardType === 'newProjectPhotos') {
         return ' В проекте обновились фото: '
     } else if (props.feedCardType === 'newFile') {
         return 'Добавили вложение: '
-    }
+    }else if (props.feedCardType === 'PROJECT_ACTIVITY') {
+        return 'Проект активно обсуждается: '
+    }    
 })
-const demoVacancy = {
-    type: 'Driver',
-    description: `Ищем надёжного джентельмена, со своим транспортным средством, желательно без растительности на голове, c суровым взглядом и парой пушек в багажнике. 
-Вам можно доверить доставку любого груза/человека в любую точку земного шара.`,
-    offer: 'Доля в компании + ЗП + оплата расходников на авто и парикмахера',
-}
 const sharePost = () => {
     try {
         navigator.share({
             title: 'ITNT',
             text: 'Откройте для себя ITNT.',
-            url: 'http://62.113.105.220/post/' + 1,
+            url: 'http://62.113.105.220/blog/' + props.post?.id,
         })
     } catch (error) {
         console.log('error :' + error)
+    }
+}
+// Функция форматирования даты
+function formatDate(inputDate) {
+    const date = new Date(inputDate);
+    const now = new Date();
+
+    const isToday = date.toDateString() === now.toDateString();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (isToday) {
+        // Если дата сегодняшняя
+        const diffMs = now - date;
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
+
+        if (diffHours > 0) {
+            return `${diffHours}ч назад`;
+        } else {
+            return `${diffMinutes}м назад`;
+        }
+    } else if (isYesterday) {
+        // Если дата вчерашняя
+        return `Вчера в ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+        // Любая другая дата
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}.${month}.${year} в ${hours}:${minutes}`;
     }
 }
 </script>
