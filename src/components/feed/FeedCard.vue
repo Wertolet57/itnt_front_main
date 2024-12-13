@@ -3,18 +3,23 @@
         <!-- head -->
         <div class="feedCard__head">
             <div class="d-flex align-center">
-                <img class="mr-3" width="30" height="30" src="../../assets/demo/ava-small-header.svg" />
+                <img class="mr-3" width="30" height="30" :src="fullAvatarUrl" />
                 <div>
                     <div class="d-flex align-center">
-                        <p class="txt-body3">{{props.post?.createdBy.login}}</p>
+                        <p class="txt-body3">
+                            {{ props.post?.createdBy.firstName && props.post?.createdBy.lastName
+                    ? `${props.post.createdBy.firstName} ${props.post.createdBy.lastName}`
+                    : props.post?.createdBy.firstName || props.post?.createdBy.login }}
+                        </p>
                         <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
                         <span style="color: #9e9e9e" class="txt-cap1">{{ formatDate(props.post?.created) }}</span>
                     </div>
 
-                    <p class="feedCard__head__subtitle txt-cap1">                     
-                            {{ feedCardSubtitle }}
+                    <p class="feedCard__head__subtitle txt-cap1">
+                        {{ feedCardSubtitle }}
 
-                        <span v-if="props.feedCardType === 'NEW_STAGE'" class="color-blue">{{ props.post?.relatedProject.projectStage}}</span>
+                        <span v-if="props.feedCardType === 'NEW_STAGE'" class="color-blue">{{
+                    props.post?.relatedProject.projectStage }}</span>
                     </p>
                 </div>
             </div>
@@ -29,7 +34,7 @@
             <!-- Новый этап проекта -->
             <div v-if="props.feedCardType === 'NEW_STAGE'">
                 <p class="txt-cap1">
-                      {{ props.post?.description }}
+                    {{ props.post?.description }}
                 </p>
             </div>
             <!-- !Новый этап проекта -->
@@ -44,8 +49,11 @@
             </div>
 
             <!-- Слайдер -->
-            <div class="feedCard__body__slider" v-if="props.feedCardType === 'newProjectPhotos'">
-                <img width="135" v-for="i in 5" height="204" src="../../assets/demo/demo-rec1.png" />
+            <div class="feedCard__body__slider" v-if="props.feedCardType === 'NEW_ATTACHMENT'">
+                <div class="flex flex-row w-[135px] h-[204px] rounded-[12px]" v-for="file in filteredProjectFiles">
+                    <img style="border-radius: 12px !important; object-fit: cover;" width="135" height="204"
+                        :src="getFileUrl(file.pictureUrl)" alt="Project Image" class="rounded-[12px]" />
+                </div>
             </div>
 
             <!-- Проекту требуются специалисты -->
@@ -63,14 +71,15 @@
         <!-- footer -->
         <div class="feedCard__footer">
             <UiButton bgColor="def" class="feedCard__footer__button" fit>
-                <p @click="$router.push('project/' + props.post?.relatedProject?.id)" v-if="props.feedCardType != 'PROJECT_ACTIVITY'"
-                    class="txt-cap1">{{ $t('feed.GoTo') }}</p>
-                <p @click="$router.push('/' +  props.post?.relatedProject?.id + '/blogComment')" v-else class="txt-cap1">{{ $t('feed.comments') }}</p>
+                <p @click="$router.push('project/' + props.post?.relatedProject?.id)"
+                    v-if="props.feedCardType != 'PROJECT_ACTIVITY'" class="txt-cap1">{{ $t('feed.GoTo') }}</p>
+                <p @click="$router.push('/' + props.post?.relatedProject?.id + '/blogComment')" v-else class="txt-cap1">
+                    {{ $t('feed.comments') }}</p>
             </UiButton>
             <!-- <UiButton bgColor="def"></UiButton> -->
             <div class="d-flex align-center">
-                <UiButton @click="sharePost" v-if="props.feedCardType != 'PROJECT_ACTIVITY'" bgColor="def"
-                    class="mr-3" :imgSrc="share" style="padding: 10px 13px 9px 14px" onlyIcon />
+                <UiButton @click="sharePost" v-if="props.feedCardType != 'PROJECT_ACTIVITY'" bgColor="def" class="mr-3"
+                    :imgSrc="share" style="padding: 10px 13px 9px 14px" onlyIcon />
 
                 <Fire :id="1" />
             </div>
@@ -89,10 +98,8 @@
 </template>
 
 <script lang="ts" setup>
+import ava from "../../assets/demo/defAva.svg"
 import warning from "~/assets/icons/warning-red.svg"
-import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
-import { ru } from 'date-fns/locale';
-// import chat from "~/assets/icons/chat-black.svg"
 import share from "~/assets/icons/share-black.svg";
 import Fire from '../Fire.vue'
 import UiButton from '../ui-kit/UiButton.vue'
@@ -144,19 +151,17 @@ const props = defineProps({
 })
 
 const feedCardSubtitle = computed(() => {
-    if (props.feedCardType === 'newProjectDiscussed') {
+    if (props.feedCardType === 'PROJECT_ACTIVITY') {
         return 'Проект активно обсуждается'
     } else if (props.feedCardType === 'NEW_VACANCY') {
         return 'Проекту требуются специалисты'
     } else if (props.feedCardType === 'NEW_STAGE') {
         return ' Перешли на новый этап:'
-    } else if (props.feedCardType === 'newProjectPhotos') {
+    } else if (props.feedCardType === 'NEW_ATTACHMENT') {
         return ' В проекте обновились фото: '
     } else if (props.feedCardType === 'newFile') {
         return 'Добавили вложение: '
-    }else if (props.feedCardType === 'PROJECT_ACTIVITY') {
-        return 'Проект активно обсуждается: '
-    }    
+    }
 })
 const sharePost = () => {
     try {
@@ -169,7 +174,23 @@ const sharePost = () => {
         console.log('error :' + error)
     }
 }
-// Функция форматирования даты
+const baseURL = 'https://itnt.store/files/';
+
+const isExternalUrl = (url: string | null) => {
+    return url?.startsWith('http') || url?.startsWith(',');
+};
+
+const getFileUrl = (url: string) => {
+    return `${baseURL}${url}`;
+};
+const filteredProjectFiles = computed(() =>
+    props.post?.relatedProject.projectFiles.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
+);
+const baseAvaURL = 'https://itnt.store/';
+
+const fullAvatarUrl = computed(() => {
+    return props.post?.createdBy.pictureUrl ? `${baseAvaURL}files/${props.post?.createdBy.pictureUrl}` : ava;
+});
 function formatDate(inputDate) {
     const date = new Date(inputDate);
     const now = new Date();
@@ -180,7 +201,6 @@ function formatDate(inputDate) {
     const isYesterday = date.toDateString() === yesterday.toDateString();
 
     if (isToday) {
-        // Если дата сегодняшняя
         const diffMs = now - date;
         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
@@ -191,10 +211,8 @@ function formatDate(inputDate) {
             return `${diffMinutes}м назад`;
         }
     } else if (isYesterday) {
-        // Если дата вчерашняя
         return `Вчера в ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     } else {
-        // Любая другая дата
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear().toString().slice(-2);
@@ -234,6 +252,7 @@ function formatDate(inputDate) {
         &__slider {
             display: flex;
             gap: 16px;
+            flex-direction: row !important;
             -ms-overflow-style: none;
             /* Internet Explorer 10+ */
             scrollbar-width: none;

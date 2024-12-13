@@ -3,7 +3,6 @@
     <v-col class="pa-0 text-center">
         <v-container class="pa-6 pt-0 mt-3">
             <div class="mb-4" v-for="event in events">
-                    <!-- {{event.eventType}} -->
                     <FeedCard :post="event" :feedCardType="event.eventType" />
                 </div>
             <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
