@@ -208,6 +208,7 @@ onMounted(loadComments);
       border: 3px solid rgb(199, 237, 255);
       border-radius: 100%;
       width: 40px;
+      height:40px;
     }
 
     .title {

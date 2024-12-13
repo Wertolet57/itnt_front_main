@@ -156,13 +156,10 @@ const modalItems: modalActionsList[] = [
     },
 ]
 const baseURL = 'https://itnt.store/';
-const fullAvatarUrl = props.projectInfo.project.avatarUrl;
-// const fullAvatarUrl = computed(() => {
-//     return `${baseURL}files/${props.projectInfo.project.avatarUrl}`;
-// })
+const fullAvatarUrl = props.projectInfo?.project.avatarUrl;
 const displayAvatarUrl = computed(() => {
-    return fullAvatarUrl && fullAvatarUrl !== `${baseURL}files/string` && fullAvatarUrl !== `${baseURL}files/`
-        ? fullAvatarUrl
+    return fullAvatarUrl && fullAvatarUrl.trim() !== ''
+        ? `${baseURL}files/${fullAvatarUrl}`
         : defPrjImg;
 });
 </script>

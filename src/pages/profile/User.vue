@@ -1,7 +1,7 @@
 <template>
     <Header showID :showUserMinify="true" />
     <ProfileHeader :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
-
+    <!-- {{events}} -->
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
             :user-name="userInfo.firstName" :city="userInfo.city ? userInfo.city.name : ''"
@@ -48,7 +48,7 @@ import { getUserByID, getUserPosts } from '~/API/ways/user.ts'
 import { isAuth } from '~/helpers/routerHandler'
 import { delPost } from "../../API/ways/post"
 import { onMounted, ref, computed } from 'vue';
-import { postProject } from "~/API/ways/post";
+import { postProject , getEvents } from "~/API/ways/post";
 let posts = ref();
 const postData = ref({
     descriptionHeader: '',
@@ -56,6 +56,15 @@ const postData = ref({
     authorProject: null,
     authorUser: localStorage.getItem('userId'),
 });
+const events = ref()
+async function feedEvents() {
+    try {
+        const response = await getEvents()
+        events.value = response.data
+    } catch (error) {
+        
+    }
+}
 const isBottomSheetOpen = ref(false);
 const closeBottomSheet = async () => {
     isBottomSheetOpen.value = false;
@@ -86,6 +95,7 @@ const modalState = ref(null);
 isAuth();
 onMounted(async () => {
     await fetchUserInfo();
+    await feedEvents();
 });
 let userInfo = ref({});
 const fetchUserInfo = async () => {

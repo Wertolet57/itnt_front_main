@@ -2,15 +2,19 @@
     <Header showUserMinify />
     <div class="projectHeader__edit">
         <div class="avatar-uploader">
-            <div class="avatar-circle" @click="triggerFileInput">
+            <div class="avatar-" @click="triggerFileInput">
                 <img v-if="avatarPreview" :src="avatarPreview" alt="Аватар" />
-                <img src="@/assets/img/regSteps/addProfilePic.svg" v-else/>
+                <img src="@/assets/img/regSteps/addProfilePic.svg" v-else />
             </div>
             <input ref="fileInput" type="file" accept="image/*" @change="onAvatarChange" class="hidden-input" />
         </div>
         <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
         <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
-        <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
+        <!-- <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" /> -->
+        <div class="project-id-input">
+            <span class="prefix">{{ defaultPrefix }}</span>
+            <input type="text" v-model="editableValue" @input="syncValue" class="editable-input" />
+        </div>
     </div>
     <div class="mx-4">
 
@@ -76,6 +80,16 @@ const projectDescription = ref('')
 const avatarFile = ref(null);
 const avatarPreview = ref('');
 const fileInput = ref(null);
+const defaultPrefix = "https://itnt.store/";
+const placeholder = "Введите дополнительный текст...";
+
+// Хранит изменяемую часть текста
+const editableValue = ref("");
+
+// Синхронизация значения
+function syncValue(event) {
+    editableValue.value = event.target.value;
+}
 const triggerFileInput = () => {
     fileInput.value.click();
 };
@@ -152,6 +166,27 @@ console.log(projectTags)
 
 
 <style lang="scss" scoped>
+.project-id-input {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.prefix {
+    color: #323232;
+    user-select: none;
+}
+
+.editable-input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding-left: 1px;
+}
+
 .avatar-uploader {
     display: flex;
     flex-direction: column;

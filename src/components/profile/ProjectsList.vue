@@ -14,12 +14,12 @@ export default {
         </div>
         <UiSwitch @changeValue="currentProjects = $event" :items="[`${$t('now')} `, `${$t('before')} `]" />
         <template v-if="props.projects">
-            <template v-for="(project, id) in visibleProjects" :key="id">
+            <template v-for="(project, id) in props.projects" :key="id">
                 <ProjectCard :read-only="true"
-                    v-if="props.readOnly === true && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                    v-if="props.readOnly === true && project.relationType == 'PROJECT_OWNER' && !project.isAnon && !project.isHiden"
                     :projectInfo="project" />
                 <ProjectCard  :read-only="false"
-                    v-if="props.readOnly === false && project.relationType !== 'PROJECT_FOLLOWER' && !project.isAnon && !project.isHiden"
+                    v-if="props.readOnly === false && project.relationType == 'PROJECT_OWNER' && !project.isAnon && !project.isHiden"
                     :projectInfo="project" />
             </template>
 
@@ -64,8 +64,8 @@ const filteredProjects = computed(() => {
     if (!props.projects) return [];
     const uniqueProjects = new Set();
     return props.projects.filter(project => {
-        const isUnique = !uniqueProjects.has(project.id) && 
-                         project.relationType !== 'PROJECT_FOLLOWER' &&
+        const isUnique = !uniqueProjects.has(project.id) &&
+                         project.relationType === "PROJECT_OWNER" &&
                          !project.isAnon &&
                          !project.isHiden;
         if (isUnique) uniqueProjects.add(project.id);

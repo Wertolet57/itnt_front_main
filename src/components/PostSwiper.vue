@@ -1,6 +1,6 @@
 <template>
     <div class="flex h-[180px] max-w-[1024px] mx-4">
-        <swiper :breakpoints="swiperBreakpoints" :spaceBetween="0" :modules="modules" class="mySwiper">
+        <swiper :breakpoints="swiperBreakpoints" :spaceBetween="0" :modules="modules" class="swiper">
             <swiper-slide class="rounded-[16px]" v-for="file in data" :key="file.id">
                 <img class="rounded-[16px]" :src="`${baseURL}/${file.pictureUrl}`" :alt="baseURL" />
             </swiper-slide>
@@ -14,7 +14,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
-import { useRoute } from 'vue-router';
+// import { useRoute } from 'vue-router';
 import { getPostById } from '../API/ways/post';
 
 const props = defineProps({
@@ -37,13 +37,13 @@ onMounted(async () => {
 });
 const swiperBreakpoints = {
     0: {
-        slidesPerView: 1.6
+        slidesPerView: 1
     },
     768: {
-        slidesPerView: 3.7
+        slidesPerView: 1
     },
     1024: {
-        slidesPerView: 4.8
+        slidesPerView: 1
     }
 }
 
@@ -56,7 +56,7 @@ const swiperBreakpoints = {
 
 .swiper-slide {
     // text-align: center;
-    height: 60px;
+    height: 180px;
     font-size: 18px;
     padding-left: 4px;
     // display: flex;

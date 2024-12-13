@@ -40,10 +40,15 @@ class WebSocketService {
             };
 
             this.socket.onmessage = (event) => {
-                const message = JSON.parse(event.data);
-                console.log('Получено сообщение:', message);
-                this.messages.value.push(message);
+                try {
+                    const message = JSON.parse(event.data);
+                    console.log('Получено сообщение:', message);
+                    this.messages.value.push(message);
+                } catch (error) {
+                    console.error('Ошибка обработки входящего сообщения:', error);
+                }
             };
+
 
             this.socket.onerror = (error) => {
                 console.error('Ошибка WebSocket:', error);
@@ -60,14 +65,13 @@ class WebSocketService {
         }
     }
 
-    sendMessage(dialogId: number, messageContent: any) {
+    sendMessage(dialogId: number, message: any) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            const message = {
-                type: 'chat_message',
-                dialogId: dialogId,
-                content: messageContent
-            };
-            this.socket.send(JSON.stringify(message));
+            const payload = JSON.stringify({
+                dialogId,
+                ...message,
+            });
+            this.socket.send(payload);
         } else {
             console.error('WebSocket не подключен');
         }

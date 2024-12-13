@@ -3,14 +3,17 @@
         <Header :showUserMinify="true" :routeName="lastPart" :chat="true" />
         <div class="chat-container">
             <div class="messages-container">
+                {{receivedMessages}}
                 <div v-if="messages.length > 0" class="date-container">
                     <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
                 </div>
-                <div v-for="message in messages" :key="index" class="message my-message ">
+
+                <div v-for="message in messages"  class="message my-message ">
                     <!-- :class="['message', message.isMine ? 'my-message' : 'other-message']"> -->
-                    <div class="message-content">{{ message.messageText }}</div>
+                    <div class="message-content">{{ message?.messageText }}</div>
                     <div class="message-info flex items-center">
-                        <span class="message-time text-[9E9E9E] mr-[8px] ">{{ message.timestamp ? formatDate(message.timestamp) : '00:00' }}</span>
+                        <span class="message-time text-[9E9E9E] mr-[8px] ">{{ message?.timestamp ?
+            formatDate(message?.timestamp) : '00:00' }}</span>
                         <!-- <span v-if="message.isMine" class="message-status">
                             <img :src="message.read ? delivered : chat" alt="">
                         </span> -->
@@ -23,9 +26,9 @@
             </div>
             <div class="input-container">
                 <div class="inner-input">
-                    <input v-model="newMessage" @keyup.enter="sendMessageAPI" placeholder="Введите сообщение..."
+                    <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
                         :disabled="connectionStatus !== 'open'" />
-                    <button @click="sendMessageAPI" :disabled="connectionStatus !== 'open'">
+                    <button @click="sendMessageWebSocket" :disabled="connectionStatus !== 'open'">
                         <img :src="chat" alt="Send" />
                     </button>
                 </div>
@@ -36,7 +39,7 @@
 
 <script lang="ts" setup>
 import Header from '~/components/Header.vue';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue';
 import { getDialogMessages, sendMessage } from "../../API/ways/dialog";
 import { webSocketService } from '../../helpers/websocket.ts';
 import { useRoute } from 'vue-router';
@@ -49,10 +52,11 @@ const connectionStatus = webSocketService.connectionStatus;
 const userId = ref(localStorage.getItem("userId"));
 const route = useRoute();
 const lastPart = ref<string | null>(null);
-
+// const messages = computed(() => webSocketService.messages);
+const receivedMessages = webSocketService.messages;
 const connectToWebSocket = () => {
     if (currentDialogId.value && userId.value) {
-        webSocketService.connect(currentDialogId.value, userId.value);
+        webSocketService.connect(currentDialogId.value, Number(userId.value));
     } else {
         console.error('DialogId или UserId не установлены');
     }
@@ -86,7 +90,23 @@ const sendMessageAPI = async () => {
         console.error('Ошибка при отправке сообщения:', error);
     }
 };
-const formatDate = (isoDate:any) => {
+const sendMessageWebSocket = () => {
+    if (newMessage.value.trim() && currentDialogId.value) {
+        webSocketService.sendMessage(currentDialogId.value, {
+            dialogType: "GROPE",
+            messageText: newMessage.value.trim(),
+            readStatus: false,
+            user: {
+                id: userId.value
+            }
+        });
+        newMessage.value = '';
+    } else {
+        console.error('Сообщение пустое или DialogId не установлен');
+    }
+};
+
+const formatDate = (isoDate: any) => {
     const date = new Date(isoDate);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
@@ -95,7 +115,7 @@ onMounted(() => {
     lastPart.value = fullPath.split('/').pop();
 
     if (lastPart.value) {
-        currentDialogId.value = parseInt(lastPart.value, 10); 
+        currentDialogId.value = parseInt(lastPart.value, 10);
         connectToWebSocket();
         getDialog(lastPart.value); 
     } else {
@@ -148,7 +168,7 @@ watch(connectionStatus, (newStatus) => {
     height: calc(100vh - 140px);
     overflow-y: auto;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: start;
 }
 
@@ -193,11 +213,13 @@ watch(connectionStatus, (newStatus) => {
     min-width: 10%;
     margin-bottom: 15px;
     border: .1px solid #E0E0E0;
-   
+
 }
-.message-content{
+
+.message-content {
     padding: 10px 15px 6px 14px;
 }
+
 .my-message {
     border-radius: 12px 12px 2px 12px;
     background-color: #E1F5FE;

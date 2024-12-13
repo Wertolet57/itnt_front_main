@@ -1,6 +1,6 @@
 <template>
     <div v-if="blogData" class="feedCard mb-4">
-        <img :src="backgroundUrl" alt="">
+        <!-- <img :src="backgroundUrl" alt=""> -->
         <div :class="{ 'feedCard__head-empty': withoutBg, 'feedCard__head': !withoutBg }" :style="headStyle">
             <div class="d-flex align-center">
                 <div>
@@ -27,8 +27,17 @@
             </p>
         </div>
         <div class="" v-if="blogData && blogData.pictureUrls && blogData.pictureUrls.length > 0">
-            <AddPostPhoto :post-id="blogData.id" :read-only="true"/>
+            <AddPostPhoto @click="dialog = true" :post-id="blogData.id" :read-only="true"/>
         </div>
+        <v-dialog class="elevation-0" v-model="dialog" width="90%">
+        <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
+            <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
+        </v-row>
+        <PostSwiper :id="blogData?.id"/>
+        <div @click="$router.push('/project/' + props.projectInfoSet.id)" class="slider-card text-center pt-4">
+            <p class="slider-button ma-0">Открыть проект<v-icon icon="mdi-arrow-right" size="x-small" /></p>
+        </div>
+    </v-dialog>
         <div v-if="props.userType == 'me'" class="feedCard__footer">
             <div class="d-flex align-center">
                 <UiButton @click="shareBlog" bgColor="def " class="mr-3" :imgSrc="share"
@@ -96,6 +105,7 @@ import bgImage from "@/assets/Frame221.png"
 import trash from "@/assets/trash_blue.svg"
 import edit_icon from "@/assets/edit_icon.svg"
 import AddPostPhoto from "../AddPostPhoto.vue"
+import PostSwiper from '../PostSwiper.vue'
 const props = defineProps({
     feedCardType: { type: String, default: '' },
     userType: { type: String, default: '' },
@@ -111,7 +121,7 @@ const modalState = ref(null)
 const blogState = ref(null)
 const postData = ref(null)
 const complaintData = ref(null)
-
+const dialog = ref(false)
 const headStyle = computed(() => ({
     'background-image': `url(${bgImage})`,
     'height': props.withoutBg ? 'auto' : '120px',

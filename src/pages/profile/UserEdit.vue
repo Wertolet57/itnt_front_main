@@ -7,7 +7,7 @@
             <UiInput v-model="user.lastName" class="mb-4" :label="$t('user-edit.second-name')" :required="true" ref="lastNameRef" />
             <div class="custom-select">
                 <select placeholder="123" v-model="user.country" @change="onCountryChange" ref="countryRef">
-                    <option  disabled value="">Выберите страну</option>
+                    <option disabled value="">Выберите страну</option>
                     <option v-for="country in countries" :key="country.id" :value="country">
                         {{ country.name }}
                     </option>
@@ -43,7 +43,7 @@
                     :rules="[(v) => v.length <= 300 || 'Max 300 characters']" ref="fullDescriptionRef" />
             </div>
             <div class="userEdit__components">
-                <UiSkills @update-skills="updateUserSkills" :skillList="user.interests" />
+                <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
                 <ProjectsList showAdder class="mt-12 mb-8" :projects="user.projects" />
             </div>
             <UiAgree @click="changeUser" />
@@ -86,7 +86,6 @@ const cities = ref([]);
 const countries = ref([]);
 const selectedCountryId = ref<number | null>(null);
 
-// Загружаем посты пользователя
 onMounted(async () => {
     try {
         const response = await getPostByUser(Number(localStorage.getItem('userId')));
@@ -122,46 +121,40 @@ const fetchCities = async (countryId: number) => {
         console.error('Error fetching cities:', error);
     }
 };
-
-// Загружаем страны и информацию о пользователе
 onMounted(async () => {
     try {
-        // Загружаем страны
         const countryResp = await getCountryList();
         countries.value = countryResp.data.object;
-
-        // Загружаем данные пользователя
         const response = await getUserByID(Number(localStorage.getItem('userId')));
         user.value = {
             ...user.value,
             ...response.data.object
         };
 
-        // Если у пользователя уже выбрана страна, загружаем соответствующие города
         if (user.value.country) {
             selectedCountryId.value = user.value.country.id;
             await fetchCities(user.value.country.id);
+        }
+        if (!user.value.country) {
+            user.value.country = '';
+        }
+        if (!user.value.city) {
+            user.value.city = '';
         }
 
     } catch (e) {
         console.error('Error fetching user data or countries:', e);
     }
 });
-
-// Фильтр городов по выбранной стране
 const filteredCities = computed(() => {
     return cities.value.filter(city => city.country && city.country.id === selectedCountryId.value);
 });
-
-// Обработка изменения страны
 const onCountryChange = async () => {
     if (user.value.country) {
         selectedCountryId.value = user.value.country.id;
         await fetchCities(user.value.country.id);
     }
 };
-
-// Добавляем функцию прокрутки к пустому инпуту
 function scrollToEmptyInput() {
     if (!user.value.firstName) {
         firstNameRef.value.$el.scrollIntoView({ behavior: 'smooth' });
@@ -173,7 +166,6 @@ function scrollToEmptyInput() {
     }
 }
 
-// Сохранение изменений пользователя с проверкой полей
 const changeUser = async () => {
     if (!user.value.firstName || !user.value.lastName) {
         scrollToEmptyInput();
@@ -258,7 +250,7 @@ const fullBannerUrl = computed(() => {
   cursor: pointer;
 }
 .custom-select option:disabled {
-  color: #9e9e9e;
+  color: #9e9e9e !important;
 }
 .props {
     display: flex;

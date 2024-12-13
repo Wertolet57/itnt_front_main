@@ -25,10 +25,10 @@
             <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
                 <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
             </v-row>
-            <div class="flex justify-center">
+            <!-- <div class="flex justify-center">
                 <v-img :src="selectedImageUrl" class="border" style="max-height: 80vh; max-width: 70vw;" cover
                     aspect-ratio="1"></v-img>
-            </div>
+            </div> -->
         </v-dialog>
     </div>
 </template>

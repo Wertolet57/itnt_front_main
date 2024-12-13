@@ -144,3 +144,6 @@ export const delPost = (postId: number) => {
 export const delPostFile = (Id: number) => {
     return API.delete(`${prefix}/post/delPostFile?id=${Id}`)
 }
+export const getEvents = () => {
+    return API.get(`${prefix}/new/feed/events`)
+}

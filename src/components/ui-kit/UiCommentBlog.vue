@@ -29,7 +29,9 @@
                 <v-icon icon="mdi-dots-vertical" />
             </button>
         </div>
-
+        <div class="" v-if="blogData && blogData.pictureUrls && blogData.pictureUrls.length > 0">
+            <AddPostPhoto :post-id="blogData.id" :read-only="true"/>
+        </div>
         <!-- body -->
         <div v-if="props.editable == false" class="feedCard__body">
             <!-- Новый этап проекта -->
