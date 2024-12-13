@@ -20,8 +20,12 @@ class WebSocketService {
     public messages = ref<any[]>([]);
     public connectionStatus = ref<'connecting' | 'open' | 'closed' | 'error'>('closed');
 
-    connect(dialogId: number, userId: number) {
-        const token = localStorage.getItem('userToken');
+    private getToken(): string | null {
+        return localStorage.getItem('userToken');
+    }
+
+    connect(dialogId: number, userId: number): void {
+        const token = this.getToken();
         if (!token) {
             console.error('Токен отсутствует. Невозможно установить WebSocket соединение.');
             return;
@@ -39,24 +43,16 @@ class WebSocketService {
                 this.connectionStatus.value = 'open';
             };
 
-            this.socket.onmessage = (event) => {
+            this.socket.onmessage = (event: MessageEvent) => {
                 console.log('Сырой ответ:', event.data);
                 try {
                     const message = JSON.parse(event.data);
                     console.log('Получено сообщение:', message);
-
-                    this.messages.value.push({
-                        dialogId: message.dialogId,
-                        type: message.dialogType,
-                        text: message.messageText,
-                        readStatus: message.readStatus,
-                        userId: message.user.id,
-                    });
+                    this.messages.value.push(message);
                 } catch (error) {
                     console.error('Ошибка обработки входящего сообщения:', error);
                 }
             };
-
 
             this.socket.onerror = (error) => {
                 console.error('Ошибка WebSocket:', error);
@@ -73,25 +69,26 @@ class WebSocketService {
         }
     }
 
-    sendMessage(dialogId: number, message: any) {
+    sendMessage(dialogId: number, message: Record<string, any>): void {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            const payload = JSON.stringify({
-                dialogId,
-                ...message,
-            });
+            const payload = JSON.stringify({ dialogId, ...message });
+            console.log('Отправка сообщения:', payload);
             this.socket.send(payload);
         } else {
-            console.error('WebSocket не подключен');
+            console.error('WebSocket не подключен или соединение закрыто');
         }
     }
 
-    disconnect() {
-        if (this.socket) {
+    disconnect(): void {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.close();
+            console.log('WebSocket отключен');
+        } else {
+            console.warn('WebSocket уже отключен или не существует');
         }
     }
 
-    async createDialog(dialogId: string, userId: number) {
+    async createDialog(dialogId: string, userId: number): Promise<any> {
         try {
             const response = await API.post(`${prefix}/`, {
                 dialogType: dialogId,

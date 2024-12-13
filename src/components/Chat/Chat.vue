@@ -3,12 +3,11 @@
         <Header :showUserMinify="true" :routeName="lastPart" :chat="true" />
         <div class="chat-container">
             <div class="messages-container">
-                {{receivedMessages}}
                 <div v-if="messages.length > 0" class="date-container">
                     <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
                 </div>
 
-                <div v-for="message in messages"  class="message my-message ">
+                <div v-for="message in messages" class="message my-message ">
                     <!-- :class="['message', message.isMine ? 'my-message' : 'other-message']"> -->
                     <div class="message-content">{{ message?.messageText }}</div>
                     <div class="message-info flex items-center">
@@ -46,14 +45,12 @@ import { useRoute } from 'vue-router';
 import chat from '../../assets/icons/chat.svg';
 import delivered from '~/assets/chat/delivered.svg';
 const newMessage = ref('');
-const messages = ref([]);
+const messages = webSocketService.messages;
 const currentDialogId = ref<number | null>(null);
 const connectionStatus = webSocketService.connectionStatus;
 const userId = ref(localStorage.getItem("userId"));
 const route = useRoute();
 const lastPart = ref<string | null>(null);
-// const messages = computed(() => webSocketService.messages);
-const receivedMessages = webSocketService.messages;
 const connectToWebSocket = () => {
     if (currentDialogId.value && userId.value) {
         webSocketService.connect(currentDialogId.value, Number(userId.value));
@@ -70,7 +67,7 @@ const getDialog = async (id: string) => {
         console.error('Ошибка при получении сообщений:', error);
     }
 };
-const sendMessageAPI = async (messageData:Object) => {
+const sendMessageAPI = async (messageData: Object) => {
     try {
         if (lastPart.value) {
             await sendMessage(lastPart.value, messageData);
@@ -89,14 +86,8 @@ const sendMessageWebSocket = () => {
                 id: userId.value
             }
         };
-
-        // Отправка через WebSocket
         webSocketService.sendMessage(currentDialogId.value, messageData);
-
-        // Отправка через API
         sendMessageAPI(messageData);
-
-        // Очистка поля ввода
         newMessage.value = '';
     } else {
         console.error('Сообщение пустое или DialogId не установлен');
@@ -115,7 +106,7 @@ onMounted(() => {
     if (lastPart.value) {
         currentDialogId.value = parseInt(lastPart.value, 10);
         connectToWebSocket();
-        getDialog(lastPart.value); 
+        getDialog(lastPart.value);
     } else {
         console.error('Не удалось получить ID чата из строки пути');
     }
