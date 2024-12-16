@@ -73,15 +73,6 @@ export default {
 
             </div>
         </div>
-        <!-- <div v-if="followed && followed.users" class=" text-black" v-for="user in followed.users">
-            <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
-                подписан
-            </div>
-            <div v-show="user.user.id == userId && user.relationType === 'PROJECT_FOLLOWER'" class="">
-                подписаться
-            </div>
-
-        </div> -->
         <div class="card__main">
             <img class="bordered" v-if="filteredProjectFiles.length == 0" src="../../assets/demo/projectSmallCard.svg"
                 alt="" />
@@ -101,7 +92,6 @@ export default {
                 </div>
             </div>
         </div>
-        {{ followers }}
     </v-card>
 
     <vue-bottom-sheet max-height="270px" full-screen ref="modalState">
@@ -114,8 +104,9 @@ export default {
                 </div>
                 <div class="modal__list__item">
                     <img :src="follow" alt="" />
-                    <p @click="isFollowing ? deletefollow() : Follow()" class="txt-body1"> {{ isFollowing ? 'Отписаться'
-                        : 'Подписаться' }}</p>
+                    <p @click="toggleFollow" class="txt-body1">
+                        {{ isFollowed ? 'Отписаться' : 'Подписаться' }}
+                    </p>
                 </div>
                 <div class="modal__list__item">
                     <img :src="share" alt="" />
@@ -171,7 +162,7 @@ import { projectSkill } from "../../helpers/projectSkill";
 import project from "~/assets/project_modal/project.svg"
 import share from "~/assets/icons/share-blue.svg"
 import warning from "~/assets/icons/warning-red.svg"
-import defAva from "~/assets/demo/projectsmallphoto.svg"
+// import defAva from "~/assets/demo/projectsmallphoto.svg"
 // import statistic from "~/assets/modal_icon/statistic.svg"
 import UiButton from "~/components/ui-kit/UiButton.vue"
 import follow from "~/assets/modal_icon/follow.svg"
@@ -179,16 +170,16 @@ import { ref, computed, onMounted } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { addFollow, delFollow, addComplaint, getProjectFollowers } from "~/API/ways/project"
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 const skillsMap = Object.fromEntries(projectSkill.manageSkills.map(skill => [skill.key, skill.value]));
 
-function getRussianTags(activityFields) {
-    return activityFields.map(tag => skillsMap[tag] || tag);
+function getRussianTags(activityFields: any) {
+    return activityFields.map((tag: any) => skillsMap[tag] || tag);
 }
-function truncateTag(tag) {
+function truncateTag(tag: any) {
     return tag.length > 15 ? `${tag.slice(0, 15)}...` : tag;
 }
-const router = useRouter()
+// const router = useRouter()
 const complainState = ref(false)
 const modalState = ref(false)
 const dialog = ref(false)
@@ -213,15 +204,16 @@ const complaint = ref('')
 const sendComplaint = async () => {
     await addComplaint(props.projectInfoSet.id, Number(localStorage.getItem('userId')), complaint.value,)
 }
-const followers = ref()
+const followers = ref([]);
 const getFollowers = async () => {
     try {
         const response = await getProjectFollowers(props.projectInfoSet.id)
-        followers.value = response.data
+        followers.value = response.data.object
     } catch (error) {
 
     }
 }
+
 onMounted(getFollowers)
 function Share() {
     if (navigator.share) {
@@ -236,27 +228,43 @@ function Share() {
         console.log('Web Share API не поддерживается этим браузером');
     }
 }
-const userID = localStorage.getItem("userId");
 const snackbarVisible = ref(false);
-const isFollowing = ref(false);
-async function Follow() {
+const isFollowed = computed(() => {
+    const currentUserId = Number(localStorage.getItem("userId"));
+    return followers.value.some(follower => follower.user.id === currentUserId);
+});
+
+async function toggleFollow() {
+    const currentUserId = Number(localStorage.getItem("userId"));
+    if (!currentUserId) {
+        console.error('No valid user ID to toggle follow');
+        return;
+    }
+
     try {
-        await addFollow(Number(props.projectInfoSet.id));
-        isFollowing.value = true;
-        snackbarVisible.value = true;
+        if (isFollowed.value) {
+            await delFollow(props.projectInfoSet.id, currentUserId);
+        } else {
+            await addFollow(props.projectInfoSet.id);
+        }
+
+        // Обновляем список подписчиков напрямую
+        await updateFollowersList();
     } catch (error) {
-        console.error('Error following project:', error);
+        console.error('Ошибка при изменении подписки:', error);
     }
 }
-async function deletefollow() {
+
+const updateFollowersList = async () => {
     try {
-        await delFollow(Number(props.projectInfoSet.id), userID);
-        isFollowing.value = false;
-        snackbarVisible.value = true;
+        const response = await getProjectFollowers(props.projectInfoSet.id);
+        followers.value = response.data.object;
     } catch (error) {
-        console.error('Error following project:', error);
+        console.error('Ошибка получения списка подписчиков:', error);
     }
-}
+};
+
+onMounted(updateFollowersList);
 const baseURL = 'https://itnt.store/';
 
 const isExternalUrl = (url: string | null) => {
@@ -268,7 +276,7 @@ const getFileUrl = (url: string) => {
 };
 const filteredProjectFiles = computed(() => {
     return props.projectInfoSet?.projectFiles
-        ? props.projectInfoSet.projectFiles.filter((file) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
+        ? props.projectInfoSet.projectFiles.filter((file: any) => file.pictureUrl && !isExternalUrl(file.pictureUrl))
         : [];
 });
 

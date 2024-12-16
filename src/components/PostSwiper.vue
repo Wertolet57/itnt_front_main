@@ -4,7 +4,6 @@
             <swiper-slide class="rounded-[16px]" v-for="file in data" :key="file.id">
                 <img class="rounded-[16px]" :src="`${baseURL}/${file.pictureUrl}`" :alt="baseURL" />
             </swiper-slide>
-            {{ baseURL }}
         </swiper>
     </div>
 </template>
@@ -50,13 +49,14 @@ const swiperBreakpoints = {
 </script>
 <style lang="scss" scoped>
 .swiper {
-    width: 100%;
-    height: 100%;
+    // width: 50vw;
+    // height: 50vw;
 }
 
 .swiper-slide {
     // text-align: center;
-    height: 180px;
+    // width: 100%;
+    // height: 100%;
     font-size: 18px;
     padding-left: 4px;
     // display: flex;
@@ -67,8 +67,9 @@ const swiperBreakpoints = {
 
 .swiper-slide img {
     // display: flex;
-    width: 177px;
-    height: 133px;
+    background: no-repeat;
+    // width: 100%;
+    // height: 100%;
     // width: auto;
     // height: auto;
     // aspect-ratio: 177 / 133;

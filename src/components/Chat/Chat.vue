@@ -1,49 +1,63 @@
 <template>
-    <div>
-        <Header :showUserMinify="true" :routeName="lastPart" :chat="true" />
-        <div class="chat-container">
-            <div class="messages-container">
-                <div v-if="messages.length > 0" class="date-container">
+    <div class="chat-container">
+        <Header class="mb-[40px]" :showUserMinify="true" :routeName="lastPart" :chat="true" />
+        
+        <div 
+            ref="messagesContainer" 
+            class="messages-wrapper"
+        >
+            <div class="messages-container" v-if="messages.length > 0">
+                <div class="date-container">
                     <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
                 </div>
-
-                <div v-for="message in messages" class="message my-message ">
-                    <!-- :class="['message', message.isMine ? 'my-message' : 'other-message']"> -->
+                
+                <div 
+                    v-for="message in messages" 
+                    :key="message.id" 
+                    :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']"
+                >  
                     <div class="message-content">{{ message?.messageText }}</div>
                     <div class="message-info flex items-center">
-                        <span class="message-time text-[9E9E9E] mr-[8px] ">{{ message?.timestamp ?
-            formatDate(message?.timestamp) : '00:00' }}</span>
-                        <!-- <span v-if="message.isMine" class="message-status">
-                            <img :src="message.read ? delivered : chat" alt="">
-                        </span> -->
+                        <span class="message-time text-[9E9E9E] mr-[8px]">
+                            {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
+                        </span>
                         <span class="message-status">
-                            <img :src="delivered" alt="">
-                            <!-- <img :src="message.readStatus ? delivered : chat" alt=""> -->
+                            <img :src="delivered" alt="" />
                         </span>
                     </div>
                 </div>
             </div>
-            <div class="input-container">
-                <div class="inner-input">
-                    <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
-                        :disabled="connectionStatus !== 'open'" />
-                    <button @click="sendMessageWebSocket" :disabled="connectionStatus !== 'open'">
-                        <img :src="chat" alt="Send" />
-                    </button>
-                </div>
+        </div>
+
+        <div class="input-container">
+            <div class="inner-input">
+                <input 
+                    v-model="newMessage" 
+                    @keyup.enter="sendMessageWebSocket" 
+                    placeholder="Введите сообщение..."
+                    :disabled="connectionStatus !== 'open'"
+                />
+                <button 
+                    @click="sendMessageWebSocket" 
+                    :disabled="connectionStatus !== 'open'"
+                >
+                    <img :src="chat" alt="Send" />
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Header from '~/components/Header.vue';
-import { onMounted, onUnmounted, ref, watch, computed } from 'vue';
 import { getDialogMessages, sendMessage } from "../../API/ways/dialog";
 import { webSocketService } from '../../helpers/websocket.ts';
-import { useRoute } from 'vue-router';
 import chat from '../../assets/icons/chat.svg';
 import delivered from '~/assets/chat/delivered.svg';
+
+// Refs
 const newMessage = ref('');
 const messages = webSocketService.messages;
 const currentDialogId = ref<number | null>(null);
@@ -51,6 +65,21 @@ const connectionStatus = webSocketService.connectionStatus;
 const userId = ref(localStorage.getItem("userId"));
 const route = useRoute();
 const lastPart = ref<string | null>(null);
+const messagesContainer = ref<HTMLDivElement | null>(null);
+const myMessage = ref();
+const sentMessage = ref()
+const isMyMessage = (message: any) => {
+    return message?.user?.id == userId.value;
+};
+const scrollToBottom = () => {
+    nextTick(() => {
+        if (messagesContainer.value) {
+            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+        }
+    });
+};
+
+// Connect to WebSocket
 const connectToWebSocket = () => {
     if (currentDialogId.value && userId.value) {
         webSocketService.connect(currentDialogId.value, Number(userId.value));
@@ -59,23 +88,32 @@ const connectToWebSocket = () => {
     }
 };
 
+// Fetch dialog messages
 const getDialog = async (id: string) => {
     try {
         const response = await getDialogMessages(id);
         messages.value = response.data.object;
+        sentMessage.value = response.data.object.user.id
+        scrollToBottom();
     } catch (error) {
         console.error('Ошибка при получении сообщений:', error);
     }
 };
+
+// Send message via API
 const sendMessageAPI = async (messageData: Object) => {
     try {
         if (lastPart.value) {
-            await sendMessage(lastPart.value, messageData);
+            const response = await sendMessage(lastPart.value, messageData);
+            myMessage.value = response.data.object;
+            await getDialog(lastPart.value)
         }
     } catch (error) {
         console.error('Ошибка при отправке сообщения через API:', error);
     }
 };
+
+// Send message via WebSocket
 const sendMessageWebSocket = () => {
     if (newMessage.value.trim() && currentDialogId.value) {
         const messageData = {
@@ -89,16 +127,19 @@ const sendMessageWebSocket = () => {
         webSocketService.sendMessage(currentDialogId.value, messageData);
         sendMessageAPI(messageData);
         newMessage.value = '';
+        scrollToBottom();
     } else {
         console.error('Сообщение пустое или DialogId не установлен');
     }
 };
 
-
+// Format date
 const formatDate = (isoDate: any) => {
     const date = new Date(isoDate);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
+
+// Lifecycle hooks
 onMounted(() => {
     const fullPath = window.location.origin + route.fullPath;
     lastPart.value = fullPath.split('/').pop();
@@ -110,19 +151,27 @@ onMounted(() => {
     } else {
         console.error('Не удалось получить ID чата из строки пути');
     }
+
+    // Add WebSocket message listener to scroll to bottom when new message arrives
+    webSocketService.messages.value.length > 0 && scrollToBottom();
 });
 
 onUnmounted(() => {
     webSocketService.disconnect();
 });
 
+// Watch for connection status changes
 watch(connectionStatus, (newStatus) => {
     if (newStatus === 'closed' || newStatus === 'error') {
         setTimeout(connectToWebSocket, 5000);
     }
 });
-</script>
 
+// Watch for new messages to scroll to bottom
+watch(messages, () => {
+    scrollToBottom();
+});
+</script>
 
 <style scoped lang="scss">
 .v-application .v-card,
@@ -153,13 +202,6 @@ watch(connectionStatus, (newStatus) => {
     white-space: break-spaces;
 }
 
-.chat-screen {
-    height: calc(100vh - 140px);
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-}
 
 .date {
     display: flex;
@@ -173,10 +215,27 @@ watch(connectionStatus, (newStatus) => {
 }
 
 .chat-container {
-    height: calc(100vh - 140px);
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    height: calc(100vh + 140px);
+    overflow: hidden;
+}
+
+.messages-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    padding-bottom: 70px;
+}
+.messages-container {
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .date-container {
@@ -184,18 +243,19 @@ watch(connectionStatus, (newStatus) => {
     justify-content: center;
     padding: 10px;
     align-items: center;
-    flex-direction: column;
-    justify-content: end;
 }
 
-.messages-container {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
+.date {
     display: flex;
-    flex-direction: column;
-    justify-content: end;
+    justify-content: center;
+    width: 100px;
+    background: rgba(224, 224, 224, 0.5);
+    font-size: 13px !important;
+    letter-spacing: 0.01em !important;
+    padding: 6px 20px;
+    line-height: 14px;
 }
+
 
 .message {
     max-width: 100%;
