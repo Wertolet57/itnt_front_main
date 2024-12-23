@@ -191,7 +191,7 @@ const baseAvaURL = 'https://itnt.store/';
 const fullAvatarUrl = computed(() => {
     return props.post?.createdBy.pictureUrl ? `${baseAvaURL}files/${props.post?.createdBy.pictureUrl}` : ava;
 });
-function formatDate(inputDate) {
+function formatDate(inputDate:any) {
     const date = new Date(inputDate);
     const now = new Date();
 
