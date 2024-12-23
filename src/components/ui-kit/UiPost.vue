@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="padding: 15px; padding-bottom: 20px">
+    <div class="card" style="padding: 15px; padding-bottom: 20px;overflow-y: auto;">
         <div class="d-flex mb-2">
             <p>{{ $t("Post.publish") }}</p>
         </div>
@@ -175,7 +175,7 @@ const submitImages = async () => {
 .background{
     img{
         width: 100%;
-        height: 100%;
+        max-height: 240px;
         object-fit: cover;
         border-radius: 12px;
     }

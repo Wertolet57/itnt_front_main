@@ -78,7 +78,28 @@ class WebSocketService {
             console.error('WebSocket не подключен или соединение закрыто');
         }
     }
+    updateMessageStatus(messageId: number, readStatus: boolean): void {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const statusUpdate = {
+                messageId,
+                readStatus,
+            };
+            this.socket.send(JSON.stringify(statusUpdate));
+        } else {
+            console.error('WebSocket соединение не установлено. Невозможно обновить статус сообщения.');
+        }
+    }
 
+    onMessageStatusUpdate(callback: (messageId: number, readStatus: boolean) => void): void {
+        if (this.socket) {
+            this.socket.onmessage = (event: MessageEvent) => {
+                const message = JSON.parse(event.data);
+                if (message.type === 'status_update') {
+                    callback(message.messageId, message.readStatus);
+                }
+            };
+        }
+    }
     disconnect(): void {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.close();

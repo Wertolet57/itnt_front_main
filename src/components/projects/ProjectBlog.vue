@@ -27,16 +27,17 @@
             </p>
         </div>
         <div class="" v-if="blogData && blogData.pictureUrls && blogData.pictureUrls.length > 0">
-            <AddPostPhoto @click="dialog = true" :post-id="blogData.id" :read-only="true"/>
+            <PostSwiper @click="dialog = true" :id="blogData?.id"/>
+            <!-- <AddPostPhoto @click="dialog = true" :post-id="blogData.id" :read-only="true"/> -->
         </div>
         <v-dialog class="elevation-0" v-model="dialog" width="90%">
         <v-row class="pa-2 pt-0 pb-2 ma-0" justify="end">
             <v-icon class="close-button" @click="dialog = false" icon="mdi-close" />
         </v-row>
-        <PostSwiper :id="blogData?.id"/>
-        <div @click="$router.push('/project/' + props.projectInfoSet.id)" class="slider-card text-center pt-4">
-            <p class="slider-button ma-0">Открыть проект<v-icon icon="mdi-arrow-right" size="x-small" /></p>
-        </div>
+        <PostSwiper :zoom="true" :id="blogData?.id"/>
+        <!-- <div @click="$router.push('/project/' + props.projectInfoSet.id)" class="slider-card text-center pt-4">
+            <p class="slider-button ma-0">Открыть пост<v-icon icon="mdi-arrow-right" size="x-small" /></p>
+        </div> -->
     </v-dialog>
         <div v-if="props.userType == 'me'" class="feedCard__footer">
             <div class="d-flex align-center">

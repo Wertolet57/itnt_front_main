@@ -10,7 +10,7 @@
         <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
         <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">{{ $t('create') }}</UiButton>
         <v-bottom-sheet inset v-model="isBottomSheetOpen" :click-to-close="true" :background-scrollable="false">
-            <div class="min-h-[350px]">
+            <div class="max-h-[650px] overflow-y-auto">
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
                         v-model:description="postData.description" :author-project="postData.authorProject"

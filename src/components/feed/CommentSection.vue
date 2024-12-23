@@ -76,13 +76,13 @@ const submitComment = async () => {
   try {
     const response = await addComment(newComment);
 
-    if (replyingTo) {
-      const parentComment = comments.value.find(comment => comment.id === replyingTo.id);
+    if (replyingTo.value) {
+      const parentComment = comments.value.find(comment => comment.id === replyingTo.value.id);
       if (parentComment) {
-        if (!Array.isArray(parentComment.parentNode)) {
-          parentComment.parentNode = [];
+        if (!Array.isArray(parentComment.replies)) {
+          parentComment.replies = [];
         }
-        parentComment.parentNode.push(response.data);
+        parentComment.replies.push(response.data);
       }
     } else {
       comments.value.push(response.data);
@@ -208,7 +208,7 @@ onMounted(loadComments);
       border: 3px solid rgb(199, 237, 255);
       border-radius: 100%;
       width: 40px;
-      height:40px;
+      height: 40px;
     }
 
     .title {

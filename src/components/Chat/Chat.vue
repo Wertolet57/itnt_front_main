@@ -1,7 +1,6 @@
 <template>
-    <div class="chat-container">
-        <Header class="mb-[40px]" :showUserMinify="true" :routeName="lastPart" :chat="true" />
-        
+    <Header class="mb-[40px]" :showUserMinify="true" :routeName="lastPart" :chat="true" />
+    <div class="">    
         <div 
             ref="messagesContainer" 
             class="messages-wrapper"
@@ -22,28 +21,27 @@
                             {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
                         </span>
                         <span class="message-status">
-                            <img :src="delivered" alt="" />
+                            <img :src="message.readStatus ? seen : delivered" alt="status" />
                         </span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="input-container">
-            <div class="inner-input">
-                <input 
-                    v-model="newMessage" 
-                    @keyup.enter="sendMessageWebSocket" 
-                    placeholder="Введите сообщение..."
-                    :disabled="connectionStatus !== 'open'"
-                />
-                <button 
-                    @click="sendMessageWebSocket" 
-                    :disabled="connectionStatus !== 'open'"
-                >
-                    <img :src="chat" alt="Send" />
-                </button>
-            </div>
+    </div>
+    <div class="input-container">
+        <div class="inner-input">
+            <input 
+                v-model="newMessage" 
+                @keyup.enter="sendMessageWebSocket" 
+                placeholder="Введите сообщение..."
+                :disabled="connectionStatus !== 'open'"
+            />
+            <button 
+                @click="sendMessageWebSocket" 
+                :disabled="connectionStatus !== 'open'"
+            >
+                <img :src="chat" alt="Send" />
+            </button>
         </div>
     </div>
 </template>
@@ -56,7 +54,7 @@ import { getDialogMessages, sendMessage } from "../../API/ways/dialog";
 import { webSocketService } from '../../helpers/websocket.ts';
 import chat from '../../assets/icons/chat.svg';
 import delivered from '~/assets/chat/delivered.svg';
-
+import seen from '~/assets/chat/seen.svg';
 // Refs
 const newMessage = ref('');
 const messages = webSocketService.messages;
@@ -68,15 +66,16 @@ const lastPart = ref<string | null>(null);
 const messagesContainer = ref<HTMLDivElement | null>(null);
 const myMessage = ref();
 const sentMessage = ref()
+const messageList = ref([]);
+
 const isMyMessage = (message: any) => {
     return message?.user?.id == userId.value;
 };
 const scrollToBottom = () => {
-    nextTick(() => {
-        if (messagesContainer.value) {
-            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-        }
-    });
+    const chatContainer = document.getElementById('chat-container');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 };
 
 // Connect to WebSocket
@@ -91,7 +90,7 @@ const connectToWebSocket = () => {
 // Fetch dialog messages
 const getDialog = async (id: string) => {
     try {
-        const response = await getDialogMessages(id);
+        const response = await getDialogMessages(Number(id));
         messages.value = response.data.object;
         sentMessage.value = response.data.object.user.id
         scrollToBottom();
@@ -104,7 +103,7 @@ const getDialog = async (id: string) => {
 const sendMessageAPI = async (messageData: Object) => {
     try {
         if (lastPart.value) {
-            const response = await sendMessage(lastPart.value, messageData);
+            const response = await sendMessage(Number(lastPart.value), messageData);
             myMessage.value = response.data.object;
             await getDialog(lastPart.value)
         }
@@ -132,7 +131,12 @@ const sendMessageWebSocket = () => {
         console.error('Сообщение пустое или DialogId не установлен');
     }
 };
-
+webSocketService.onMessageStatusUpdate((messageId, readStatus) => {
+    const message = messageList.value.find(msg => msg.id === messageId);
+    if (message) {
+        message.readStatus = readStatus;
+    }
+});
 // Format date
 const formatDate = (isoDate: any) => {
     const date = new Date(isoDate);
