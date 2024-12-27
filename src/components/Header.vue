@@ -12,12 +12,12 @@ export default {
         <h2 v-show="props.routeName">{{ props.routeName }}</h2>
         <v-spacer v-if="search === false" />
         <div @click="toggleTopModal" class="ava cursor-pointer">
-            <img  v-if="fullAvatarUrl == null || fullAvatarUrl == ''" class="defAva" :src="defAva">
-            <img class="img" v-else style="padding: 10px" v-if="props.showUserMinify === true"
-                :src="fullAvatarUrl" />
-            
+            <img v-if="fullAvatarUrl == null || fullAvatarUrl == ''" class="defAva" :src="defAva">
+            <img class="img" v-else style="padding: 10px" v-if="props.showUserMinify === true" :src="fullAvatarUrl" />
+
         </div>
-        <img class="cursor-pointer" @click="toggleProjectModal" style="padding: 10px" v-if="props.showControlDotsProject" :src="dots"/>
+        <img class="cursor-pointer" @click="toggleProjectModal" style="padding: 10px"
+            v-if="props.showControlDotsProject" :src="dots" />
         <img @click="toggleUserModal" style="padding: 10px" v-if="props.showControlDots" :src="dots" />
 
         <img @click="modalState.open()" style="padding: 10px" v-if="props.chat" :src="dots" />
@@ -40,15 +40,20 @@ export default {
 
             </div>
         </vue-bottom-sheet>
-        <vue-bottom-sheet max-height="980px" ref="invite">
+        <vue-bottom-sheet class="h-[980px] max-h-[980px]" ref="invite">
             <div class="searchTeammateModal modal">
-                <p class="mb-2">Выберите проект, в который хотите пригласить участника:</p>
-                <v-radio-group v-model="selectedProject" color="#29b6f6">
-                    <v-radio v-for="(project, idx) in followed" :key="idx" class="" base-color="#29b6f6"
-                        :label="project.project.name" :value="project.project.name"></v-radio>
-                </v-radio-group>
-                <UiTextArea label="Сопроводительное письмо*" v-model="props.textarea" />
-                <UiButton bg-color="blue" @click="sendProp">Отправить приглашение</UiButton>
+                <div v-if="followed && followed.length > 0">
+                    <p class="mb-2">Выберите проект, в который хотите пригласить участника:</p>
+                    <v-radio-group v-model="selectedProject" color="#29b6f6">
+                        <v-radio v-for="(project, idx) in followed" :key="idx" class="" base-color="#29b6f6"
+                            :label="project.project.name" :value="project.project.name"></v-radio>
+                    </v-radio-group>
+                    <UiTextArea label="Сопроводительное письмо*" v-model="props.textarea" />
+                    <UiButton bg-color="blue" @click="sendProp">Отправить приглашение</UiButton>
+                </div>
+                <div v-else class="text-center py-4">
+                    <p>У вас еще нет проектов</p>
+                </div>
             </div>
         </vue-bottom-sheet>
         <vue-bottom-sheet max-height="480px" full-screen ref="chat">
@@ -78,8 +83,9 @@ export default {
             <v-icon icon="mdi-magnify" />
         </div>
     </v-app-bar>
-    <UserProject :project="project" @close="closeUserProjectModal" v-if="showUserProjectModal"/>
-    <UserModal :userID="lastPart" @close="user.userObj.userModalState = false" v-if="user.userObj.userModalState === true" />
+    <UserProject :project="project" @close="closeUserProjectModal" v-if="showUserProjectModal" />
+    <UserModal :userID="lastPart" @close="user.userObj.userModalState = false"
+        v-if="user.userObj.userModalState === true" />
 
     <TopModal @close="isModalOpen = false" v-if="user.userObj.topModalState === true" />
 </template>
@@ -201,7 +207,7 @@ onMounted(async () => {
     })
 })
 
-const baseURL ='https://itnt.store/';
+const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
     return data.value.pictureUrl ? `${baseURL}files/${data.value.pictureUrl}` : '';
@@ -230,9 +236,11 @@ function copyID() {
 </script>
 
 <style scoped lang="scss">
-.addaptive{}
+.addaptive {}
+
 .searchTeammateModal {
     min-height: 350px;
+
     &__items {
         display: flex;
         flex-direction: column;
@@ -252,12 +260,14 @@ function copyID() {
     max-height: 58px;
     padding: 0;
     margin: 0;
-    .defAva{
+
+    .defAva {
         padding: 10px 0 12px 0;
         width: 60px;
         height: 60px;
         border-radius: 100%;
     }
+
     .img {
         width: 60px;
         height: 58px;

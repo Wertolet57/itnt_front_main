@@ -1,14 +1,14 @@
 <template>
-    <div v-if="props.zoom" class="zoom-mode">
-        <swiper :breakpoints="swiperBreakpoints" :spaceBetween="10" :modules="modules" class="">
+    <div v-if="isZoomed" class="zoom-mode" @click="toggleZoom">
+        <swiper :breakpoints="swiperBreakpoints" :spaceBetween="10" :modules="modules">
             <swiper-slide v-for="file in data" :key="file.id">
                 <img :src="`${baseURL}/${file.pictureUrl}`" :alt="baseURL" />
             </swiper-slide>
         </swiper>
     </div>
-    <div v-else class="default-mode">
-        <swiper :breakpoints="defaultSwiperBreakpoints" :spaceBetween="1" :modules="modules" class="">
-            <swiper-slide v-for="file in data" :key="file.id">
+    <div v-else class="custom-swiper">
+        <swiper :breakpoints="defaultSwiperBreakpoints" :space-between="20" :modules="modules" class="mySwiper">
+            <swiper-slide v-for="file in data" :key="file.id" class="my-slide" @click="toggleZoom">
                 <img :src="`${baseURL}/${file.pictureUrl}`" :alt="baseURL" />
             </swiper-slide>
         </swiper>
@@ -27,11 +27,11 @@ const props = defineProps({
     id: {
         type: Number
     },
-    zoom: {
-        type: Boolean,
-        default: false
-    }
 });
+const isZoomed = ref(false);
+const toggleZoom = () => {
+    isZoomed.value = !isZoomed.value;
+};
 const modules = ref([Pagination]);
 const baseURL = 'https://itnt.store/files';
 
@@ -56,52 +56,74 @@ const swiperBreakpoints = {
     }
 };
 const defaultSwiperBreakpoints = {
-    0: {
-        slidesPerView: 1
+    320: {
+        slidesPerView: 5,
+        spaceBetween: 10
     },
-    600: {
-        slidesPerView: 2
+    768: {
+        slidesPerView: 5,
+        spaceBetween: 10
     },
     1024: {
-        slidesPerView: 4
+        slidesPerView: 5,
+        spaceBetween: 10
     }
 };
 </script>
 
 <style lang="scss" scoped>
 .zoom-mode {
-    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
     height: 100vh;
-    max-width: 100vw;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+
+    img {
+        margin: auto;
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 16px;
+    }
 }
 
-.zoom-mode .swiper-slide img {
+.custom-swiper {
     width: 100%;
-    height: auto;
-    object-fit: contain;
-    border-radius: 12px;
-}
-
-.default-mode {
+    padding: 20px;
     display: flex;
-    justify-content: start;
-    height: 160px;
-    width: 97%;
-    margin: 0 10px;
-    .swiper{
-    overflow:visible !important;
-    margin:0 !important;
-    position:relative;
-}
-}
+    flex-direction: row;
 
-.default-mode .swiper-slide img {
-    min-width: 160px;
-    min-height: 100%;
-    object-fit: cover;
-    border-radius: 16px;
-    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.05);
+    .mySwiper {
+        width: 100%;
+        height: 100%;
+    }
+
+    .my-slide {
+        aspect-ratio: 1;
+        max-width: 160px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+
+        // &:hover {
+        //     transform: translateY(-5px);
+        //     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+        // }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+    }
 }
 </style>

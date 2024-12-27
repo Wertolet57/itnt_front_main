@@ -79,7 +79,7 @@ import SearchUserCard from '~/components/search/SearchUserCard.vue'
 import SearchProjectCard from '~/components/search/SearchProjectCard.vue'
 import { ref, computed, onMounted } from 'vue';
 import { getAllProjects } from '~/API/ways/project'
-import { getUserSearch, searcgUsers } from '~/API/ways/user'
+import { getUserSearch } from '~/API/ways/user'
 import { useRoute } from 'vue-router';
 import { addComment } from '~/API/ways/post'
 import ava from '../assets/Coop.svg'
@@ -138,36 +138,6 @@ const filteredProjects = computed(() => {
     });
 });
 const openforProp = ref()
-const searchUsersByTegs = async () => {
-    try {
-        const params = {
-            openedForProposition: true,
-        };
-        const response = await searcgUsers(params)
-        console.log(response);
-        openforProp.value = response.data.object
-    } catch (error) {
-        console.error('Error fetching users:', error)
-    }
-}
-// const comment = ref()
-// const addCommentApi = async () => {
-//     const postComment = {
-//         childNodes: [null],
-//         deep: 1,
-//         id: 1,
-//         message: 'string',
-//         user: {
-//             id: 1,
-//         }
-//     }
-//     try {
-//         const response = await addComment(postComment)
-//         comment.value = response.data.object;
-//     } catch (error) {
-
-//     }
-// }
 const fetchUsers = async () => {
     try {
         const response = await getUserSearch();

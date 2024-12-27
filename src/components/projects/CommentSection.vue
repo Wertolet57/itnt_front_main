@@ -11,30 +11,49 @@
       </div>
     </div>
 
-    <div v-for="comment in comments" :key="comment.id" class="comment">
-      <div class=" comment-content">
-        <div class="comment-content__header">
-          <img :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
-          <div :class="['title', { 'title-center': !comment.user.nickName }]">
-            <p class="bold-title">{{ comment.user.firstName }}</p>
-            <p v-if="comment.user.nickName" class="gray-title">{{ comment.user.nickName }}</p>
-          </div>
-
-        </div>
-        <div class="comment-content__body">
-          <p>{{ comment.message }}</p>
-
-        </div>
-        <div class="comment-content__footer">
-          <span>{{ comment.insertDate }}</span>
-          <button @click="replyTo(comment)">Ответить</button>
-        </div>
-        <div v-if="comment.parentNode && comment.parentNode.length > 0" class="replies">
-          <div v-for="reply in comment.parentNode" :key="reply.id" class="reply">
-            <p>{{ reply.message }}</p>
-            <div class="reply-meta">
-              <span>{{ reply.insertDate }}</span>
+    <div v-for="comment in comments" :key="comment.id" class="">
+      <div class="comment rounded-[12px]">
+        <div class=" comment-content">
+          <div class="comment-content__header">
+            <img :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+            <div :class="['title', { 'title-center': !comment.user.nickName }]">
+              <p class="bold-title">{{ comment.user.firstName }}</p>
+              <p v-if="comment.user.nickName" class="gray-title">{{ comment.user.nickName }}</p>
             </div>
+  
+          </div>
+          <div class="comment-content__body">
+            <p>{{ comment.message }}</p>
+  
+          </div>
+          <div class="comment-content__footer">
+            <span>{{ formatDate(comment.insertDate) }}</span>
+            <button @click="replyTo(comment)">Ответить</button>
+          </div>
+        </div>
+      </div>
+      <div v-if="comment.childNodes && comment.childNodes.length > 0"  class="ml-1 flex flex-col items-center w-full">
+        <div v-for="reply in comment.childNodes" :key="reply.id" class="w-full flex flex-row items-center">
+          <div class="rounded-[100%] w-2 h-2 bg-[#29B6F6] mr-3"></div>
+            <div class="comment w-full" style="border-top-left-radius: 0;border-top-right-radius: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+            <div class="comment-content">
+            <div class="comment-content__header">
+              <img :src="reply.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+              <div :class="['title', { 'title-center': !reply.user.nickName }]">
+                <p class="bold-title">{{ reply.user.firstName }}</p>
+                <p v-if="reply.user.nickName" class="gray-title">{{ reply.user.nickName }}</p>
+              </div>
+    
+            </div>
+            <div class="comment-content__body">
+              <p>{{ reply.message }}</p>
+    
+            </div>
+            <div class="comment-content__footer">
+              <span>{{ formatDate(reply.insertDate) }}</span>
+              <!-- <button @click="replyTo(reply)">Ответить</button> -->
+            </div>
+          </div>
           </div>
         </div>
       </div>
@@ -64,30 +83,36 @@ const commentText = ref('');
 const replyingTo = ref(null);
 
 const submitComment = async () => {
-  if (!commentText.value.trim()) return; // Prevent submitting empty comments
+  if (!commentText.value.trim()) return;
+
+  const newComment = {
+    message: commentText.value,
+    project: { id: props.prjID },
+    user: { id: props.userId },
+    parentNode: replyingTo.value ? { id: replyingTo.value.id } : null,
+  };
 
   try {
-    const response = await addComment(props.prjID, props.userId, commentText.value);
+    const response = await addComment(newComment);
 
     if (replyingTo.value) {
       const parentComment = comments.value.find(comment => comment.id === replyingTo.value.id);
       if (parentComment) {
-        if (!Array.isArray(parentComment.parentNode)) {
-          parentComment.parentNode = [];
+        if (!Array.isArray(parentComment.replies)) {
+          parentComment.replies = [];
         }
-        parentComment.parentNode.push(response.data); // Push the new reply into parentNode
+        parentComment.replies.push(response.data);
       }
     } else {
-      comments.value.push(response.data); // Push the new top-level comment
+      comments.value.push(response.data);
     }
 
-    // Clear the input field after successfully submitting the comment
-    commentText.value = ''; // Reset the comment text
+    commentText.value = '';
   } catch (error) {
     console.error('Ошибка при отправке комментария:', error);
   } finally {
-    replyingTo.value = null; // Reset replying state
-    await loadComments(); // Reload comments to reflect changes
+    replyingTo.value = null;
+    await loadComments(); // Перезагрузка комментариев
   }
 };
 
@@ -108,6 +133,37 @@ const loadComments = async () => {
     console.error('Ошибка при загрузке комментариев:', error);
   }
 };
+function formatDate(inputDate) {
+    const date = new Date(inputDate);
+    const now = new Date();
+
+    const isToday = date.toDateString() === now.toDateString();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (isToday) {
+        const diffMs = now - date;
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
+
+        if (diffHours > 0) {
+            return `${diffHours}ч назад`;
+        } else {
+            return `${diffMinutes}м назад`;
+        }
+    } else if (isYesterday) {
+        return `Вчера в ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}.${month}.${year} в ${hours}:${minutes}`;
+    }
+}
 const baseURL = 'https://itnt.store/files';
 onMounted(loadComments);
 </script>

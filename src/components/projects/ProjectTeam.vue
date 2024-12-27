@@ -34,17 +34,16 @@
                                 <p style="color: #9e9e9e"> {{ users.user.id }}</p>
                             </div>
                         </div>
-                        <v-icon @click="modalState.open()" icon="mdi-dots-vertical" />
+                        <v-icon @click="openModal(users.user.id)" icon="mdi-dots-vertical" />
                     </div>
                 </div>
             </div>
 
             <vue-bottom-sheet max-height="105px" full-screen ref="modalState">
                 <div class="modalList">
-                    <div @click="$router.push('/' + `user/5`)" class="modalList__item flex flex-row">
+                    <div @click="$router.push('/user/' + selectedUserId)" class="modalList__item flex flex-row">
                         <img :src="account" alt="" />
                         <p class="txt-body1">Открыть профиль</p>
-
                     </div>
                 </div>
             </vue-bottom-sheet>
@@ -151,19 +150,16 @@
                 <p class="mb-2">Поиск человека для добавления в проект</p>
                 <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
                 <div class="searchTeammateModal__items">
-                    <div v-for="user in filteredUsers" :key="user.id" class="d-flex align-center">
-                        <img @click="$router.push('/' + `messenger/chat/39`)" class="mr-3 cursor-pointer" width="30"
-                            height="30" src="../../assets/demo/ava-small-header.svg" />
-                        <div>
-                            <div @click="$router.push('/' + `messenger/chat/39`)"
-                                class="cursor-pointer d-flex align-center">
-                                <p class="txt-cap1">{{ user.login }}</p>
-                                <img class="mx-2" src="../../assets/icons/singeDot-gray.svg" />
-                                <!-- <p class="searchUserCard__head__subtitle txt-cap1">{{ user.login }}</p> -->
+                    <div v-for="user in users" :key="user?.id" class="d-flex align-center"
+                            @click="() => openUser(user?.id)">
+                            <img class="mr-3 rounded-[100%] shadow-xl w-[37px] h-[37px]" width="37" height="37" :src="user?.pictureUrl ? `${baseAvaURL}/files/${user.pictureUrl}` : ava" />
+                            <div>
+                                <div class="d-flex align-center">
+                                    <p class="txt-body3">{{ user?.firstName || `#${user?.id}` }}</p>
+                                </div>
+                                <p class="txt-cap1 text-[#9E9E9E]">{{ user?.login }}</p>
                             </div>
-                            <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
                         </div>
-                    </div>
                 </div>
             </div>
         </vue-bottom-sheet>
@@ -209,17 +205,25 @@ import UiInput from '../ui-kit/UiInput.vue'
 import { modalActionsList } from '~/helpers/types'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted,watch } from 'vue'
 import { reactToProposition } from '~/API/ways/notifications.ts';
 import { getUserSearch } from '~/API/ways/user.ts';
 import { getProjectPropositions } from "~/API/ways/notifications.ts"
 import { useRoute } from 'vue-router'
-import { getProjectByID, addUser } from "../../API/ways/project"
+import { getProjectByID, addUser } from "../../API/ways/project.ts"
+import debounce from 'lodash/debounce';
+import { createDialog } from '~/API/ways/dialog';
 import ava from '../../assets/demo/ava-small-header.svg'
 const state = ref(false)
 const checkOrders = ref()
 const editState = ref(false)
 const userID = localStorage.getItem("userId")
+const selectedUserId = ref(null)
+
+const openModal = (userId) => {
+  selectedUserId.value = userId
+  modalState.value.open()
+}
 onMounted(async () => {
     const response = await getProjectByID(Number(route.params.ID));
     checkOrders.value = response.data.object.owner;
@@ -227,7 +231,21 @@ onMounted(async () => {
 function togleState() {
     state.value = !state.value
 }
+const openUser = async (userId: number) => {
+    try {
+        const response = await createDialog(userId);
 
+        const chatId = response?.data?.object?.id;
+        if (chatId) {
+            console.log('Созданный chat.id:', chatId);
+            router.push(`/messenger/chat/${chatId}`);
+        } else {
+            console.error('Не удалось получить chat.id. Проверьте структуру ответа:', response);
+        }
+    } catch (error) {
+        console.error('Ошибка при создании диалога:', error);
+    }
+};
 const expandedIndex = ref(null);
 
 const toggleExpand = (index) => {
@@ -268,8 +286,6 @@ const props = defineProps({
         type: Number
     }
 })
-const users = ref<User[]>([]);
-const searchQuery = ref('');
 
 enum Answer {
     Yes = "YES",
@@ -287,33 +303,25 @@ const getProjectPropositionsApi = async () => {
 
 }
 onMounted(getProjectPropositionsApi)
-const filteredUsers = computed(() => {
-    if (!Array.isArray(users.value)) {
-        // console.error('Users is not an array:', users.value);
-        return [];
+const searchQuery = ref('');
+const users = ref([]);
+
+const searchUsers = debounce(async (query: string) => {
+    if (!query.trim()) {
+        users.value = [];
+        return;
     }
-    return users.value.filter(user => {
-        const searchLower = searchQuery.value.toLowerCase();
-        return Object.values(user).some(value =>
-            String(value).toLowerCase().includes(searchLower)
-        );
-    });
-});
-const fetchUsers = async () => {
+
     try {
-        const response = await getUserSearch();
-        if (response.data && Array.isArray(response.data.object)) {
-            users.value = response.data.object;
-        } else {
-            console.error('Fetched data is not in expected format:', response.data);
-            users.value = [];
-        }
-        // console.log('Fetched users:', users.value);
+        const response = await getUserSearch({
+            searchString: query
+        });
+        users.value = response.data.object;
     } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error searching users:', error);
         users.value = [];
     }
-};
+}, 300);
 const addUsers = async (user: number) => {
     try {
         const response = await addUser(route.params.ID, user)
@@ -333,7 +341,8 @@ const react = async (propositionAnswer: Answer) => {
         console.error('Error sending proposition:', error);
     }
 };
-// 
+const baseAvaURL = 'https://itnt.store/';
+
 const teamRoles = ref(false)
 const modalState = ref(null)
 const searchTeammateModal = ref(null)
@@ -367,7 +376,10 @@ const joinTeamModalItems: modalActionsList[] = [
         }
     },
 ]
-onMounted(fetchUsers);
+watch(searchQuery, (newQuery) => {
+    searchUsers(newQuery);
+});
+
 </script>
 
 <style lang="scss" scoped>

@@ -95,34 +95,34 @@ const props = defineProps({
 
 const router = useRouter();
 const projects = ref()
-const getProjects = async () => {
-    try {
-        const data = await getUserProjects(props.projectInfo.project.id);
-        projects.value = data.data.object;
-    } catch (error) {
-        console.error(error);
-    }
-};
-onMounted(getProjects);
-const Anonim = async (anonim: Boolean) => {
-    try {
-        const response = await postAnonimProjects(anonim, props.projectInfo.project.id);
-        console.log(response);
-        await getProjects();
-    } catch (error) {
-        console.error(error);
-    }
-};
-const quickMenu = async (quick: Boolean) => {
-    try {
-        const response = await postMenuProjects(quick, props.projectInfo.project.id);
-        console.log(response);
-        await getProjects();
+// const getProjects = async () => {
+//     try {
+//         const data = await getUserProjects(props.projectInfo.project.id);
+//         projects.value = data.data.object;
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+// onMounted(getProjects);
+// const Anonim = async (anonim: Boolean) => {
+//     try {
+//         const response = await postAnonimProjects(anonim, props.projectInfo.project.id);
+//         console.log(response);
+//         await getProjects();
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
+// const quickMenu = async (quick: Boolean) => {
+//     try {
+//         const response = await postMenuProjects(quick, props.projectInfo.project.id);
+//         console.log(response);
+//         await getProjects();
 
-    } catch (error) {
-        console.error(error);
-    }
-}
+//     } catch (error) {
+//         console.error(error);
+//     }
+// }
 
 const modalState = ref(false)
 

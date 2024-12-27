@@ -3,10 +3,10 @@
         <!-- head -->
         <div class="feedCard__head">
             <div class="d-flex align-center">
-                <img class="mr-3" width="30" height="30" :src="fullAvatarUrl" />
+                <img @click="$router.push(`user/${props.post?.createdBy?.id}`)" class="mr-3 cursor-pointer" width="30" height="30" :src="fullAvatarUrl" />
                 <div>
                     <div class="d-flex align-center">
-                        <p class="txt-body3">
+                        <p @click="$router.push(`user/${props.post?.createdBy?.id}`)" class="txt-body3 cursor-pointer">
                             {{ props.post?.createdBy.firstName && props.post?.createdBy.lastName
                     ? `${props.post.createdBy.firstName} ${props.post.createdBy.lastName}`
                     : props.post?.createdBy.firstName || props.post?.createdBy.login }}

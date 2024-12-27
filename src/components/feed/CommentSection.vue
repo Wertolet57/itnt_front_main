@@ -51,7 +51,7 @@
             </div>
             <div class="comment-content__footer">
               <span>{{ formatDate(reply.insertDate) }}</span>
-              <button @click="replyTo(reply)">Ответить</button>
+              <!-- <button @click="replyTo(reply)">Ответить</button> -->
             </div>
           </div>
           </div>

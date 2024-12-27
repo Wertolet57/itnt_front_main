@@ -1,47 +1,38 @@
 <template>
     <Header class="mb-[40px]" :showUserMinify="true" :routeName="lastPart" :chat="true" />
-    <div class="">    
-        <div 
-            ref="messagesContainer" 
-            class="messages-wrapper"
-        >
-            <div class="messages-container" v-if="messages.length > 0">
-                <div class="date-container">
-                    <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
-                </div>
-                
-                <div 
-                    v-for="message in messages" 
-                    :key="message.id" 
-                    :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']"
-                >  
-                    <div class="message-content">{{ message?.messageText }}</div>
-                    <div class="message-info flex items-center">
-                        <span class="message-time text-[9E9E9E] mr-[8px]">
-                            {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
-                        </span>
-                        <span class="message-status">
-                            <img :src="message.readStatus ? seen : delivered" alt="status" />
-                        </span>
+    <div class="flex w-full h-full flex-col justify-end">
+        <div class="mb-4">
+            <div ref="messagesContainer" class="messages-wrapper">
+                <div class="messages-container" v-if="messages.length > 0">
+                    <div class="date-container">
+                        <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
+                    </div>
+
+                    <div v-for="message in messages" :key="message.id"
+                        :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']">
+                        <div class="message-content">{{ message?.messageText }}</div>
+                        <div class="message-info flex items-center">
+                            <span class="message-time text-[9E9E9E] pl-[12px] mr-[8px]">
+                                {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
+                            </span>
+                            <span class="message-status">
+                                <img :src="message.readStatus ? seen : delivered" alt="status" />
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="input-container">
-        <div class="inner-input">
-            <input 
-                v-model="newMessage" 
-                @keyup.enter="sendMessageWebSocket" 
-                placeholder="Введите сообщение..."
-                :disabled="connectionStatus !== 'open'"
-            />
-            <button 
-                @click="sendMessageWebSocket" 
-                :disabled="connectionStatus !== 'open'"
-            >
-                <img :src="chat" alt="Send" />
-            </button>
+        <div class="flex items-end w-full fixed bottom-0">
+            <div class="input-container w-full">
+                <div class="inner-input">
+                    <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
+                        :disabled="connectionStatus !== 'open'" />
+                    <button @click="sendMessageWebSocket" :disabled="connectionStatus !== 'open'">
+                        <img :src="chat" alt="Send" />
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -234,6 +225,7 @@ watch(messages, () => {
     padding: 10px;
     padding-bottom: 70px;
 }
+
 .messages-container {
     display: flex;
     overflow-y: auto;
@@ -294,9 +286,6 @@ watch(messages, () => {
 }
 
 .input-container {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
     display: flex;
     padding: 10px;
     background-color: #ffffff;

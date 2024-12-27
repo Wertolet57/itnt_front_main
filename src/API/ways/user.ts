@@ -1,8 +1,13 @@
-import UserFollowed from '~/pages/profile/UserFollowed.vue';
 import { API } from '../main'
 // import ComplaintData from "~/helpers/types"
 const prefix = '/user'
 
+interface SearchParams {
+    cityId?: number;
+    countryId?: number;
+    openedForProposition?: boolean;
+    searchString?: string;
+  }
 export const addPost = (description: String, descriptionHeader: String, authorProject: any, authorUser: any) => {
     let requestBody = {
         "authorProject": {
@@ -21,9 +26,6 @@ export const getPost = () => {
 }
 export const getUser = () => {
     return API.get(`${prefix}/`);
-}
-export const getUserSearch = () => {
-    return API.get(`${prefix}/search`);
 }
 export const patchUser = (data: Object) => {
     return API.patch(`${prefix}/`, data)
@@ -73,10 +75,6 @@ export const deleteUserPicture = (id: Number) => {
 export const getFollowed = () => {
     return API.get(`${prefix}/followed`)
 }
-export const searcgUsers = (params: any) => {
-    const queryParams = new URLSearchParams(params).toString();
-    return API.get(`${prefix}/search?${queryParams}`);
-}
 export const postUserLoginCode = (phone: String) => {
     return API.post(`${prefix}/loginCode`, {
         login: phone,
@@ -109,3 +107,14 @@ export const getUserPosts = (userId: Number)=>{
 export const deleteInterest = (interestId: Number)=>{
     return API.delete(`${prefix}/delUserInterest?interestId=${interestId}`)
 }
+
+export const getUserSearch = (params: SearchParams = {}) => {
+    const queryParams = new URLSearchParams();
+  
+    if (params.cityId) queryParams.append('cityId', params.cityId.toString());
+    if (params.countryId) queryParams.append('countryId', params.countryId.toString());
+    if (params.openedForProposition !== undefined) queryParams.append('openedForProposition', params.openedForProposition.toString());
+    if (params.searchString) queryParams.append('searchString', params.searchString);
+  
+    return API.get(`${prefix}/search?${queryParams.toString()}`);
+};

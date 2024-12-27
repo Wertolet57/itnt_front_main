@@ -148,16 +148,8 @@ export const deleteVacancy = (projectId: number, vacancyId: number) => {
 export const delUser = (projectID: number, userId: number) => {
     return API.delete(`${prefix}/${projectID}/delUser?userId=${userId}`)
 }
-export const addComment = (projectID: number, userID: number, message: string) => {
-    return API.post(`${prefix}/addComment`, {
-        project: {
-            id: projectID
-        },
-        user: {
-            id: userID
-        },
-        "message": message
-    });
+export const addComment = (postComment: any,) => {
+    return API.post(`${prefix}/addComment`, postComment);
 };
 export const addComplaint = (projectId: number, userId: number, complaint: String) => {
     return API.post(`${prefix}/addComplaint`, {
