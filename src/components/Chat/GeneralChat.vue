@@ -17,6 +17,7 @@
             </div>
         </div>
     </div>
+    
     <div class="fixed bottom-20 right-6 bg-marine z-[10000]  rounded-[12px]">
         <button @click="showSheet = true" class="p-[10px]"><img :src="plus" alt=""></button>
         <transition name="bottom-sheet">
