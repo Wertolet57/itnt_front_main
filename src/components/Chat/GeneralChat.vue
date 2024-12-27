@@ -2,7 +2,7 @@
     <ChatFolders />
 
     <div v-if="chatData" v-for="chat in chatData" class="">
-        <div @click="$router.push(`/messenger/chat/${chat.id}`)" class="card shadow-none cursor-pointer">
+        <div @click="navigateToChat(chat.id)" class="card shadow-none cursor-pointer">
             <span class="card__image  border-chatThird">
                 <img :src="avatar" alt="User Avatar" />
             </span>
@@ -17,7 +17,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="fixed bottom-20 right-6 bg-marine z-[10000]  rounded-[12px]">
         <button @click="showSheet = true" class="p-[10px]"><img :src="plus" alt=""></button>
         <transition name="bottom-sheet">
@@ -62,6 +62,13 @@ import debounce from 'lodash/debounce';
 const router = useRouter()
 const showSheet = ref(false)
 
+const navigateToChat = (chatId:any) => {
+  if (chatId) {
+    router.push(`/messenger/chat/${chatId}`);
+  } else {
+    console.error('ID чата не указан!');
+  }
+};
 let showPopup = ref(false)
 const openUser = async (userId: number) => {
     try {

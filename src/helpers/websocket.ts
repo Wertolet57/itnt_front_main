@@ -44,13 +44,16 @@ class WebSocketService {
             };
 
             this.socket.onmessage = (event: MessageEvent) => {
-                console.log('Сырой ответ:', event.data);
-                try {
-                    const message = JSON.parse(event.data);
-                    console.log('Получено сообщение:', message);
+                const message = JSON.parse(event.data);
+
+                if (message.type === 'status_update') {
+                    console.log('Обновление статуса сообщения:', message);
+                    const targetMessage = this.messages.value.find(msg => msg.id === message.messageId);
+                    if (targetMessage) {
+                        targetMessage.readStatus = message.readStatus; // Обновляем статус сообщения
+                    }
+                } else {
                     this.messages.value.push(message);
-                } catch (error) {
-                    console.error('Ошибка обработки входящего сообщения:', error);
                 }
             };
 
@@ -68,7 +71,13 @@ class WebSocketService {
             this.connectionStatus.value = 'error';
         }
     }
-
+    markMessagesAsRead(dialogId: number): void {
+        const unreadMessages = this.messages.value.filter(msg => !msg.readStatus && msg.dialogId === dialogId);
+        unreadMessages.forEach(message => {
+            this.updateMessageStatus(message.id, true); // Отправляем обновление статуса "прочитано"
+        });
+    }
+    
     sendMessage(dialogId: number, message: Record<string, any>): void {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             const payload = JSON.stringify({ dialogId, ...message });

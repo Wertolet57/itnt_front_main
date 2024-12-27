@@ -1,29 +1,31 @@
 <template>
-    <Header class="mb-[40px]" :showUserMinify="true" :routeName="lastPart" :chat="true" />
-    <div class="flex w-full h-full flex-col justify-end">
-        <div class="mb-4">
-            <div ref="messagesContainer" class="messages-wrapper">
-                <div class="messages-container" v-if="messages.length > 0">
-                    <div class="date-container">
-                        <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
-                    </div>
+    <Header class="mb-[40px]" :showUserMinify="true" :routeName="chatId" :chat="true" />
+    <div class="flex w-full h-full flex-col">
+        <div ref="messagesContainer" class="flex w-full h-[100%] flex-col justify-end">
+            <div class="">
+                <div class="messages-wrapper">
+                    <div class="messages-container" v-if="messages.length > 0">
+                        <div class="date-container">
+                            <div class="date text-center rounded-xl d-inline-block">{{ $t('feed.today') }}</div>
+                        </div>
 
-                    <div v-for="message in messages" :key="message.id"
-                        :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']">
-                        <div class="message-content">{{ message?.messageText }}</div>
-                        <div class="message-info flex items-center">
-                            <span class="message-time text-[9E9E9E] pl-[12px] mr-[8px]">
-                                {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
-                            </span>
-                            <span class="message-status">
-                                <img :src="message.readStatus ? seen : delivered" alt="status" />
-                            </span>
+                        <div v-for="message in messages" :key="message.id"
+                            :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']">
+                            <div class="message-content">{{ message?.messageText }}</div>
+                            <div class="message-info flex items-center">
+                                <span class="message-time text-[9E9E9E] pl-[12px] mr-[8px]">
+                                    {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
+                                </span>
+                                <span class="message-status">
+                                    <img :src="message.readStatus ? seen : delivered" alt="status" />
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="flex items-end w-full fixed bottom-0">
+        <div class="flex items-end w-full sticky bottom-[0px]">
             <div class="input-container w-full">
                 <div class="inner-input">
                     <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
@@ -38,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Header from '~/components/Header.vue';
 import { getDialogMessages, sendMessage } from "../../API/ways/dialog";
@@ -58,32 +60,33 @@ const messagesContainer = ref<HTMLDivElement | null>(null);
 const myMessage = ref();
 const sentMessage = ref()
 const messageList = ref([]);
+const messageObserver = ref();
+const chatId = ref(String(route.params.ID)); 
 
 const isMyMessage = (message: any) => {
     return message?.user?.id == userId.value;
 };
 const scrollToBottom = () => {
-    const chatContainer = document.getElementById('chat-container');
-    if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+    if (messagesContainer.value) {
+        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
     }
 };
 
 // Connect to WebSocket
 const connectToWebSocket = () => {
-    if (currentDialogId.value && userId.value) {
-        webSocketService.connect(currentDialogId.value, Number(userId.value));
+    if (chatId.value && userId.value) {
+        webSocketService.connect(Number(chatId.value), Number(userId.value));
     } else {
         console.error('DialogId или UserId не установлены');
     }
 };
 
 // Fetch dialog messages
-const getDialog = async (id: string) => {
+const getDialog = async (id: number) => {
     try {
-        const response = await getDialogMessages(Number(id));
+        const response = await getDialogMessages(id);
         messages.value = response.data.object;
-        sentMessage.value = response.data.object.user.id
+        sentMessage.value = response.data?.object?.user?.id;
         scrollToBottom();
     } catch (error) {
         console.error('Ошибка при получении сообщений:', error);
@@ -93,11 +96,12 @@ const getDialog = async (id: string) => {
 // Send message via API
 const sendMessageAPI = async (messageData: Object) => {
     try {
-        if (lastPart.value) {
-            const response = await sendMessage(Number(lastPart.value), messageData);
+        if (chatId.value) {
+            const response = await sendMessage(Number(chatId.value), messageData);
             myMessage.value = response.data.object;
-            await getDialog(lastPart.value)
+            await getDialog(Number(chatId.value));
         }
+        setTimeout(scrollToBottom, 100);
     } catch (error) {
         console.error('Ошибка при отправке сообщения через API:', error);
     }
@@ -105,7 +109,7 @@ const sendMessageAPI = async (messageData: Object) => {
 
 // Send message via WebSocket
 const sendMessageWebSocket = () => {
-    if (newMessage.value.trim() && currentDialogId.value) {
+    if (newMessage.value.trim() && chatId.value) {
         const messageData = {
             dialogType: "GROPE",
             messageText: newMessage.value.trim(),
@@ -114,47 +118,59 @@ const sendMessageWebSocket = () => {
                 id: userId.value
             }
         };
-        webSocketService.sendMessage(currentDialogId.value, messageData);
+        webSocketService.sendMessage(Number(chatId.value), messageData);
         sendMessageAPI(messageData);
         newMessage.value = '';
-        scrollToBottom();
+        setTimeout(scrollToBottom, 100);
     } else {
         console.error('Сообщение пустое или DialogId не установлен');
     }
 };
+
 webSocketService.onMessageStatusUpdate((messageId, readStatus) => {
-    const message = messageList.value.find(msg => msg.id === messageId);
+    const message = messages.value.find(msg => msg.id === messageId);
     if (message) {
         message.readStatus = readStatus;
     }
 });
-// Format date
+
 const formatDate = (isoDate: any) => {
     const date = new Date(isoDate);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-// Lifecycle hooks
 onMounted(() => {
-    const fullPath = window.location.origin + route.fullPath;
-    lastPart.value = fullPath.split('/').pop();
-
-    if (lastPart.value) {
-        currentDialogId.value = parseInt(lastPart.value, 10);
+    if (chatId.value) {
+        currentDialogId.value = chatId.value;
         connectToWebSocket();
-        getDialog(lastPart.value);
+        getDialog(Number(chatId.value));
     } else {
-        console.error('Не удалось получить ID чата из строки пути');
+        console.error('Не удалось получить ID чата из router params');
     }
-
-    // Add WebSocket message listener to scroll to bottom when new message arrives
     webSocketService.messages.value.length > 0 && scrollToBottom();
 });
 
 onUnmounted(() => {
     webSocketService.disconnect();
 });
+onMounted(() => {
+    const config = { childList: true, subtree: true };
 
+    messageObserver.value = new MutationObserver(() => {
+        scrollToBottom();
+    });
+
+    const messagesWrapper = document.querySelector('.messages-wrapper');
+    if (messagesWrapper) {
+        messageObserver.value.observe(messagesWrapper, config);
+    }
+});
+
+onUnmounted(() => {
+    if (messageObserver.value) {
+        messageObserver.value.disconnect();
+    }
+});
 // Watch for connection status changes
 watch(connectionStatus, (newStatus) => {
     if (newStatus === 'closed' || newStatus === 'error') {
@@ -162,9 +178,8 @@ watch(connectionStatus, (newStatus) => {
     }
 });
 
-// Watch for new messages to scroll to bottom
 watch(messages, () => {
-    scrollToBottom();
+    setTimeout(scrollToBottom, 10);
 });
 </script>
 
@@ -223,7 +238,7 @@ watch(messages, () => {
     flex-direction: column;
     justify-content: flex-end;
     padding: 10px;
-    padding-bottom: 70px;
+    max-height: calc(100vh - 150px);
 }
 
 .messages-container {
