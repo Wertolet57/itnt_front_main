@@ -15,7 +15,7 @@
       <div class="comment rounded-[12px]">
         <div class=" comment-content">
           <div class="comment-content__header">
-            <img :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+            <img class="w-[40px] h-[40px]" :src="comment.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
             <div :class="['title', { 'title-center': !comment.user.nickName }]">
               <p class="bold-title">{{ comment.user.firstName }}</p>
               <p v-if="comment.user.nickName" class="gray-title">{{ comment.user.nickName }}</p>

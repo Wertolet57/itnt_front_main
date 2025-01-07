@@ -22,5 +22,10 @@ const getDialogMessages = (dialogId: number) => {
 const getDialogByID = (id: number) => {
     return API.get(`${prefix}/${id}`)
 }
-
-export { getDialog, getDialogMessages, getDialogByID, sendMessage, createDialog }
+const getDialogLastMessage = (dialogId : number) => {
+    return API.get(`${prefix}/${dialogId}/lastMessage`)
+}
+const markAsRead = (messageId: number) =>{
+    return API.post(`${prefix}/markAsRead?messageId=${messageId}`)
+}
+export { getDialog, getDialogMessages, getDialogByID, sendMessage, createDialog, getDialogLastMessage,markAsRead }

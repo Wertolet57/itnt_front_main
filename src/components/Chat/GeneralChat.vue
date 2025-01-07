@@ -1,17 +1,44 @@
 <template>
     <ChatFolders />
-
     <div v-if="chatData" v-for="chat in chatData" class="">
-        <div @click="navigateToChat(chat.id)" class="card shadow-none cursor-pointer">
+        <div @click="navigateToChat(chat.id)" v-if="lastMessages[chat?.id]" class="card shadow-none cursor-pointer">
             <span class="card__image  border-chatThird">
-                <img :src="avatar" alt="User Avatar" />
+                <img class="rounded-[100%] w-[40px] h-auto max-h-[40px] aspect-square"
+                    :src="getOtherUser(chat)?.pictureUrl ? `${baseAvaURL}/files/${getOtherUser(chat).pictureUrl}` : avatar"
+                    alt="User Avatar" />
             </span>
+            <!-- {{ chat }} -->
+            <!-- {{ lastMessages[chat?.id].dialog.users }} -->
+            <!-- <div class="" v-for="user in lastMessages[chat?.id].dialog.users">
+                {{ user.id }}
+            </div> -->
+            <!-- {{ getOtherUser(chat)?.login }} -->
             <div class="flex flex-col flex-1">
                 <div class="flex flex-row justify-between flex-1">
-                    <p class="card__name">{{ chat.id }}</p>
-                    <div class="flex flex-row items-center gap-[6px]">
-                        <img :src="delivered" alt="">
-                        <p class="card__time">15:12</p>
+                    <div v-if="lastMessages[chat?.id]?.user?.id == userId" class="card__name">
+                        {{
+                            getOtherUser(chat)?.firstName && getOtherUser(chat)?.lastName
+                                ? `${getOtherUser(chat)?.firstName} ${getOtherUser(chat)?.lastName}`
+                                : getOtherUser(chat)?.firstName || getOtherUser(chat)?.lastName || getOtherUser(chat)?.login
+                        }}
+                        <p class="font-normal mt-[4px] text-sm"><span class="text-gray-400 font-normal">Вы</span> {{
+                            lastMessages[chat?.id]?.messageText }}</p>
+                    </div>
+                    <div v-else class="card__name">
+                        {{
+                            lastMessages[chat?.id]?.user.firstName && lastMessages[chat?.id]?.user.lastName
+                                ? `${lastMessages[chat?.id]?.user.firstName} ${lastMessages[chat?.id]?.user.lastName}`
+                                : lastMessages[chat?.id]?.user.firstName || lastMessages[chat?.id]?.user.lastName ||
+                                lastMessages[chat?.id]?.user.login
+                        }}
+                        <p class="font-normal mt-[4px] text-sm">{{ lastMessages[chat?.id]?.messageText }}</p>
+                    </div>
+                    <div v-if="lastMessages[chat?.id]?.messageDate" class="flex flex-row items-start gap-[6px]">
+                        <p class="card__time">{{ formatDate(lastMessages[chat?.id]?.messageDate) }}</p>
+                        <div class="w-[20px]">
+                            <img v-if="lastMessages[chat?.id]?.user?.id == userId"
+                                :src="lastMessages[chat?.id]?.readStatus ? seen : delivered" alt="" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,7 +57,8 @@
                     <div class="searchTeammateModal__items">
                         <div v-for="user in users" :key="user?.id" class="d-flex align-center"
                             @click="() => openUser(user?.id)">
-                            <img class="mr-3 rounded-[100%] shadow-xl w-[37px] h-[37px]" width="37" height="37" :src="user?.pictureUrl ? `${baseAvaURL}/files/${user.pictureUrl}` : ava" />
+                            <img class="mr-3 rounded-[100%] shadow-xl w-[37px] h-[37px]" width="37" height="37"
+                                :src="user?.pictureUrl ? `${baseAvaURL}/files/${user.pictureUrl}` : ava" />
                             <div>
                                 <div class="d-flex align-center">
                                     <p class="txt-body3">{{ user?.firstName || `#${user?.id}` }}</p>
@@ -49,25 +77,40 @@
 import ava from "../../assets/demo/defAva.svg"
 import avatar from '~/assets/Profile/Photo.svg'
 // import send from '~/assets/chat/send.svg'
-// import seen from '~/assets/chat/seen.svg'
+import seen from '~/assets/chat/seen.svg'
 import delivered from '~/assets/chat/delivered.svg'
 import ChatFolders from './ChatFolders.vue'
 import plus from '~/assets/modal_icon/plus.svg'
 import UiInput from '~/components/ui-kit/UiInput.vue'
-import { ref, watch,computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import { getUserSearch } from '~/API/ways/user'
-import { getDialog, getDialogMessages, createDialog } from '~/API/ways/dialog';
+import { getDialog, getDialogMessages, createDialog, getDialogLastMessage } from '~/API/ways/dialog';
 import debounce from 'lodash/debounce';
+
+interface User {
+    id: number;
+    firstName?: string;
+    pictureUrl?: string;
+    login?: string;
+}
+
 const router = useRouter()
 const showSheet = ref(false)
+const userId = ref(localStorage.getItem('userId'))
+const navigateToChat = (chatId: any) => {
+    if (chatId) {
+        router.push(`/messenger/chat/${chatId}`);
+    } else {
+        console.error('ID чата не указан!');
+    }
+};
 
-const navigateToChat = (chatId:any) => {
-  if (chatId) {
-    router.push(`/messenger/chat/${chatId}`);
-  } else {
-    console.error('ID чата не указан!');
-  }
+
+const getOtherUser = (currentChat: any) => {
+    return lastMessages.value[currentChat?.id]?.dialog?.users?.find(
+        (user: User) => user.id !== Number(userId.value)
+    ) || null;
 };
 let showPopup = ref(false)
 const openUser = async (userId: number) => {
@@ -85,7 +128,38 @@ const openUser = async (userId: number) => {
         console.error('Ошибка при создании диалога:', error);
     }
 };
+const lastMessages = ref<Record<number, any>>({});
+const getLastMessages = async () => {
+    if (!chatData.value || chatData.value.length === 0) {
+        console.error("Список чатов пуст или не загружен.");
+        return;
+    }
+
+    try {
+        const promises = chatData.value.map(async (chat: any) => {
+            try {
+                const response = await getDialogLastMessage(chat.id);
+                return { chatId: chat.id, message: response.data.object };
+            } catch (error) {
+                console.error(`Ошибка получения сообщения для чата ${chat.id}:`, error);
+                return { chatId: chat.id, message: null };
+            }
+        });
+        const results = await Promise.all(promises);
+        results.forEach(({ chatId, message }) => {
+            if (message) {
+                lastMessages.value[chatId] = message;
+            }
+        });
+
+        console.log("Последние сообщения:", lastMessages.value);
+    } catch (error) {
+        console.error("Ошибка при получении последних сообщений:", error);
+    }
+};
+
 const chatData = ref()
+
 const showDialog = async () => {
     try {
         const response = await getDialog();
@@ -122,7 +196,37 @@ const searchUsers = debounce(async (query: string) => {
         users.value = [];
     }
 }, 300);
+function formatDate(inputDate: any) {
+    const date = new Date(inputDate);
+    const now = new Date();
 
+    const isToday = date.toDateString() === now.toDateString();
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (isToday) {
+        const diffMs = now - date;
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
+
+        if (diffHours > 0) {
+            return `${diffHours}ч назад`;
+        } else {
+            return `${diffMinutes}м назад`;
+        }
+    } else if (isYesterday) {
+        return `Вчера в ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    } else {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString().slice(-2);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${day}.${month}.${year} в ${hours}:${minutes}`;
+    }
+}
 const baseAvaURL = 'https://itnt.store/';
 
 watch(searchQuery, (newQuery) => {
@@ -131,6 +235,13 @@ watch(searchQuery, (newQuery) => {
 
 onMounted(showDialog);
 onMounted(showDialogById)
+onMounted(getLastMessages)
+watch(chatData, (newData) => {
+    if (newData && newData.length > 0) {
+        getLastMessages();
+    }
+});
+
 </script>
 
 

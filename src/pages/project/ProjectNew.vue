@@ -13,7 +13,7 @@
         <!-- <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" /> -->
         <div class="project-id-input">
             <span class="prefix">{{ defaultPrefix }}</span>
-            <input type="text" v-model="editableValue" @input="syncValue" class="editable-input" />
+            <input type="text" v-model="projectId" @input="syncValue" class="editable-input" />
         </div>
     </div>
     <div class="mx-4">
@@ -73,14 +73,14 @@ const router = useRouter()
 
 const projectName = ref('')
 const projectSlogan = ref('')
-const projectId = ref('https://itnt.store/')
+const projectId = ref('')
 const projectTags = ref([])
 const projectTitle = ref('')
 const projectDescription = ref('')
 const avatarFile = ref(null);
 const avatarPreview = ref('');
 const fileInput = ref(null);
-const defaultPrefix = "https://itnt.store/";
+// const defaultPrefix = "https://itnt.store/";
 const placeholder = "Введите дополнительный текст...";
 
 // Хранит изменяемую часть текста
