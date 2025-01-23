@@ -38,7 +38,7 @@
             <div class="comment w-full" style="border-top-left-radius: 0;border-top-right-radius: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
             <div class="comment-content">
             <div class="comment-content__header">
-              <img :src="reply.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
+              <img class="w-[40px] h-[40px]" :src="reply.user.pictureUrl ? `${baseURL}/${comment.user.pictureUrl}` : defAva" alt="">
               <div :class="['title', { 'title-center': !reply.user.nickName }]">
                 <p class="bold-title">{{ reply.user.firstName }}</p>
                 <p v-if="reply.user.nickName" class="gray-title">{{ reply.user.nickName }}</p>

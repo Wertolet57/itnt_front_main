@@ -12,22 +12,26 @@ export default {
         variant="outlined"
         :label="props?.label"
         :placeholder="props?.placeholder"
-        hide-details="auto"        :v-model="search"
+        hide-details="auto"
+        v-model="search"
         :clearable="clearable"
         v-maska:[mask]
-        :rules="validationRules"
+        :rules="props.required ? validationRules : []"
+        :error="error"
+        :error-messages="error ? 'Это поле обязательно для заполнения' : ''"
         @input="$emit('input', $event.target.value)"
         :append-icon="props.appendIcon ? `mdi-${props.appendIcon}` : ''"
         :required="props.required"
         :append-inner-icon="props.appendIcon ? `mdi-${props.appendIcon}` : ''"
         @blur="checkRequired"
-        ></v-text-field>
+    ></v-text-field>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue"
+import { ref } from "vue"
 import { vMaska } from 'maska'
-const search =ref('')
+
+const search = ref('')
 const error = ref(false)
 
 const props = defineProps({
@@ -59,16 +63,13 @@ const props = defineProps({
         default: false,
     },
 })
+
 const checkRequired = () => {
-    if (props.required && !search.value) {
-        error.value = true
-    } else {
-        error.value = false
-    }
+    error.value = props.required && !search.value
 }
-const inputValue = ref('')
+
 const validationRules = [
-    (v:any) => !!v || (props.required ? 'Это поле обязательно для заполнения' : '')
+    (v: any) => !!v || 'Это поле обязательно для заполнения'
 ]
 </script>
 

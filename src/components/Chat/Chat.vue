@@ -1,26 +1,32 @@
 <template>
     <Header class="mb-[40px]" :showUserMinify="true" :routeName="chatId" :chat="true" />
     <div class="flex w-full min-h-[98%] h-[98%] flex-col">
-        <div ref="messagesContainer" class="messages-container min-h-full overflow-y-auto" v-if="messages.length > 0">
+        <div ref="messagesContainer" class="messages-container min-h-full overflow-y-auto relative"
+            v-if="messages.length > 0">
             <div v-for="message in messages" :key="message.id" :data-id="message.id" class="messages-container mx-2">
                 <div class="date-container">
-                    <!-- <div class="date text-center rounded-xl d-inline-block">{{ message?.messageDate }}</div> -->
                 </div>
-                <div :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']" class="flex flex-col">
+                <div ref="myDiv" :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']" class="flex flex-col">
                     <div class="message-content break-words">
-                        {{ message?.messageText }}
+                        {{ message.messageText }}
                     </div>
                     <div class="message-info flex items-center mt-2">
                         <span class="message-time text-gray-500 text-xs pl-3 mr-2">
-                            {{ message?.messageDate ? formatDate(message?.messageDate) : '00:00' }}
+                            {{ message.messageDate ? formatDate(message.messageDate) : '00:00' }}
                         </span>
                         <span class="message-status">
-                            <img :class="isMyMessage(message) ? '' : 'hidden'"
-                                :src="message.readStatus ? seen : delivered" alt="status" class="w-4 h-4" />
+                            <img v-if="isMyMessage(message)" :src="message.readStatus ? seen: delivered"
+                                alt="status" class="w-4 h-4" />
                         </span>
                     </div>
                 </div>
             </div>
+            <!-- Кнопка прокрутки -->
+            <button v-if="showScrollButton" @click="scrollToBottom"
+                class="scroll-button fixed z-[1000] bottom-[80px] right-[20px] bg-blue-500 text-white rounded-full p-3 shadow-lg flex items-center justify-center">
+                <span class="mr-2">{{ unreadCount }}</span>
+                <img :src="downArrowIcon" alt="Scroll Down" class="w-4 h-4" />
+            </button>
         </div>
     </div>
     <div class="input-wrapper fixed bottom-[40px] w-full h-[2%]">
@@ -37,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed,onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import Header from '~/components/Header.vue';
 import { getDialogMessages, sendMessage, markAsRead } from "../../API/ways/dialog";
@@ -46,6 +52,7 @@ import chat from '../../assets/icons/chat.svg';
 import delivered from '~/assets/chat/delivered.svg';
 import seen from '~/assets/chat/seen.svg';
 import { nextTick } from 'vue';
+const myDiv = ref(null);
 
 const route = useRoute();
 const chatId = ref(route.params.ID);
@@ -55,6 +62,8 @@ const messages = webSocketService.messages;
 const connectionStatus = webSocketService.connectionStatus;
 const messagesContainer = ref(null);
 const observedMessages = new WeakSet();
+const unreadCount = ref(0);
+const showScrollButton = ref(false);
 const isMyMessage = (message) => {
     return message?.user?.id == userId.value;
 };
@@ -83,7 +92,32 @@ const getDateLabel = (date) => {
         year: 'numeric'
     });
 };
+const handleScroll = () => {
+  if (!messagesContainer.value) return;
 
+  const container = messagesContainer.value;
+  const nearBottom =
+    container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+
+  if (nearBottom) {
+    showScrollButton.value = false;
+    unreadCount.value = 0;
+  } else {
+    showScrollButton.value = true;
+  }
+};
+
+const scrollToBottom = () => {
+  if (!messagesContainer.value) return;
+
+  const container = messagesContainer.value;
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior: 'smooth',
+  });
+  unreadCount.value = 0;
+  showScrollButton.value = false;
+};
 const connectToWebSocket = () => {
     if (chatId.value && userId.value) {
         webSocketService.connect(Number(chatId.value), Number(userId.value));
@@ -120,6 +154,8 @@ const sendMessageWebSocket = async () => {
         webSocketService.sendMessage(Number(chatId.value), messageData);
         await sendMessageAPI(messageData);
         newMessage.value = '';
+        scrollToBottom();
+
     }
 };
 const markMessagesAsRead = async () => {
@@ -190,13 +226,37 @@ const groupedMessages = computed(() => {
         .sort(([a], [b]) => b - a)
         .map(([_, group]) => group);
 });
+const receiveMessage = (newMsg) => {
+  messages.value.push(newMsg);
 
+  if (messagesContainer.value) {
+    const container = messagesContainer.value;
+    const nearBottom =
+      container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+
+    if (!nearBottom) {
+      unreadCount.value += 1;
+      showScrollButton.value = true;
+    } else {
+      scrollToBottom();
+    }
+  }
+};
 onMounted(async () => {
     if (chatId.value) {
         await getDialog(Number(chatId.value));
         connectToWebSocket();
-        await nextTick();
         markMessagesAsRead();
+        await nextTick();
+        const div = myDiv.value;
+        if (div && typeof div.scrollTop !== 'undefined') {
+            try {
+                // Use scrollTop property instead of scrollTo method
+                div.scrollTop = div.scrollHeight;
+            } catch (error) {
+                console.error('Scroll error:', error);
+            }
+        }
     }
 });
 
@@ -215,6 +275,17 @@ webSocketService.onMessageStatusUpdate((messageId, readStatus) => {
     if (message) {
         message.readStatus = readStatus;
     }
+});
+onMounted(() => {
+  if (messagesContainer.value) {
+    messagesContainer.value.addEventListener('scroll', handleScroll);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (messagesContainer.value) {
+    messagesContainer.value.removeEventListener('scroll', handleScroll);
+  }
 });
 </script>
 

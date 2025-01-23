@@ -21,7 +21,7 @@
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
         <div class="my-[48px]">
             <h1>{{ $t('Post.new') }}</h1>
-            <UiInput @click="openBottomSheet" :label="$t('Post.day')" />
+            <UiInput :required="false" @click="openBottomSheet" :label="$t('Post.day')" />
         </div>
         <div v-if="posts" v-for="post in posts">
             <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"

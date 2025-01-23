@@ -141,6 +141,8 @@ const submitImages = async () => {
       authorUser: { id: 1 },
     };
     const response = await postProject(background.value as File, otherFiles, postData);
+    snackbarVisible.value = true
+    emit('postSuccess')
     console.log('Успешно отправлено:', response);
   } catch (error) {
     console.error('Ошибка при отправке:', error);
