@@ -5,16 +5,26 @@ export default {
 </script>
 
 <template>
-    <v-bottom-navigation class="" :elevation="10" grow>
-        <v-footer>
-            <div class="footer__row">
-                <div class="footer__item" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
-                    :class="route.name === $route.path && 'footer__item--active'">
-                    <img width="22" height="22" :src="route?.icon" :alt="route.icon" />
+    <div class="small__screen">
+        <v-bottom-navigation :elevation="10" grow>
+            <v-footer>
+                <div class="footer__row">
+                    <div class="footer__item" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
+                        :class="route.name === $route.path && 'footer__item--active'">
+                        <img width="22" height="22" :src="route?.icon" :alt="route.icon" />
+                    </div>
                 </div>
+            </v-footer>
+        </v-bottom-navigation>
+    </div>
+    <div class="big__screen">
+        <div class="footer__column">
+            <div class="footer__item2" v-for="(route, id) in routes" :key="id" @click="$router.push(route?.name)"
+                :class="route.name === $route.path && 'footer__item2--active'">
+                <img width="24" height="24" :src="route?.icon" :alt="route.icon" />
             </div>
-        </v-footer>
-    </v-bottom-navigation>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -66,14 +76,12 @@ const routes: modalActionsList[] = [
     width: 80px;
     background-color: #ffffff;
     display: none;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    // box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 900;
 
     @media (min-width: 1200px) {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: stretch;
-        margin-top: auto;
+        display: block;
+        // box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <Header showID show-user-minify />
+  <Header  :messenger="true" showID show-user-minify />
   <div class="comments-section">
     <div class="mx-4">
       <UiCommentBlog :feed-card-type="'newProjectStage'" :blog-data="data" />

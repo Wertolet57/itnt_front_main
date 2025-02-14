@@ -1,5 +1,5 @@
 <template>
-  <Header showID show-user-minify />
+  <Header  :messenger="true" showID show-user-minify />
   <div class="comments-section">
     <div class="mx-4 text-md font-medium" >Коментарии к проекту:</div>
     <ProjectHeader :commentText="true" :prjAva="fullAvatarUrl" :prj-name="data.name" :prjID="data.id"

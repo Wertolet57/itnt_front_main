@@ -1,7 +1,7 @@
 <template>
     <Header showID showUserMinify />
-    <ProjectHeader :prjAva="fullAvatarUrl" :read-only="false"  />
-    <v-container>
+    <ProjectHeader :class="{ 'ml-[80px]': isSidePanel }" :prjAva="fullAvatarUrl" :read-only="false"  />
+    <v-container >
         <ProjectCard />
         <ProjectTeam :team="data.users" class="mt-12" />
         <!-- <ProjectInvesting /> -->
@@ -35,6 +35,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '~/store/projectStore'
 let data = ref({})
 
+const isSidePanel = ref(false);
 
 const prjStore = useProjectStore()
 const router = useRouter()
@@ -53,6 +54,14 @@ onMounted(async () => {
             console.error('error:', e)
         }
     })
+
+    // Check window width on mount
+    isSidePanel.value = window.innerWidth >= 768;
+    
+    // Listen for window resize
+    window.addEventListener('resize', () => {
+        isSidePanel.value = window.innerWidth >= 768;
+    });
 })
 
 async function changeProject() {

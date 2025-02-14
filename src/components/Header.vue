@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-    <v-app-bar class="px-4 addaptive z-1 relative" :elevation="0" height="46" color="white">
+    <v-app-bar class="px-4 addaptive z-1 relative" :class="props.messenger ? 'header-chat' : 'header'" :elevation="0" height="46" color="white">
         <v-icon class="mr-3" @click="$router.back()" icon="mdi-arrow-left" />
         <h2 @click="copyID" v-show="props.showID">{{ chosenId }}</h2>
 
@@ -173,6 +173,10 @@ const props = defineProps({
     chat: {
         type: Boolean,
         default: false,
+    },
+    messenger:{
+        type: Boolean,
+        default: false,
     }
 })
 let data = ref({})
@@ -272,6 +276,22 @@ function copyID() {
         width: 60px;
         height: 58px;
         border-radius: 100%;
+    }
+}
+
+.header {
+    @media (min-width: 1200px) {
+        margin-left: 80px;
+        background-color: #fffeee;
+        width: calc(100% - 80px) !important;
+    }
+}
+
+.header-chat {
+    @media (min-width: 1200px) {
+        margin-left: 0;
+        background-color: #fffeee;
+        width: calc(100%) !important;
     }
 }
 </style>

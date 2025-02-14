@@ -1,49 +1,49 @@
 <template>
-    <Header class="mb-[40px]" :showUserMinify="true" :routeName="chatId" :chat="true" />
-    <div class="flex w-full min-h-[98%] h-[98%] flex-col">
-        <div ref="messagesContainer" class="messages-container min-h-full overflow-y-auto relative"
-            v-if="messages.length > 0">
-            <div v-for="message in messages" :key="message.id" :data-id="message.id" class="messages-container mx-2">
-                <div class="date-container">
-                </div>
-                <div ref="myDiv" :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']" class="flex flex-col">
-                    <div class="message-content break-words">
-                        {{ message.messageText }}
+    <div class="flex flex-col h-[88vh]">
+        <Header class="mb-[40px]" :showUserMinify="true" :messenger="true" :routeName="chatId" :chat="true" />
+        <div class="flex-1 overflow-hidden mb-[40px]">
+            <div ref="messagesContainer" class="h-full  overflow-y-auto px-2" v-if="messages.length > 0">
+                <div v-for="message in messages" :key="message.id" :data-id="message.id" class="w-full flex">
+                    <div :class="['message-wrapper', isMyMessage(message) ? 'justify-end' : 'justify-start']" class="w-full flex">
+                        <div ref="myDiv" :class="['message', isMyMessage(message) ? 'my-message' : 'other-message']" class="flex flex-col">
+                            <div class="message-content break-words">
+                                {{ message.messageText }}
+                            </div>
+                            <div class="message-info flex items-center mt-2">
+                                <span class="message-time text-gray-500 text-xs pl-3 mr-2">
+                                    {{ message.messageDate ? formatDate(message.messageDate) : '00:00' }}
+                                </span>
+                                <span class="message-status">
+                                    <img v-if="isMyMessage(message)" :src="message.readStatus ? seen: delivered"
+                                        alt="status" class="w-4 h-4" />
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="message-info flex items-center mt-2">
-                        <span class="message-time text-gray-500 text-xs pl-3 mr-2">
-                            {{ message.messageDate ? formatDate(message.messageDate) : '00:00' }}
-                        </span>
-                        <span class="message-status">
-                            <img v-if="isMyMessage(message)" :src="message.readStatus ? seen: delivered"
-                                alt="status" class="w-4 h-4" />
-                        </span>
-                    </div>
                 </div>
-            </div>
-            <!-- Кнопка прокрутки -->
-            <button v-if="showScrollButton" @click="scrollToBottom"
-                class="scroll-button fixed z-[1000] bottom-[80px] right-[20px] bg-blue-500 text-white rounded-full p-3 shadow-lg flex items-center justify-center">
-                <span class="mr-2">{{ unreadCount }}</span>
-                <img :src="downArrowIcon" alt="Scroll Down" class="w-4 h-4" />
-            </button>
-        </div>
-    </div>
-    <div class="input-wrapper fixed bottom-[40px] w-full h-[2%]">
-        <div class="input-container w-full">
-            <div class="inner-input">
-                <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
-                    :disabled="connectionStatus !== 'open'" />
-                <button @click="sendMessageWebSocket" :disabled="connectionStatus !== 'open'">
-                    <img :src="chat" alt="Send" />
+                <button v-if="showScrollButton" @click="scrollToBottom"
+                    class="scroll-button fixed z-[1000] bottom-[400px] right-[20px] bg-blue-500 text-white rounded-full p-3 shadow-lg flex items-center justify-center">
+                    <span class="mr-2">{{ unreadCount }}</span>
+                    <v-icon icon="mdi-arrow-down" size="small" color="white"></v-icon>
                 </button>
+            </div>
+        </div>
+        <div class="mt-auto">
+            <div class="input-container w-full">
+                <div class="inner-input">
+                    <input v-model="newMessage" @keyup.enter="sendMessageWebSocket" placeholder="Введите сообщение..."
+                        :disabled="connectionStatus !== 'open'" />
+                    <button @click="sendMessageWebSocket" :disabled="connectionStatus !== 'open'">
+                        <img :src="chat" alt="Send" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed,onBeforeUnmount } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed, onBeforeUnmount, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import Header from '~/components/Header.vue';
 import { getDialogMessages, sendMessage, markAsRead } from "../../API/ways/dialog";
@@ -51,7 +51,6 @@ import { webSocketService } from '../../helpers/websocket.ts';
 import chat from '../../assets/icons/chat.svg';
 import delivered from '~/assets/chat/delivered.svg';
 import seen from '~/assets/chat/seen.svg';
-import { nextTick } from 'vue';
 const myDiv = ref(null);
 
 const route = useRoute();
@@ -108,16 +107,25 @@ const handleScroll = () => {
 };
 
 const scrollToBottom = () => {
-  if (!messagesContainer.value) return;
-
-  const container = messagesContainer.value;
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: 'smooth',
-  });
-  unreadCount.value = 0;
-  showScrollButton.value = false;
+    if (!messagesContainer.value) {
+        console.log('messagesContainer не найден');
+        return;
+    }
+    
+    const container = messagesContainer.value;
+    
+    // Используем requestAnimationFrame для гарантированного скролла после рендеринга
+    requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+        
+        console.log('Scroll Debug после RAF:', {
+            scrollHeight: container.scrollHeight,
+            clientHeight: container.clientHeight,
+            currentScrollTop: container.scrollTop
+        });
+    });
 };
+
 const connectToWebSocket = () => {
     if (chatId.value && userId.value) {
         webSocketService.connect(Number(chatId.value), Number(userId.value));
@@ -227,36 +235,43 @@ const groupedMessages = computed(() => {
         .map(([_, group]) => group);
 });
 const receiveMessage = (newMsg) => {
-  messages.value.push(newMsg);
+    console.log('Получено новое сообщение:', newMsg);
+    messages.value.push(newMsg);
+    nextTick(() => {
+        if (messagesContainer.value) {
+            const container = messagesContainer.value;
+            const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            
+            console.log('Состояние скролла:', {
+                scrollHeight: container.scrollHeight,
+                scrollTop: container.scrollTop,
+                clientHeight: container.clientHeight,
+                isNearBottom
+            });
 
-  if (messagesContainer.value) {
-    const container = messagesContainer.value;
-    const nearBottom =
-      container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
-
-    if (!nearBottom) {
-      unreadCount.value += 1;
-      showScrollButton.value = true;
-    } else {
-      scrollToBottom();
-    }
-  }
-};
-onMounted(async () => {
-    if (chatId.value) {
-        await getDialog(Number(chatId.value));
-        connectToWebSocket();
-        markMessagesAsRead();
-        await nextTick();
-        const div = myDiv.value;
-        if (div && typeof div.scrollTop !== 'undefined') {
-            try {
-                // Use scrollTop property instead of scrollTo method
-                div.scrollTop = div.scrollHeight;
-            } catch (error) {
-                console.error('Scroll error:', error);
+            if (isNearBottom) {
+                console.log('Скроллим вниз, так как близко к низу');
+                scrollToBottom();
+            } else {
+                console.log('Не скроллим, увеличиваем счетчик непрочитанных');
+                unreadCount.value += 1;
+                showScrollButton.value = true;
             }
         }
+    });
+};
+
+onMounted(async () => {
+    console.log('Component mounted');
+    if (chatId.value) {
+        await getDialog(Number(chatId.value));
+        console.log('Диалог загружен, количество сообщений:', messages.value.length);
+        connectToWebSocket();
+        markMessagesAsRead();
+        nextTick(() => {
+            console.log('nextTick выполнен, пробуем скроллить');
+            scrollToBottom();
+        });
     }
 });
 
@@ -287,6 +302,14 @@ onBeforeUnmount(() => {
     messagesContainer.value.removeEventListener('scroll', handleScroll);
   }
 });
+
+// Add new watcher for messages
+watch(messages, () => {
+    nextTick(() => {
+        scrollToBottom();
+    });
+}, { deep: true });
+
 </script>
 
 <style scoped lang="scss">
@@ -347,14 +370,34 @@ onBeforeUnmount(() => {
 }
 
 .messages-container {
+    height: calc(100vh - 180px); // вычитаем высоту header и input
+    overflow-y: auto;
     display: flex;
-    overflow-y: auto;
     flex-direction: column;
-    justify-content: flex-end;
-    // gap: 10px;
-    // height: 100%;
-    overflow-y: auto;
-    scroll-behavior: smooth;
+    gap: 8px;
+    padding-bottom: 60px;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+}
+
+.messages-content {
+    flex: 1;
+    min-height: min-content;
+}
+
+.message-item {
+    margin: 8px;
 }
 
 .date-container {
@@ -375,6 +418,11 @@ onBeforeUnmount(() => {
     line-height: 14px;
 }
 
+.message-wrapper {
+    width: 100%;
+    display: flex;
+    padding: 4px 0;
+}
 
 .message {
     max-width: 80%;
@@ -388,23 +436,16 @@ onBeforeUnmount(() => {
     width: auto;
 }
 
-.message-content {
-    padding: 10px 10px 6px 14px;
-    word-break: break-all;
-    max-width: 100%;
-}
-
 .my-message {
+    padding: 6px 0px 0px 12px;
     border-radius: 12px 12px 2px 12px;
     background-color: #E1F5FE;
-    align-self: flex-end;
-
 }
 
 .other-message {
+    padding: 6px 0px 0px 12px;
     border-radius: 12px 12px 12px 2px;
     background-color: #ffffff;
-    align-self: flex-start;
 }
 
 .message-info {
@@ -416,12 +457,13 @@ onBeforeUnmount(() => {
 }
 
 .input-container {
-    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
     padding: 10px;
-    // height:60px;
-    background-color: #ffffff;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top: 1px solid #eee;
 }
 
 .inner-input {

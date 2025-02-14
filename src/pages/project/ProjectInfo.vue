@@ -1,7 +1,7 @@
 <template>
     <Header showControlDotsProject showID show-user-minify />
-    <ProjectHeader :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
-    <v-container>
+    <ProjectHeader :class="{ 'ml-[80px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
+    <v-container >
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
         <ProjectTeam :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys :project-name="data.name" :project-id="data.id" class="mt-12" readOnly />
@@ -122,6 +122,18 @@ const fullAvatarUrl = computed(() => {
     else {
         return data.value.avatarUrl ? `${baseURL}files/${data.value.avatarUrl}` : '';
     }
+});
+
+const isSidePanel = ref(false);
+
+onMounted(() => {
+    // Check window width on mount
+    isSidePanel.value = window.innerWidth >= 768;
+    
+    // Listen for window resize
+    window.addEventListener('resize', () => {
+        isSidePanel.value = window.innerWidth >= 768;
+    });
 });
 
 import Footer from '~/components/Footer.vue'

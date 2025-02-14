@@ -1,76 +1,78 @@
 <template>
-    <ChatFolders />
-    <div v-if="chatData" v-for="chat in chatData" class="">
-        <div @click="navigateToChat(chat.id)" v-if="lastMessages[chat?.id]" class="card shadow-none cursor-pointer">
-            <span class="card__image  border-chatThird">
-                <img class="rounded-[100%] w-[40px] h-auto max-h-[40px] aspect-square"
-                    :src="getOtherUser(chat)?.pictureUrl ? `${baseAvaURL}/files/${getOtherUser(chat).pictureUrl}` : avatar"
-                    alt="User Avatar" />
-            </span>
-            <!-- {{ chat }} -->
-            <!-- {{ lastMessages[chat?.id].dialog.users }} -->
-            <!-- <div class="" v-for="user in lastMessages[chat?.id].dialog.users">
-                {{ user.id }}
-            </div> -->
-            <!-- {{ getOtherUser(chat)?.login }} -->
-            <div class="flex flex-col flex-1">
-                <div class="flex flex-row justify-between flex-1">
-                    <div v-if="lastMessages[chat?.id]?.user?.id == userId" class="card__name">
-                        {{
-                            getOtherUser(chat)?.firstName && getOtherUser(chat)?.lastName
-                                ? `${getOtherUser(chat)?.firstName} ${getOtherUser(chat)?.lastName}`
-                                : getOtherUser(chat)?.firstName || getOtherUser(chat)?.lastName || getOtherUser(chat)?.login
-                        }}
-                        <p class="font-normal mt-[4px] text-sm"><span class="text-gray-400 font-normal">Вы</span> {{
-                            lastMessages[chat?.id]?.messageText }}</p>
-                    </div>
-                    <div v-else class="card__name">
-                        {{
-                            lastMessages[chat?.id]?.user.firstName && lastMessages[chat?.id]?.user.lastName
-                                ? `${lastMessages[chat?.id]?.user.firstName} ${lastMessages[chat?.id]?.user.lastName}`
-                                : lastMessages[chat?.id]?.user.firstName || lastMessages[chat?.id]?.user.lastName ||
-                                lastMessages[chat?.id]?.user.login
-                        }}
-                        <p class="font-normal mt-[4px] text-sm">{{ lastMessages[chat?.id]?.messageText }}</p>
-                    </div>
-                    <div v-if="lastMessages[chat?.id]?.messageDate" class="flex flex-row items-start gap-[6px]">
-                        <p class="card__time">{{ formatDate(lastMessages[chat?.id]?.messageDate) }}</p>
-                        <div class="w-[20px]">
-                            <img v-if="lastMessages[chat?.id]?.user?.id == userId"
-                                :src="lastMessages[chat?.id]?.readStatus ? seen : delivered" alt="" />
+    <div :class="{'has-folder': hasFolders}">
+        <ChatFolders v-if="hasFolders" />
+        <div v-if="chatData" v-for="chat in chatData" class="">
+            <div @click="navigateToChat(chat.id)" v-if="lastMessages[chat?.id]" class="card shadow-none cursor-pointer">
+                <span class="card__image  border-chatThird">
+                    <img class="rounded-[100%] w-[40px] h-auto max-h-[40px] aspect-square"
+                        :src="getOtherUser(chat)?.pictureUrl ? `${baseAvaURL}/files/${getOtherUser(chat).pictureUrl}` : avatar"
+                        alt="User Avatar" />
+                </span>
+                <!-- {{ chat }} -->
+                <!-- {{ lastMessages[chat?.id].dialog.users }} -->
+                <!-- <div class="" v-for="user in lastMessages[chat?.id].dialog.users">
+                    {{ user.id }}
+                </div> -->
+                <!-- {{ getOtherUser(chat)?.login }} -->
+                <div class="flex flex-col flex-1">
+                    <div class="flex flex-row justify-between flex-1">
+                        <div v-if="lastMessages[chat?.id]?.user?.id == userId" class="card__name">
+                            {{
+                                getOtherUser(chat)?.firstName && getOtherUser(chat)?.lastName
+                                    ? `${getOtherUser(chat)?.firstName} ${getOtherUser(chat)?.lastName}`
+                                    : getOtherUser(chat)?.firstName || getOtherUser(chat)?.lastName || getOtherUser(chat)?.login
+                            }}
+                            <p class="font-normal mt-[4px] text-sm"><span class="text-gray-400 font-normal">Вы</span> {{
+                                lastMessages[chat?.id]?.messageText }}</p>
+                        </div>
+                        <div v-else class="card__name">
+                            {{
+                                lastMessages[chat?.id]?.user.firstName && lastMessages[chat?.id]?.user.lastName
+                                    ? `${lastMessages[chat?.id]?.user.firstName} ${lastMessages[chat?.id]?.user.lastName}`
+                                    : lastMessages[chat?.id]?.user.firstName || lastMessages[chat?.id]?.user.lastName ||
+                                    lastMessages[chat?.id]?.user.login
+                            }}
+                            <p class="font-normal mt-[4px] text-sm">{{ lastMessages[chat?.id]?.messageText }}</p>
+                        </div>
+                        <div v-if="lastMessages[chat?.id]?.messageDate" class="flex flex-row items-start gap-[6px]">
+                            <p class="card__time">{{ formatDate(lastMessages[chat?.id]?.messageDate) }}</p>
+                            <div class="w-[20px]">
+                                <img v-if="lastMessages[chat?.id]?.user?.id == userId"
+                                    :src="lastMessages[chat?.id]?.readStatus ? seen : delivered" alt="" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="fixed bottom-20 right-6 bg-marine z-[10000]  rounded-[12px]">
-        <button @click="showSheet = true" class="p-[10px]"><img :src="plus" alt=""></button>
-        <transition name="bottom-sheet">
-            <div v-if="showSheet" style="overflow-y: auto;" class="bottom-sheet bg-white text-left"
-                @click="showPopup = false">
-                <div class="searchTeammateModal modal">
-                    <h6 class="text mb-2">Создание новой беседы</h6>
-                    <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
-                    <div class="mt-4 date rounded-xl d-inline-block">Результаты поиска:</div>
-                    <div class="searchTeammateModal__items">
-                        <div v-for="user in users" :key="user?.id" class="d-flex align-center"
-                            @click="() => openUser(user?.id)">
-                            <img class="mr-3 rounded-[100%] shadow-xl w-[37px] h-[37px]" width="37" height="37"
-                                :src="user?.pictureUrl ? `${baseAvaURL}/files/${user.pictureUrl}` : ava" />
-                            <div>
-                                <div class="d-flex align-center">
-                                    <p class="txt-body3">{{ user?.firstName || `#${user?.id}` }}</p>
+        <div class="fixed bottom-20 right-6 bg-marine z-[10000]  rounded-[12px]">
+            <button @click="showSheet = true" class="p-[10px]"><img :src="plus" alt=""></button>
+            <transition name="bottom-sheet">
+                <div v-if="showSheet" style="overflow-y: auto;" class="bottom-sheet bg-white text-left"
+                    @click="showPopup = false">
+                    <div class="searchTeammateModal modal">
+                        <h6 class="text mb-2">Создание новой беседы</h6>
+                        <UiInput prepend-icon="magnify" label="Введите данные для поиска" v-model="searchQuery" />
+                        <div class="mt-4 date rounded-xl d-inline-block">Результаты поиска:</div>
+                        <div class="searchTeammateModal__items">
+                            <div v-for="user in users" :key="user?.id" class="d-flex align-center"
+                                @click="() => openUser(user?.id)">
+                                <img class="mr-3 rounded-[100%] shadow-xl w-[37px] h-[37px]" width="37" height="37"
+                                    :src="user?.pictureUrl ? `${baseAvaURL}/files/${user.pictureUrl}` : ava" />
+                                <div>
+                                    <div class="d-flex align-center">
+                                        <p class="txt-body3">{{ user?.firstName || `#${user?.id}` }}</p>
+                                    </div>
+                                    <p class="txt-cap1 text-[#9E9E9E]">{{ user?.login }}</p>
                                 </div>
-                                <p class="txt-cap1 text-[#9E9E9E]">{{ user?.login }}</p>
                             </div>
                         </div>
                     </div>
+                    <v-btn @click="showSheet = false" class="close-btn text-white mr-2" icon="mdi-check" color="#00e676" />
                 </div>
-                <v-btn @click="showSheet = false" class="close-btn text-white mr-2" icon="mdi-check" color="#00e676" />
-            </div>
-        </transition>
+            </transition>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
@@ -106,6 +108,9 @@ const navigateToChat = (chatId: any) => {
     }
 };
 
+const hasFolders = computed(() => {
+    return router.currentRoute.value.path.includes('/messenger') && !router.currentRoute.value.path.includes('/chat/');
+});
 
 const getOtherUser = (currentChat: any) => {
     return lastMessages.value[currentChat?.id]?.dialog?.users?.find(
@@ -331,6 +336,13 @@ watch(chatData, (newData) => {
             color: #9E9E9E;
 
         }
+    }
+}
+
+.has-folder {
+    @media (min-width: 1200px) {
+        margin-left: 80px;
+        width: calc(100% - 80px);
     }
 }
 
