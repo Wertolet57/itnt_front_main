@@ -35,7 +35,7 @@
             <p class="txt-body2 item__text">Сумма уже выкупленной доли</p>
         </div>
 
-        <UiButton bgColor="blue">Приобрести долю в проекте</UiButton>
+        <UiButton bgColor="blue">Инвестировать в талант</UiButton>
     </div>
 </template>
 

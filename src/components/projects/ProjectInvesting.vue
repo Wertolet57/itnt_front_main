@@ -15,7 +15,7 @@
         <div class="projectInvesting__body">
             <ProjectInvestSlider />
 
-            <div class="mt-[48px] mb-4">
+            <!-- <div class="mt-[48px] mb-4">
                 <div class="comment bg-gray-100">
                     <div>
                         Мы все очень любим “Danger Flower”, но проект не может существовать на одном нашем энтузиазме.
@@ -28,8 +28,8 @@
                         Краудинвестинг позволяет совершать как крупные, так и микро-инвестиции от $100.
                     </span>
                 </div>
-            </div>
-            <div class="flex flex-row justify-between mb-[24px]">
+            </div> -->
+            <!-- <div class="flex flex-row justify-between mb-[24px]">
 
                 <div class="projectMedia__item w-[50%] flex justify-center">
                     <div class="flex flex-col">
@@ -54,11 +54,11 @@
                         <p class="font-normal text-sm">Питч для инвесторов</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
-            <UiButton class="mb-[48px]" bgColor="def">Мне интересно, но есть вопросы</UiButton>
+            <!-- <UiButton class="mb-[48px]" bgColor="def">Мне интересно, но есть вопросы</UiButton>
             <Stat/>
-            <UiButton class="mt-[48px]" bgColor="orange">Сделать взнос в обмен на долю</UiButton>
+            <UiButton class="mt-[48px]" bgColor="orange">Сделать взнос в обмен на долю</UiButton> -->
 
         </div>
     </div>

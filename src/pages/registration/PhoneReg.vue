@@ -132,7 +132,9 @@ async function sendCode() {
                     $cookies.set('userId', response.data.object.user.id)
                     localStorage.setItem('userToken', response.data.object.jwtToken)
                     localStorage.setItem('userId', response.data.object.user.id)
-                    router.push('/screening')
+                    router.push('/screening').then(() => {
+                        location.reload() // Reload the page after navigation to projects
+                    })
                 }
             })
             .catch((e) => {

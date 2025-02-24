@@ -172,8 +172,9 @@ async function sendPinCode() {
                     $cookies.set('userId', response.data.object.user.id)
                     localStorage.setItem('userToken', response.data.object.jwtToken)
                     localStorage.setItem('userId', response.data.object.user.id)
-                    router.push('/projects')
-                    // pageStep.value = 3
+                    router.push('/projects').then(() => {
+                        location.reload() // Reload the page after navigation to projects
+                    })
                 }
             })
             .catch((e) => {
