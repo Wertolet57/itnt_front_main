@@ -4,28 +4,33 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import { VitePWA } from 'vite-plugin-pwa'
 import vuetify from 'vite-plugin-vuetify'
-// import { UnpluginVueComponentsResolver, UnpluginDirectivesResolver } from 'maz-ui/resolvers'
 
 export default defineConfig({
     plugins: [vue(), vuetify(), VitePWA()],
-    server:{
-        watch:{
-            usePolling:true,
+    server: {
+        watch: {
+            usePolling: true,
         },
-        host:true,
-        strictPort:true,
-        port:8080
+        host: true,
+        strictPort: true,
+        port: 8080,
+        fs: {
+            strict: true,
+        }
     },
-    // TODO: поменять пути динамических иконок
     build: {
         outDir: 'dist',
         minify: true,
+        sourcemap: true,
         rollupOptions: {
-            external: ['vuedraggable'],
-             input: '/src/main.ts'
-          }
+            output: {
+                manualChunks: undefined,
+                entryFileNames: 'assets/[name].[hash].js',
+                chunkFileNames: 'assets/[name].[hash].js',
+                assetFileNames: 'assets/[name].[hash][extname]'
+            }
+        }
     },
-
     css: {
         preprocessorOptions: {
             scss: {
@@ -43,4 +48,7 @@ export default defineConfig({
             'vuetify/labs/VPullToRefresh': 'vuetify/lib/labs/VPullToRefresh',
         },
     },
+    optimizeDeps: {
+        include: ['vue', 'vue-router', 'vuetify']
+    }
 })

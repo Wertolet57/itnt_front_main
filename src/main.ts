@@ -16,7 +16,7 @@ import { initializeApp } from "firebase/app";
 import messages from './i18n/main';
 import 'maz-ui/styles' // or import 'maz-ui/css/main.css'
 import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
-import MazPullToRefresh from 'maz-ui/components/MazPullToRefresh'
+// import MazPullToRefresh from 'maz-ui/components/MazPullToRefresh'
 
 // Firebase configuration
 const firebaseConfig = {
