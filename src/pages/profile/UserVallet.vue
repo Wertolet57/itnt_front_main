@@ -14,60 +14,85 @@
         </v-container>
     </div>
     <div class="scrollable-container p-[20px]" v-show="pageStep === 2">
+        <UiSwitch :isVallet="true" @change-value="valletType = $event"
+        :items="[`Инвестиции `, `Мои вложения`]" />
         <!-- <v-pull-to-refresh class=" text-[#263238]" :pull-down-threshold="pullDownThreshold" @load="load"> -->
-            <div class="transaction-list text-[#263238]">
-                <div class="transaction-card z-" v-for="(transaction, index) in transactions" :key="index">
-                    <img :src="ava" class="transaction-icon" alt="icon">
-                    <div class="transaction-details">
-                        <p class="transaction-type">{{ transaction.type }}</p>
-                        <p class="transaction-description">{{ transaction.description }}</p>
-                    </div>
-                    <div class="transaction-amount"
-                        :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
-                        <p>{{ transaction.amount }} ETH</p>
-                        <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
+            <div class="" v-if="valletType == 0">
+                <div class="transaction-list text-[#263238]">
+                        <div class="transaction-card z-" v-for="(transaction, index) in transactions" :key="index" @click="openDonationDetails(transaction)">
+                        <img :src="ava" class="transaction-icon" alt="icon">
+                        <div class="transaction-details">
+                            <p class="transaction-type">{{ transaction.type }}</p>
+                            <p class="transaction-description">{{ transaction.description }}</p>
+                        </div>
+                        <div class="transaction-amount"
+                            :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
+                            <p>{{ transaction.amount }} ETH</p>
+                            <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="donation-block mt-4 p-[20px]  text-[#263238]">
-                <div class="flex flex-row items-center mb-[42px]">
-                    <img :src="ava" class="transaction-icon" alt="icon">
-                    <div class="transaction-details">
-                        <p class="transaction-type">Danger Flower</p>
-                        <p class="text-[#263238]">9 марта 22г  в 17:33</p>
-                    </div>
-                    <div class="transaction-amount">
-                        <p>-2 ETH</p>
-                        <p class="text-[#9E9E9E]">~$5 459.88</p>
+            <div class="" v-if="valletType == 1">
+                <div class="transaction-list text-[#263238]">
+                        <div class="transaction-card z-" v-for="(transaction, index) in myTransactions" :key="index" @click="openDonationDetails(transaction)">
+                        <img :src="ava" class="transaction-icon" alt="icon">
+                        <div class="transaction-details">
+                            <p class="transaction-type">{{ transaction.type }}</p>
+                            <p class="transaction-description">{{ transaction.description }}</p>
+                        </div>
+                        <div class="transaction-amount"
+                            :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
+                            <p>{{ transaction.amount }} ETH</p>
+                            <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="donation-info justify-center">
-                    <img :src="update" alt="Danger Flower" class="icon">
-                    <p>Вы отправили в проект Danger Flower пожертвование в размере <span class="span-text">2 ETH</span></p>
-                </div>
-                <div class="message">На развитие! Я в вас верю!</div>
-                <UiButton bg-color="purple" class="mt-[50px]">Пожертвовать ещё</UiButton>
-                <UiButton bg-color="def" class="mt-[15px]">Все мои операции с этим проектом</UiButton>
             </div>
-            <v-container>
+            
+            <v-bottom-sheet v-model="showDonationDetails">
+                <div class="donation-block mt-4 p-[20px] text-[#263238]">
+                    <div class="flex flex-row items-center mb-[42px]">
+                        <img :src="ava" class="transaction-icon" alt="icon">
+                        <div class="transaction-details">
+                            <p class="transaction-type">Danger Flower</p>
+                            <p class="text-[#263238]">9 марта 22г  в 17:33</p>
+                        </div>
+                        <div class="transaction-amount">
+                            <p>-2 ETH</p>
+                            <p class="text-[#9E9E9E]">~$5 459.88</p>
+                        </div>
+                    </div>
+                    <div class="donation-info justify-center">
+                        <img :src="update" alt="Danger Flower" class="icon">
+                        <p>Вы отправили в проект Danger Flower пожертвование в размере <span class="span-text">2 ETH</span></p>
+                    </div>
+                    <div class="message">На развитие! Я в вас верю!</div>
+                    <UiButton bg-color="purple" class="mt-[50px]">Пожертвовать ещё</UiButton>
+                    <UiButton bg-color="def" class="mt-[15px]">Все мои операции с этим проектом</UiButton>
+                </div>
+            </v-bottom-sheet>
+            <!-- <v-container>
                 <div class="cards">
                     <div class="z"> sdsdsdsd</div>
                     <div class="bg"></div>
                     <div class="blob"></div>
                 </div>
-            </v-container>
+            </v-container> -->
         <!-- </v-pull-to-refresh> -->
     </div>
-
+    <Footer/>
 </template>
 
 <script setup lang="ts">
 import update from "../../assets/vallet/update.svg"
 import ava from "../../assets/demo/projectsmallphoto.svg"
 import { ref } from 'vue'
+import Footer from "~/components/Footer.vue"
 import Header from '../../components/Header.vue'
 // import MazPullToRefresh from 'maz-ui/components/MazPullToRefresh'
 import UiButton from "~/components/ui-kit/UiButton.vue"
+import UiSwitch from '~/components/ui-kit/UiSwitch.vue'
 // Images
 import tonKeeper from '../../assets/vallet/tonkeeper.svg'
 import metamask from '../../assets/vallet/metamask.svg'
@@ -75,6 +100,7 @@ import wallet from '../../assets/vallet/wallet-connect.svg'
 
 const pageStep = ref(1)
 const pullDownThreshold = 64
+const valletType = ref(0)
 
 const walletItems = [
     { src: tonKeeper, alt: 'Tonkeeper', color: '#7BB3E3' },
@@ -86,11 +112,24 @@ const transactions = ref([
     { type: 'Инвестиции', description: 'Получение дивидендов', amount: 0.21, usdEquivalent: '$573.02' },
     { type: 'Краудинвестинг', description: 'Покупка акций', amount: -1.5, usdEquivalent: '~$3,869.15' }
 ])
+const myTransactions = ref([
+    // { type: 'Инвестиции', description: 'Отправка средств', amount: -2, usdEquivalent: '~$5,459.88' },
+    { type: 'Инвестиции', description: 'Получение дивидендов', amount: 0.21, usdEquivalent: '$573.02' },
+    { type: 'Краудинвестинг', description: 'Покупка акций', amount: -1.5, usdEquivalent: '~$3,869.15' }
+])
 const load = async ({ done }) => {
     console.log('loading')
     await new Promise(resolve => setTimeout(resolve, 2000))
     console.log('load finish')
     done('ok')
+}
+
+const showDonationDetails = ref(false)
+const selectedTransaction = ref(null)
+
+const openDonationDetails = (transaction) => {
+    selectedTransaction.value = transaction
+    showDonationDetails.value = true
 }
 </script>
 
@@ -237,6 +276,7 @@ const load = async ({ done }) => {
     padding: 16px;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .transaction-card::before,
@@ -357,6 +397,13 @@ const load = async ({ done }) => {
 
     100% {
         transform: translate(-100%, -100%) translate3d(0, 0, 0);
+    }
+}
+
+.v-bottom-sheet {
+    .donation-block {
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
     }
 }
 </style>

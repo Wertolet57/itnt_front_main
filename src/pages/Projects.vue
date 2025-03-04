@@ -110,7 +110,7 @@ onMounted(async () => {
 const followers = ref()
 const getFollowers = async () => {
     try {
-        const response = await getProjectFollowers(projectsInfo.id)
+        const response = await getProjectFollowers(projectsInfo?.id)
         followers.value = response.data
     } catch (error) {
 

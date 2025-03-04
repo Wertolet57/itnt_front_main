@@ -11,7 +11,7 @@ export default {
             :key="id"
             @click="changeSwitchValue(id)"
             class="ui-switch__btn"
-            :class="switchRef === id && 'ui-switch__btn--active'"
+            :class="[switchRef === id && 'ui-switch__btn--active', props.isVallet === true && switchRef === id && 'ui-switch__btn--vallet text-white']"
         >
             {{ item }}
         </div>
@@ -26,6 +26,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    isVallet:{
+        type:Boolean,
+        default:false,
+    }
 })
 
 const switchRef = ref(0)
@@ -59,6 +63,9 @@ function changeSwitchValue(id: Number) {
         padding: 8px 0px;
         &--active {
             background: #e1f5fe;
+        }
+        &--vallet {
+            background: linear-gradient(96.78deg, #ce0efe -0.02%, #9012de 94.31%);
         }
     }
 }
