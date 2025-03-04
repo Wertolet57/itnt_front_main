@@ -4,52 +4,28 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import { VitePWA } from 'vite-plugin-pwa'
 import vuetify from 'vite-plugin-vuetify'
+// import { UnpluginVueComponentsResolver, UnpluginDirectivesResolver } from 'maz-ui/resolvers'
 
 export default defineConfig({
-    plugins: [vue(), vuetify(), VitePWA({
-        registerType: 'autoUpdate',
-        manifest: {
-            name: 'ITNT Store',
-            short_name: 'ITNT',
-            theme_color: '#ffffff',
-            icons: [
-                {
-                    src: '/itnt.ico',
-                    sizes: '192x192',
-                    type: 'image/png'
-                }
-            ]
+    plugins: [vue(), vuetify(), VitePWA()],
+    server:{
+        watch:{
+            usePolling:true,
         },
-        workbox: {
-            globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-        },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-
-    })],
-    server: {
-        watch: {
-            usePolling: true,
-        },
-        host: true,
-        strictPort: true,
-        port: 8080,
-        fs: {
-            strict: true,
-        }
+        host:true,
+        strictPort:true,
+        port:8080
     },
+    // TODO: поменять пути динамических иконок
     build: {
         outDir: 'dist',
         minify: true,
-        sourcemap: true,
         rollupOptions: {
-            output: {
-                manualChunks: undefined,
-                entryFileNames: 'assets/[name].[hash].js',
-                chunkFileNames: 'assets/[name].[hash].js',
-                assetFileNames: 'assets/[name].[hash][extname]'
-            }
-        }
+            external: ['vuedraggable'],
+             input: '/src/main.ts'
+          }
     },
+
     css: {
         preprocessorOptions: {
             scss: {
@@ -67,7 +43,4 @@ export default defineConfig({
             'vuetify/labs/VPullToRefresh': 'vuetify/lib/labs/VPullToRefresh',
         },
     },
-    optimizeDeps: {
-        include: ['vue', 'vue-router', 'vuetify']
-    }
 })
