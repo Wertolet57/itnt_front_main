@@ -9,8 +9,6 @@
         "preview": "vite preview",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
         "format": "prettier .  --write",
-        "ionic:build": "vite build",
-        "ionic:serve": "vite dev"  
   },
     "dependencies": {
         "@capacitor/android": "^7.0.1",
