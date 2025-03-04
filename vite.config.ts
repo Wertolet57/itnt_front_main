@@ -18,11 +18,9 @@ export default defineConfig({
     },
     // TODO: поменять пути динамических иконок
     build: {
-        outDir: 'dist',
         minify: true,
         rollupOptions: {
-            external: ['vuedraggable'],
-             input: '/src/main.ts'
+            external: ['vuedraggable']
           }
     },
 
