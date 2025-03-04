@@ -6,7 +6,26 @@ import { VitePWA } from 'vite-plugin-pwa'
 import vuetify from 'vite-plugin-vuetify'
 
 export default defineConfig({
-    plugins: [vue(), vuetify(), VitePWA()],
+    plugins: [vue(), vuetify(), VitePWA({
+        registerType: 'autoUpdate',
+        manifest: {
+            name: 'ITNT Store',
+            short_name: 'ITNT',
+            theme_color: '#ffffff',
+            icons: [
+                {
+                    src: '/itnt.ico',
+                    sizes: '192x192',
+                    type: 'image/png'
+                }
+            ]
+        },
+        workbox: {
+            globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        },
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+
+    })],
     server: {
         watch: {
             usePolling: true,
