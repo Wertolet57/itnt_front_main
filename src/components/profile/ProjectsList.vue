@@ -4,6 +4,8 @@ export default {
 }
 </script>
 <template>
+    <v-container>
+
     <div class="list">
         <div :class="props.showAdder ? 'list__head--showAdder' : 'list__head'">
             <p class="txt-cap2">{{ $t("part") }}</p>
@@ -36,6 +38,8 @@ export default {
             </div>
         </template>
     </div>
+</v-container>
+
 </template>
 
 

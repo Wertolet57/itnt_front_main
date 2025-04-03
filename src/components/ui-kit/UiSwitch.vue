@@ -35,7 +35,7 @@ const props = defineProps({
 const switchRef = ref(0)
 
 const emit = defineEmits(['changeValue'])
-function changeSwitchValue(id: Number) {
+function changeSwitchValue(id: number) {
     emit('changeValue', id)
     switchRef.value = id
 }

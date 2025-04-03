@@ -13,53 +13,12 @@
         </div>
         <!-- body -->
         <div class="projectInvesting__body">
-            <ProjectInvestSlider />
-
-            <!-- <div class="mt-[48px] mb-4">
-                <div class="comment bg-gray-100">
-                    <div>
-                        Мы все очень любим “Danger Flower”, но проект не может существовать на одном нашем энтузиазме.
-                        Серверы нужно содержать, а нам хотелось бы уделять проекту всё своё время, не отвлекаясь на
-                        основную работу, которая нас кормит. По этому мы запускаем кампанию по привлечению народных
-                        инвестиций.
-                    </div>
-                    <br>
-                    <span>
-                        Краудинвестинг позволяет совершать как крупные, так и микро-инвестиции от $100.
-                    </span>
-                </div>
-            </div> -->
-            <!-- <div class="flex flex-row justify-between mb-[24px]">
-
-                <div class="projectMedia__item w-[50%] flex justify-center">
-                    <div class="flex flex-col">
-                        <div style="gap: 10px" class="d-flex align-center">
-                            <img src="../../assets/youtube.svg" />
-                            <p class="txt-cap1 cursor-pointer">
-                                YouTube
-                            </p>
-                        </div>
-                        <p class="font-normal text-sm pb-[16px]">Демонстрация продукта</p>
-                    </div>
-                </div>
-
-                <div class="projectMedia__item w-[50%] flex justify-center">
-                    <div class="flex flex-col">
-                        <div style="gap: 10px" class="d-flex align-center">
-                            <img src="../../assets/icons/media/ppt-blue.svg" />
-                            <p style="color: #9e9e9e" class="txt-cap1 cursor-pointer">
-                                7.2 Mb
-                            </p>
-                        </div>
-                        <p class="font-normal text-sm">Питч для инвесторов</p>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- <UiButton class="mb-[48px]" bgColor="def">Мне интересно, но есть вопросы</UiButton>
-            <Stat/>
-            <UiButton class="mt-[48px]" bgColor="orange">Сделать взнос в обмен на долю</UiButton> -->
-
+            <ProjectInvestSlider
+                :minContribution="minContribution"
+                :shareForSale="shareForSale"
+                :amountAttracted="amountAttracted"
+                :alreadyPurchased="alreadyPurchased"
+            />
         </div>
     </div>
 </template>
@@ -68,6 +27,25 @@
 import Stat from "./Stat.vue"
 import ProjectInvestSlider from './ProjectInvestSlider.vue'
 import UiButton from '../ui-kit/UiButton.vue'
+
+defineProps({
+    minContribution: {
+        type: Number,
+        required: true
+    },
+    shareForSale: {
+        type: Number,
+        required: true
+    },
+    amountAttracted: {
+        type: Number,
+        required: true
+    },
+    alreadyPurchased: {
+        type: Number,
+        required: true
+    }
+})
 </script>
 
 <style lang="scss" scoped>

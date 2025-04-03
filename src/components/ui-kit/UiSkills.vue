@@ -4,6 +4,8 @@ export default {
 }
 </script>
 <template>
+    <v-container>
+
     <v-card class="ui-skills shadow-sm p-4">
         <div class="">
             <div class="ui-skills__head" v-if="!props.readOnly">
@@ -34,6 +36,7 @@ export default {
             </div>
         </div>
     </v-card>
+</v-container>
 
     <transition name="bottom-sheet">
         <div v-if="showSheet" class="bottom-sheet min-h-[400px] bg-white text-left">

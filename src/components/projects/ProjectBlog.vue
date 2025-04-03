@@ -1,4 +1,6 @@
 <template>
+    <v-container>
+
     <div v-if="blogData" class="feedCard mb-4">
         <!-- <img :src="backgroundUrl" alt=""> -->
         <div :class="{ 'feedCard__head-empty': withoutBg, 'feedCard__head': !withoutBg }" :style="headStyle">
@@ -62,6 +64,8 @@
             </div>
         </div>
     </div>
+</v-container>
+
     <vue-bottom-sheet ref="modalState">
         <div class="modal">
             <div class="modal__list">

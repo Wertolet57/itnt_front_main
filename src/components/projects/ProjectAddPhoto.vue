@@ -7,7 +7,7 @@
             <!-- Отображаем загруженные изображения -->
             <div v-for="(file, index) in filteredProjectFiles" :key="file.id" class=" relative">
                 <img @click="openDialog(index)" :src="getFileUrl(file.pictureUrl)" alt="Project Image"
-                    class="slider__image" />
+                    class="slider__image " />
             </div>
 
             <!-- Отображаем поле для загрузки, если изображений меньше 10 -->
@@ -363,7 +363,7 @@ const filteredProjectFiles = computed(() =>
 .file-upload-label {
     display: flex;
     width: auto;
-    aspect-ratio: 73 / 106;
+    aspect-ratio: 61 / 106;
     height: auto;
     background-color: white;
     cursor: pointer;

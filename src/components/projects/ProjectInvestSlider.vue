@@ -1,41 +1,41 @@
 <template>
-    <div class="main" @click="openInvestDetails">
+    <div class="main" >
         <div class="head">
             <div class="head__title">
                 <div class="head__title__info">
                     <p class="txt-cap1">Участники сообщества могут приобрести долю в нашем проекте.</p>
                 </div>
-                <div class="head__title__info2">до <span class="head__title__info2__big">20%</span></div>
+                <div class="head__title__info2">до <span class="head__title__info2__big">{{ shareForSale }}%</span></div>
             </div>
         </div>
         <Range />
 
         <div class="item">
             <div class="w-[50%]">
-                <div class="item__block">от $100</div>
+                <div class="item__block">от ${{ minContribution }}</div>
             </div>
             <p class="txt-body2 item__text">Минимальный взнос</p>
         </div>
         <div class="item">
             <div class="w-[50%]">
-                <div class="item__block">$20 000</div>
+                <div class="item__block">${{ amountAttracted }}</div>
             </div>
             <p class="txt-body2 item__text">Общая стоимость продаваемой доли</p>
         </div>
         <div class="item">
             <div class="w-[50%]">
-                <div class="item__block">$16 000</div>
+                <div class="item__block">${{ shareForSale }}</div>
             </div>
             <p class="txt-body2 item__text">Доступно к покупке</p>
         </div>
         <div class="item">
             <div class="w-[50%]">
-                <div class="item__block">$4000</div>
+                <div class="item__block">${{ alreadyPurchased }}</div>
             </div>
             <p class="txt-body2 item__text">Сумма уже выкупленной доли</p>
         </div>
 
-        <UiButton bgColor="blue">Инвестировать в талант</UiButton>
+        <UiButton @click="openInvestDetails" bgColor="blue">Инвестировать в талант</UiButton>
     </div>
     <v-bottom-sheet v-model="showInvestDetails">
         <div class="donation-block mt-4 p-[20px] text-[#263238]">
@@ -73,6 +73,25 @@ const showInvestDetails = ref(false)
 const openInvestDetails = () => {
     showInvestDetails.value = true
 }
+
+defineProps({
+    minContribution: {
+        type: Number,
+        required: true
+    },
+    shareForSale: {
+        type: Number,
+        required: true
+    },
+    amountAttracted: {
+        type: Number,
+        required: true
+    },
+    alreadyPurchased: {
+        type: Number,
+        required: true
+    }
+})
 </script>
 
 <style lang="scss" scoped>

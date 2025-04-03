@@ -1,6 +1,6 @@
 <template>
     <Header showID showUserMinify />
-    <ProjectHeader :class="{ 'ml-[80px]': isSidePanel }" :prjAva="fullAvatarUrl" :read-only="false"  />
+    <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" :read-only="false"  />
     <v-container >
         <ProjectCard />
         <ProjectTeam :team="data.users" class="mt-12" />

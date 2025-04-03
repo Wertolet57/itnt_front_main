@@ -1,6 +1,6 @@
 <template>
     <Header showControlDotsProject showID show-user-minify />
-    <ProjectHeader :class="{ 'ml-[80px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
+    <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
     <v-container >
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
         <ProjectTeam :team="data.users" class="mt-12" readOnly />

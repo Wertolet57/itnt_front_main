@@ -11,6 +11,8 @@ import UserSetting from '~/pages/profile/UserSetting.vue'
 import UserInvite from '~/pages/profile/UserInvite.vue'
 import UserVallet from '~/pages/profile/UserVallet.vue'
 import UserLang from '~/pages/profile/UserLang.vue'
+import UserTalent from '~/pages/profile/userTalent.vue'
+
 // project
 import ProjectInfo from '~/pages/project/ProjectInfo.vue'
 import ProjectEdit from '~/pages/project/ProjectEdit.vue'
@@ -96,7 +98,8 @@ const routes: Array<routes> = [
     },
     {
         path: '/me/invite',
-        component: UserInvite,
+        component:UserTalent
+        // component: UserInvite,
     },
     {
         path: '/me/vallet',

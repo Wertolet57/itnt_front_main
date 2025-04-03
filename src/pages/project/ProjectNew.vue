@@ -2,22 +2,19 @@
     <Header showUserMinify />
     <div class="projectHeader__edit">
         <div class="avatar-uploader">
-            <div class="avatar-" @click="triggerFileInput">
-                <img v-if="avatarPreview" :src="avatarPreview" alt="Аватар" />
+            <div class="avatar" @click="triggerFileInput">
+                <img  class="rounded-[50%] w-[230px] h-[230px] object-cover" v-if="avatarPreview" :src="avatarPreview" alt="Аватар" />
                 <img src="@/assets/img/regSteps/addProfilePic.svg" v-else />
             </div>
             <input ref="fileInput" type="file" accept="image/*" @change="onAvatarChange" class="hidden-input" />
         </div>
         <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
         <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
-        <!-- <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" /> -->
-        <div class="project-id-input">
+        <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
+        <!-- <div class="project-id-input">
             <span class="prefix">{{ defaultPrefix }}</span>
             <input type="text" v-model="projectId" @input="syncValue" class="editable-input" />
-        </div>
-    </div>
-    <div class="mx-4">
-
+        </div> -->
     </div>
     <v-container>
         <div class="projectCard__editable__tags">
@@ -48,7 +45,7 @@
         <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="3000" color="white"
             rounded="lg">
             <div class="flex flex-row justify-between items-center">
-                Проект создан
+                {{ snackbarMessage }}
             </div>
         </v-snackbar>
     </v-container>
@@ -69,8 +66,8 @@ import { useRouter } from 'vue-router'
 import { postProject } from '~/API/ways/project'
 
 const snackbarVisible = ref(false)
+const snackbarMessage = ref('Проект создан');
 const router = useRouter()
-
 const projectName = ref('')
 const projectSlogan = ref('')
 const projectId = ref('')
@@ -152,13 +149,26 @@ async function postNewProject() {
     try {
         const response = await postProject(projectData, avatarFile.value, avatarFile.value)
         console.log(response)
-        snackbarVisible.value = true
+        snackbarMessage.value = 'Проект создан';
+        snackbarVisible.value = true;
 
         setTimeout(() => {
             router.push('/me')
         }, 3000)
     } catch (e) {
         console.error('Error creating project:', e)
+        if (e.response && e.response.data && e.response.data.operationInfo) {
+            const serverMessage = e.response.data.operationInfo;
+            if (serverMessage.includes("Project with nickname")) {
+                const nickname = serverMessage.match(/'([^']+)'/)[1];
+                snackbarMessage.value = `Проект с id '${nickname}' уже существует`;
+            } else {
+                snackbarMessage.value = serverMessage;
+            }
+        } else {
+            snackbarMessage.value = 'Произошла ошибка при создании проекта';
+        }
+        snackbarVisible.value = true;
     }
 }
 console.log(projectTags)

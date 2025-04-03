@@ -14,65 +14,66 @@
         </v-container>
     </div>
     <div class="scrollable-container p-[20px]" v-show="pageStep === 2">
-        <UiSwitch :isVallet="true" @change-value="valletType = $event"
-        :items="[`Инвестиции `, `Мои вложения`]" />
+        <UiSwitch :isVallet="true" @change-value="valletType = $event" :items="[`Инвестиции `, `Мои вложения`]" />
         <!-- <v-pull-to-refresh class=" text-[#263238]" :pull-down-threshold="pullDownThreshold" @load="load"> -->
-            <div class="" v-if="valletType == 0">
-                <div class="transaction-list text-[#263238]">
-                        <div class="transaction-card z-" v-for="(transaction, index) in transactions" :key="index" @click="openDonationDetails(transaction)">
-                        <img :src="ava" class="transaction-icon" alt="icon">
-                        <div class="transaction-details">
-                            <p class="transaction-type">{{ transaction.type }}</p>
-                            <p class="transaction-description">{{ transaction.description }}</p>
-                        </div>
-                        <div class="transaction-amount"
-                            :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
-                            <p>{{ transaction.amount }} ETH</p>
-                            <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
-                        </div>
+        <div class="" v-if="valletType == 0">
+            <div class="transaction-list text-[#263238]">
+                <div class="transaction-card z-" v-for="(transaction, index) in transactions" :key="index"
+                    @click="openDonationDetails(transaction)">
+                    <img :src="ava" class="transaction-icon" alt="icon">
+                    <div class="transaction-details">
+                        <p class="transaction-type">{{ transaction.type }}</p>
+                        <p class="transaction-description">{{ transaction.description }}</p>
+                    </div>
+                    <div class="transaction-amount"
+                        :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
+                        <p>{{ transaction.amount }} ETH</p>
+                        <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
                     </div>
                 </div>
             </div>
-            <div class="" v-if="valletType == 1">
-                <div class="transaction-list text-[#263238]">
-                        <div class="transaction-card z-" v-for="(transaction, index) in myTransactions" :key="index" @click="openDonationDetails(transaction)">
-                        <img :src="ava" class="transaction-icon" alt="icon">
-                        <div class="transaction-details">
-                            <p class="transaction-type">{{ transaction.type }}</p>
-                            <p class="transaction-description">{{ transaction.description }}</p>
-                        </div>
-                        <div class="transaction-amount"
-                            :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
-                            <p>{{ transaction.amount }} ETH</p>
-                            <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
-                        </div>
+        </div>
+        <div class="" v-if="valletType == 1">
+            <div class="transaction-list text-[#263238]">
+                <div class="transaction-card z-" v-for="(transaction, index) in myTransactions" :key="index"
+                    @click="openDonationDetails(transaction)">
+                    <img :src="ava" class="transaction-icon" alt="icon">
+                    <div class="transaction-details">
+                        <p class="transaction-type">{{ transaction.type }}</p>
+                        <p class="transaction-description">{{ transaction.description }}</p>
+                    </div>
+                    <div class="transaction-amount"
+                        :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
+                        <p>{{ transaction.amount }} ETH</p>
+                        <p class="text-[#9E9E9E]">{{ transaction.usdEquivalent }}</p>
                     </div>
                 </div>
             </div>
-            
-            <v-bottom-sheet v-model="showDonationDetails">
-                <div class="donation-block mt-4 p-[20px] text-[#263238]">
-                    <div class="flex flex-row items-center mb-[42px]">
-                        <img :src="ava" class="transaction-icon" alt="icon">
-                        <div class="transaction-details">
-                            <p class="transaction-type">Danger Flower</p>
-                            <p class="text-[#263238]">9 марта 22г  в 17:33</p>
-                        </div>
-                        <div class="transaction-amount">
-                            <p>-2 ETH</p>
-                            <p class="text-[#9E9E9E]">~$5 459.88</p>
-                        </div>
+        </div>
+        <v-bottom-sheet v-model="showDonationDetails">
+            <div class="donation-block mt-4 p-[20px] text-[#263238]">
+                <div class="flex flex-row items-center mb-[42px]">
+                    <img :src="ava" class="transaction-icon" alt="icon">
+                    <div class="transaction-details">
+                        <p class="transaction-type">Danger Flower</p>
+                        <p class="text-[#263238]">9 марта 22г в 17:33</p>
                     </div>
-                    <div class="donation-info justify-center">
-                        <img :src="update" alt="Danger Flower" class="icon">
-                        <p>Вы отправили в проект Danger Flower пожертвование в размере <span class="span-text">2 ETH</span></p>
+                    <div class="transaction-amount">
+                        <p>-2 ETH</p>
+                        <p class="text-[#9E9E9E]">~$5 459.88</p>
                     </div>
-                    <div class="message">На развитие! Я в вас верю!</div>
-                    <UiButton bg-color="purple" class="mt-[50px]">Пожертвовать ещё</UiButton>
-                    <UiButton bg-color="def" class="mt-[15px]">Все мои операции с этим проектом</UiButton>
                 </div>
-            </v-bottom-sheet>
-            <!-- <v-container>
+                <div class="donation-info justify-center">
+                    <img :src="update" alt="Danger Flower" class="icon">
+                    <p>Вы отправили в проект Danger Flower пожертвование в размере <span class="span-text">2 ETH</span>
+                    </p>
+                </div>
+                <div class="message">На развитие! Я в вас верю!</div>
+                <UiButton bg-color="purple" class="mt-[50px]">Пожертвовать ещё</UiButton>
+                <UiButton bg-color="def" class="mt-[15px]">Все мои операции с этим проектом</UiButton>
+            </div>
+        </v-bottom-sheet>
+        <!-- <v-container>
                 <div class="cards">
                     <div class="z"> sdsdsdsd</div>
                     <div class="bg"></div>
@@ -81,7 +82,8 @@
             </v-container> -->
         <!-- </v-pull-to-refresh> -->
     </div>
-    <Footer/>
+
+    <Footer />
 </template>
 
 <script setup lang="ts">
@@ -99,7 +101,7 @@ import metamask from '../../assets/vallet/metamask.svg'
 import wallet from '../../assets/vallet/wallet-connect.svg'
 
 const pageStep = ref(1)
-const pullDownThreshold = 64
+// const pullDownThreshold = 64
 const valletType = ref(0)
 
 const walletItems = [
@@ -117,29 +119,32 @@ const myTransactions = ref([
     { type: 'Инвестиции', description: 'Получение дивидендов', amount: 0.21, usdEquivalent: '$573.02' },
     { type: 'Краудинвестинг', description: 'Покупка акций', amount: -1.5, usdEquivalent: '~$3,869.15' }
 ])
-const load = async ({ done }) => {
-    console.log('loading')
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log('load finish')
-    done('ok')
-}
+// const load = async ({ done }: any) => {
+//     console.log('loading')
+//     await new Promise(resolve => setTimeout(resolve, 2000))
+//     console.log('load finish')
+//     done('ok')
+// }
 
 const showDonationDetails = ref(false)
 const selectedTransaction = ref(null)
 
-const openDonationDetails = (transaction) => {
+const openDonationDetails = (transaction: any) => {
     selectedTransaction.value = transaction
     showDonationDetails.value = true
 }
+
 </script>
 
 <style scoped lang="scss">
 .z {
     z-index: 99999;
 }
-.span-text{
-   color: #800080;
+
+.span-text {
+    color: #800080;
 }
+
 .donation-block {
     display: flex;
     flex-direction: column;
@@ -185,7 +190,7 @@ const openDonationDetails = (transaction) => {
     background-color: #fafafa;
     padding: 17px 22px;
     border-radius: 2px 12px 12px 12px;
-    border:1px solid #E0E0E0;
+    border: 1px solid #E0E0E0;
 }
 
 .donate-more {

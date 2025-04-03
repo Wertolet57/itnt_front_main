@@ -1,14 +1,16 @@
 <template>
     <Header showID :showUserMinify="true" />
-    <ProfileHeader :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <!-- {{events}} -->
-    <v-container style="padding: 0 20px; margin-bottom: 48px">
+    <ProfileHeader :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <v-container>
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
-            :user-name="userInfo.firstName" :city="userInfo.city ? userInfo.city.name : ''"
-            :country="userInfo.country ? userInfo.country.name : ''" :user-surname="userInfo.lastName"
+            :user-name="userInfo.firstName ? userInfo.firstName : ''" :city="userInfo.city ? userInfo.city.name : ''"
+            :country="userInfo.country ? userInfo.country.name : ''" :user-surname="userInfo.lastName ? userInfo.lastName : ''"
             :read-only="true" />
         <UiSkills @update-skills="updateUserSkills" :skillList="userInfo.interests" />
-        <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">{{ $t('create') }}</UiButton>
+        <v-container>
+            <UiButton class="mt-4" @click="$router.push('/project/new')" bgColor="blue">{{ $t('create') }}</UiButton>
+        </v-container>
         <v-bottom-sheet inset v-model="isBottomSheetOpen" :click-to-close="true" :background-scrollable="false">
             <div class="max-h-[650px] overflow-y-auto">
                 <div class="searchTeammateModal__items">
@@ -19,20 +21,35 @@
             </div>
         </v-bottom-sheet>
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
-        <div class="my-[48px]">
-            <h1>{{ $t('Post.new') }}</h1>
-            <UiInput :required="false" @click="openBottomSheet" :label="$t('Post.day')" />
+        
+        <!-- Talent Data -->
+        <div v-if="talant" class="mt-12">
+            <ProjectInvest
+                :minContribution="talant.minContribution"
+                :shareForSale="talant.shareForSale"
+                :amountAttracted="talant.amountAttracted"
+                :alreadyPurchased="talant.alreadyPurchased"
+            />
         </div>
-        <div v-if="posts" v-for="post in posts">
+
+        <v-container>
+            <div class="my-[48px]">
+                <p>{{ $t('Post.new') }}</p>
+                <UiInput :required="false" @click="openBottomSheet" :label="$t('Post.day')" />
+            </div>        
+        </v-container>
+       
+        <div v-if="posts" v-for="post in posts" :key="post.id">
             <ProjectBlog :delete="() => deletePost(post.id)" :blog-data="post" user-type="me"
                 :authorID="post.authorUser.id" :author="post.authorUser.firstName" feedCardType="newProjectStage" />
         </div>
-
+        <!-- <ProjectInvest /> -->
     </v-container>
     <Footer />
 </template>
 
 <script setup lang="ts">
+import ProjectInvest from "../../components/projects/ProjectInvesting.vue"
 import ProjectBlog from '~/components/projects/ProjectBlog.vue'
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
@@ -49,6 +66,7 @@ import { isAuth } from '~/helpers/routerHandler'
 import { delPost } from "../../API/ways/post"
 import { onMounted, ref, computed } from 'vue';
 import { postProject , getEvents } from "~/API/ways/post";
+import { getTalentByID, getTalentSearch } from '../../API/ways/talent'
 let posts = ref();
 const postData = ref({
     descriptionHeader: '',
@@ -93,15 +111,13 @@ onMounted(getPosts);
 const modalState = ref(null);
 
 isAuth();
-onMounted(async () => {
-    await fetchUserInfo();
-    await feedEvents();
-});
 let userInfo = ref({});
+const talant = ref(null)
 const fetchUserInfo = async () => {
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
         try {
             userInfo.value = response.data.object;
+            talant.value = userInfo.value.talant || null
             console.log(userInfo.value)
         } catch (e) {
             console.error('text error:', e);
@@ -112,6 +128,29 @@ const updateUserSkills = async (newSkills: any) => {
     userInfo.value.interests = newSkills;
     await fetchUserInfo();
 };
+const talents = ref([]);
+const talentDetails = ref([]);
+const userTalentId = ref(null);
+
+const getTalentSearchApi = async () => {
+    try {
+        const response = await getTalentSearch();
+        talents.value = response.data?.object.content || [];
+        const userId = Number(localStorage.getItem("userId"));
+        const userTalents = talents.value.filter(talent => talent.owner?.id === userId);
+
+        // Fetch detailed information for each talent
+        const detailsPromises = userTalents.map(talent => getTalentByID(talent.id));
+        const detailsResponses = await Promise.all(detailsPromises);
+
+        talentDetails.value = detailsResponses.map(response => response.data?.object || {});
+        console.log('Talent details:', talentDetails.value);
+    } catch (error) {
+        console.error('Error getting talents:', error);
+    }
+};
+
+const userTalents = computed(() => talentDetails.value || []);
 const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
@@ -120,9 +159,14 @@ const fullAvatarUrl = computed(() => {
 const fullBannerUrl = computed(() => {
     return userInfo.value.backgroundPictureUrl ? `${baseURL}files/${userInfo.value.backgroundPictureUrl}` : '';
 });
+onMounted(async () => {
+    await fetchUserInfo();
+    await feedEvents();
+    getTalentSearchApi();
+});
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .form-group {
     position: relative;
     max-width: 300px;
@@ -183,5 +227,19 @@ select {
     background-repeat: no-repeat;
     background-position: right 10px top 50%;
     background-size: 16px;
+}
+.projectInvesting {
+    &__body {
+        border-radius: 12px;
+        background: #fff;
+        padding: 30px 20px 40px 20px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.comment {
+    border-radius: 2px 12px 12px 12px;
+    // background-color: #9A9A9A;
+    padding: 20px;
 }
 </style>

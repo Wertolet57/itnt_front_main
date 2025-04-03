@@ -1,4 +1,6 @@
 <template>
+        <v-container>
+
     <div v-if="props.profile || readOnly" class="flex flex-row justify-between">
         <div class="userInfo">
             <div class="userInfo__head">
@@ -49,6 +51,7 @@
         <v-select v-model="userObj.city" :items="list[userObj.country] || []" :disabled="!userObj.country"
             label="Выберите город" />
     </div>
+</v-container>
 </template>
 
 <script lang="ts" setup>

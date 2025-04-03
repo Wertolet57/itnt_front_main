@@ -12,7 +12,7 @@
                         width="208" />
                 </div>
                 <div v-else class="ava">
-                    <img :src="props.prjAva" height="208" width="208" />
+                    <img class="object-cover" :src="props.prjAva" height="208" width="208" />
                 </div>
             </div>
         </div>
