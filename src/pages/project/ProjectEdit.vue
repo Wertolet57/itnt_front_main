@@ -3,7 +3,7 @@
     <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" :read-only="false"  />
     <v-container >
         <ProjectCard />
-        <ProjectTeam :team="data.users" class="mt-12" />
+        <ProjectTeam :userID="owner" :team="data.users" class="mt-12" />
         <!-- <ProjectInvesting /> -->
         <ProjectVacancys class="mt-12" />
         <ProjectStage />
@@ -33,10 +33,13 @@ import { getProjectByID, patchProject ,getProjectPosts} from '~/API/ways/project
 import { onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '~/store/projectStore'
-let data = ref({})
+let data = ref({
+    users: [],
+    avatarUrl: "",
+})
 
 const isSidePanel = ref(false);
-
+const owner = ref();
 const prjStore = useProjectStore()
 const router = useRouter()
 const route = useRoute()
@@ -44,12 +47,9 @@ onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
             data.value = response.data.object
-            prjStore.$state.prjObject.name = response.data.object.name
-            prjStore.$state.prjObject.slogan = response.data.object.slogan
-            prjStore.$state.prjObject.nickName = response.data.object.nickName
-            prjStore.$state.prjObject.description = response.data.object.description
-            prjStore.$state.prjObject.descriptionHeader = response.data.object.descriptionHeader
-            prjStore.$state.prjObject.avatarUrl = response.data.object.avatarUrl
+            owner.value = response.data.object.owner.id
+            // Map all fields from backend to store
+            Object.assign(prjStore.$state.prjObject, response.data.object)
         } catch (e) {
             console.error('error:', e)
         }
@@ -65,9 +65,31 @@ onMounted(async () => {
 })
 
 async function changeProject() {
-    prjStore.$state.prjObject.id = route.params.ID
-    const projectData = { ...prjStore.$state.prjObject };
-    delete projectData.projectStage;
+    prjStore.$state.prjObject.id = Number(route.params.ID)
+    // Ensure all fields are present in the request body
+    const projectData = {
+        ...prjStore.$state.prjObject,
+        // fallback defaults if any field is missing
+        activityFields: prjStore.$state.prjObject.activityFields || [],
+        avatarUrl: prjStore.$state.prjObject.avatarUrl || "",
+        companyPreferences: prjStore.$state.prjObject.companyPreferences || "",
+        competitionInfo: prjStore.$state.prjObject.competitionInfo || "",
+        description: prjStore.$state.prjObject.description || "",
+        descriptionHeader: prjStore.$state.prjObject.descriptionHeader || "",
+        growthRateInfo: prjStore.$state.prjObject.growthRateInfo || "",
+        id: Number(route.params.ID),
+        marketInfo: prjStore.$state.prjObject.marketInfo || "",
+        monetizationInfo: prjStore.$state.prjObject.monetizationInfo || "",
+        name: prjStore.$state.prjObject.name || "",
+        needInvestment: prjStore.$state.prjObject.needInvestment ?? false,
+        needProfessionals: prjStore.$state.prjObject.needProfessionals ?? false,
+        nickName: prjStore.$state.prjObject.nickName || "",
+        otherAchievementsInfo: prjStore.$state.prjObject.otherAchievementsInfo || "",
+        projectDevelopmentInfo: prjStore.$state.prjObject.projectDevelopmentInfo || "",
+        projectRegistrationPlaces: prjStore.$state.prjObject.projectRegistrationPlaces || "",
+        projectStage: prjStore.$state.prjObject.projectStage || "",
+        slogan: prjStore.$state.prjObject.slogan || ""
+    };
 
     await patchProject(projectData).then(() => {
         try {

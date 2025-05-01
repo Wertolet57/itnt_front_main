@@ -1,5 +1,5 @@
 <template>
-    <Header showUserMinify showID />
+    <Header :messenger="true" showUserMinify showID />
     <ProfileHeader :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
     <v-container>
         <div class="userEdit my-4">

@@ -1,5 +1,5 @@
 <template>
-    <Header showID :showUserMinify="true" />
+    <Header :messenger="true" showID :showUserMinify="true" />
     <h3 class="title font-medium m-4">{{ $t('language.interface') }}</h3>
     <div class="language-selector">
         <ul class="language-list">

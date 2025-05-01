@@ -46,7 +46,7 @@
         'selected': selectedSkills.includes(skill.key),
         'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill.key)
     }" @click="toggleSkill(skill.key)">
-                    {{ skill.value }}
+                    {{ skill.key }}
                 </div>
             </div>
             <v-btn v-if="props.isNewProject" @click="emitAddSkills" class="close-btn mr-2 text-white" icon="mdi-check"

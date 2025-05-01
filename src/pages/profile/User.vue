@@ -15,8 +15,8 @@
             <div class="max-h-[650px] overflow-y-auto">
                 <div class="searchTeammateModal__items">
                     <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
-                        v-model:description="postData.description" :author-project="postData.authorProject"
-                        :author-user="postData.authorUser" @postSuccess="closeBottomSheet" card />
+                        v-model:description="postData.description" :author-project="postData?.authorProject"
+                        :author-user="postData?.authorUser" @postSuccess="closeBottomSheet" card />
                 </div>
             </div>
         </v-bottom-sheet>
@@ -85,6 +85,7 @@ async function feedEvents() {
 }
 const isBottomSheetOpen = ref(false);
 const closeBottomSheet = async () => {
+    await postProject(postData.value, )
     isBottomSheetOpen.value = false;
     await getPosts()
 };
@@ -108,11 +109,30 @@ const deletePost = async (postID: number) => {
     }
 }
 onMounted(getPosts);
-const modalState = ref(null);
+// const modalState = ref(null);
 
 isAuth();
-let userInfo = ref({});
-const talant = ref(null)
+let userInfo = ref({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    city: {name: ''},
+    country: {name: ''},
+    pictureUrl: null,
+    backgroundPictureUrl: null,
+    fullDescription: '',
+    openedForProposition: false,
+    interests: [],
+    projects: [],
+    talant: null,
+});
+const talant = ref({
+    minContribution: 0,
+    shareForSale: 0,
+    amountAttracted: 0,
+    alreadyPurchased: 0
+})
 const fetchUserInfo = async () => {
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
         try {
@@ -150,7 +170,7 @@ const getTalentSearchApi = async () => {
     }
 };
 
-const userTalents = computed(() => talentDetails.value || []);
+// const userTalents = computed(() => talentDetails.value || []);
 const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {

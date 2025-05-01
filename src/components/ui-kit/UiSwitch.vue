@@ -9,9 +9,9 @@ export default {
         <div
             v-for="(item, id) in props.items"
             :key="id"
-            @click="changeSwitchValue(id)"
+            @click="onSwitchChange(id)"
             class="ui-switch__btn"
-            :class="[switchRef === id && 'ui-switch__btn--active', props.isVallet === true && switchRef === id && 'ui-switch__btn--vallet text-white']"
+            :class="[props.modelValue === id && 'ui-switch__btn--active', props.isVallet === true && props.modelValue === id && 'ui-switch__btn--vallet text-white']"
         >
             {{ item }}
         </div>
@@ -19,9 +19,12 @@ export default {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 
 const props = defineProps({
+    modelValue: {
+        type: Number,
+        required: true
+    },
     items: {
         type: Array,
         default: () => [],
@@ -32,12 +35,10 @@ const props = defineProps({
     }
 })
 
-const switchRef = ref(0)
+const emit = defineEmits(['update:modelValue'])
 
-const emit = defineEmits(['changeValue'])
-function changeSwitchValue(id: number) {
-    emit('changeValue', id)
-    switchRef.value = id
+function onSwitchChange(newValue: number) {
+    emit('update:modelValue', newValue)
 }
 </script>
 

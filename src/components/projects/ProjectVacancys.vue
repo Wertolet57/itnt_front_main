@@ -69,22 +69,20 @@
         </div>
         <div class="d-flex mt-2 justify-space-between align-center">
             Добавить вакансию
-            <UiButton @click="vacansyState.open()" plus />
+            <UiButton @click="vacansyState = true" plus />
         </div>
         <div>
 
         </div>
-        <vue-bottom-sheet ref="vacansyState">
-            <div class="min-h-[350px] p-4">
-                <!-- <input type="checkbox" label="Должность*" v-model="vacancyParams.archive" /> -->
+        <v-dialog v-model="vacansyState" min-width="270px" max-height="100%" color="white">
+            <v-card class="ui-skills__search p-4">
                 <UiTextArea label="Описание*" v-model="vacancyParams.description" />
                 <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
-                <div class="" @click="vacansyState.close()">
+                <div class="" @click="vacansyState = false">
                     <UiButton class="mt-4" @click="postVacancy" bg-color="blue">Добавить вакансию</UiButton>
                 </div>
-            </div>
-
-        </vue-bottom-sheet>
+            </v-card>
+        </v-dialog>
         <v-snackbar v-model="snackbarVisible" min-width="270px" max-height="46px" :timeout="4000" color="white"
             rounded="lg">
             <div class="flex flex-row justify-between items-center">

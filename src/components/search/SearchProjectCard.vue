@@ -2,8 +2,11 @@
     <div class="searchProjectCard mt-4">
         <div class="searchProjectCard__head">
             <div class="d-flex align-center">
-                <img @click="$router.push('/project/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
-                    height="37" src="../../assets/demo/ava-small-header.svg" />
+                <!-- {{ props.projectInfoSet.avatarUrl }} -->
+                <img v-if="props.projectInfoSet.avatarUrl"  @click="$router.push('/project/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
+                height="37" :src="`${baseURL}/files/${props.projectInfoSet.avatarUrl}`" /> 
+                <img v-else @click="$router.push('/project/' + props.projectInfoSet.id)" class="mr-3 cursor-pointer" width="37"
+                    height="37" :src="defPrjImg" />
                 <div>
                     <div @click="$router.push('/project/' + props.projectInfoSet.id)"
                         class="d-flex cursor-pointer align-center">
@@ -76,6 +79,7 @@
 </template>
 
 <script setup lang="ts">
+import defPrjImg from '../../assets/defPrj.svg'
 import UiButton from '../ui-kit/UiButton.vue'
 import project from "~/assets/project_modal/project.svg"
 import share from "~/assets/icons/share-blue.svg"
@@ -129,7 +133,7 @@ const modalItems: modalActionsList[] = [
         icon: follow,
         func: async () => {
             try {
-                const response = await addFollow(Number(props.projectInfoSet.id), Number(localStorage.getItem("userId")));
+                const response = await addFollow(Number(props.projectInfoSet.id));
                 console.log(response);
             } catch (error) {
                 console.error('Ошибка при подписке на проект:', error);
@@ -171,6 +175,11 @@ const shareProject = () => {
         console.log('error :' + error)
     }
 }
+const baseURL = 'https://itnt.store/';
+
+// const fullAvatarUrl = computed(() => {
+//     return props.projectInfoSet.value.avatarUrl ? `${baseURL}files/${props.projectInfoSet.value.avatarUrl}` : '';
+// });
 </script>
 
 <style scoped lang="scss">

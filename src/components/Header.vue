@@ -115,11 +115,6 @@ const lastPart = ref(null);
 const router = useRoute()
 const selectedProject = ref('');
 
-onMounted(() => {
-    const fullPath = window.location.origin + router.fullPath;
-    const parts = fullPath.split('/');
-    lastPart.value = parts[parts.length - 1];
-});
 const modalState = ref(null)
 const chat = ref(null)
 const invite = ref(null)
@@ -181,40 +176,62 @@ const props = defineProps({
 })
 let data = ref({})
 let followed = ref([])
+const project = ref()
+
 onMounted(async () => {
+    // Получаем данные пользователя (например, для аватара)
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
         try {
-            data.value = response.data.object
-            console.log('Full data:', data.value)
+            if (response.data && response.data.object) {
+                data.value = response.data.object
+                console.log('Full data:', data.value)
 
-            if (Array.isArray(data.value.projects)) {
-                data.value.projects.forEach((project, index) => {
-                })
+                if (Array.isArray(data.value.projects)) {
+                    data.value.projects.forEach((project, index) => {
+                    })
 
-                followed.value = data.value.projects.filter(project => project.relationType === 'PROJECT_OWNER')
+                    followed.value = data.value.projects.filter(project => project.relationType === 'PROJECT_OWNER')
+                }
             } else {
-                // console.warn('Expected projects to be an array, but got:', data.value.projects)
+                data.value = {}
+                followed.value = []
             }
         } catch (e) {
             console.error('Error:', e)
+            data.value = {}
+            followed.value = []
         }
     })
-})
-const project = ref()
-onMounted(async () => {
-    await getProjectByID(router.params.ID).then((response) => {
-        try {
-            project.value = response.data.object
-        } catch (e) {
-            console.error('Error:', e)
-        }
-    })
+
+    // Проверяем, находимся ли мы на странице проекта
+    // Пример: /project/123
+    if (
+        router.path.startsWith('/project/') &&
+        router.params.ID &&
+        router.params.ID !== 'undefined' &&
+        router.params.ID !== undefined &&
+        router.params.ID !== null
+    ) {
+        await getProjectByID(router.params.ID).then((response) => {
+            try {
+                if (response.data && response.data.object) {
+                    project.value = response.data.object
+                } else {
+                    project.value = null
+                }
+            } catch (e) {
+                console.error('Error:', e)
+                project.value = null
+            }
+        })
+    }
 })
 
 const baseURL = 'https://itnt.store/';
 
 const fullAvatarUrl = computed(() => {
-    return data.value.pictureUrl ? `${baseURL}files/${data.value.pictureUrl}` : '';
+    if (!data.value || !data.value.pictureUrl) return '';
+    return `${baseURL}files/${data.value.pictureUrl}`;
 });
 function toggleTopModal() {
     user.userObj.topModalState = !user.userObj.topModalState

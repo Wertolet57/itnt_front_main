@@ -7,7 +7,7 @@ interface SearchParams {
     countryId?: number;
     openedForProposition?: boolean;
     searchString?: string;
-  }
+}
 export const addPost = (description: String, descriptionHeader: String, authorProject: any, authorUser: any) => {
     let requestBody = {
         "authorProject": {
@@ -108,13 +108,28 @@ export const deleteInterest = (interestId: Number)=>{
     return API.delete(`${prefix}/delUserInterest?interestId=${interestId}`)
 }
 
-export const getUserSearch = (params: SearchParams = {}) => {
-    const queryParams = new URLSearchParams();
-  
-    if (params.cityId) queryParams.append('cityId', params.cityId.toString());
-    if (params.countryId) queryParams.append('countryId', params.countryId.toString());
-    if (params.openedForProposition !== undefined) queryParams.append('openedForProposition', params.openedForProposition.toString());
-    if (params.searchString) queryParams.append('searchString', params.searchString);
-  
-    return API.get(`${prefix}/search?${queryParams.toString()}`);
+export const getUserSearch = (params: any = {}) => {
+    let queryString = '';
+    if (params instanceof URLSearchParams) {
+        // Patch: rename tagIds to tags for backend compatibility
+        // If tagIds are present, append them as tags
+        if (params.has('tagIds')) {
+            const tagIds = params.getAll('tagIds');
+            params.delete('tagIds');
+            tagIds.forEach(id => params.append('tags', id));
+        }
+        queryString = params.toString();
+    } else {
+        const queryParams = new URLSearchParams();
+        if (params.cityId) queryParams.append('cityId', params.cityId.toString());
+        if (params.countryId) queryParams.append('countryId', params.countryId.toString());
+        if (params.openedForProposition !== undefined) queryParams.append('openedForProposition', params.openedForProposition.toString());
+        if (params.searchString) queryParams.append('searchString', params.searchString);
+        // Use 'tags' as parameter name for tag IDs
+        if (params.tagIds && Array.isArray(params.tagIds)) {
+            params.tagIds.forEach((id: number) => queryParams.append('tags', id));
+        }
+        queryString = queryParams.toString();
+    }
+    return API.get(`${prefix}/search?${queryString}`);
 };

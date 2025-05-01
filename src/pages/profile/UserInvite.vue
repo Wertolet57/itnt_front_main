@@ -1,5 +1,5 @@
 <template>
-    <Header showID showUserMinify showControlDots />
+    <Header :messenger="true" showID showUserMinify showControlDots />
     <div v-show="pageStep === 1" class="m-4 flex flex-col gap-4">
         <UiPrompt>
             <p class="part1">

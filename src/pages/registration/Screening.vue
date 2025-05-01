@@ -39,7 +39,7 @@
       <v-select v-model="user.country" :items="countryList" :label="$t('screening.country')" />
       <v-select v-model="user.city" :items="cityList" :disabled="!user.country" :label="$t('screening.city')" />
       <UiButton @click="nextStep" class="mt-6" bgColor="blue">{{$t('log.continue')}}</UiButton>
-      <UiButton @click="nextStep" class="mt-4" bgColor="def">{{ $t('skip')}}</UiButton>
+      <!-- <UiButton @click="nextStep" class="mt-4" bgColor="def">{{ $t('skip')}}</UiButton> -->
     </div>
 
     <!-- Step 4 -->

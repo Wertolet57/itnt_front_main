@@ -3,7 +3,7 @@
     <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
     <v-container >
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
-        <ProjectTeam :team="data.users" class="mt-12" readOnly />
+        <ProjectTeam  :userID="owner" :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys :project-name="data.name" :project-id="data.id" class="mt-12" readOnly />
         <ProjectStage :stage="data.projectStage" readOnly />
         <ProjectMedia class="mt-12" readOnly />
@@ -59,26 +59,11 @@ onMounted(async () => {
         }
     })
 })
-const addUsers = async () => {
-    try {
-        const response = await addUser(10, 24)
-        console.log(response);
-    } catch (error) {
-
-    }
-}
-const setNewOwners = async () => {
-    try {
-        const response = await setNewOwner(10, 7)
-        console.log(response);
-    } catch (error) {
-
-    }
-}
 let data = ref({})
 const route = useRoute()
 const modalState = ref(null);
 const isBottomSheetOpen = ref(false);
+const owner = ref();
 const closeBottomSheet =async () => {
   isBottomSheetOpen.value = false;
   await getPosts()
@@ -91,6 +76,7 @@ onMounted(async () => {
     await getProjectByID(route.params.ID).then((response) => {
         try {
             data.value = response.data.object
+            owner.value = response.data.object.owner.id
         } catch (e) {
             console.error('error:', e)
         }

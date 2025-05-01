@@ -2,12 +2,22 @@
     <div class="searchUserCard mb-2">
         <div class="searchUserCard__head">
             <div class="d-flex align-center">
-                <img @click="$router.push('/user/' + props.userInfoSet.id)" class="mr-3 cursor-pointer" width="37"
-                    height="37" src="../../assets/demo/defAva.svg" />
+                <img v-if="props.userInfoSet?.pictureUrl" @click="$router.push('/user/' + props.userInfoSet.id)"
+                    class="mr-3 w-[37px] h-[37px] rounded-[50%] cursor-pointer" width="37" height="37"
+                    :src="`${baseURL}files/${props.userInfoSet?.pictureUrl}`" />
+                <img v-else @click="$router.push('/user/' + props.userInfoSet.id)" class="mr-3  cursor-pointer"
+                    width="37" height="37" :src="defAva" />
                 <div>
                     <div @click="$router.push('/user/' + props.userInfoSet.id)"
                         class="d-flex cursor-pointer align-center">
-                        <p class="txt-body3">{{ props.userInfoSet.id }}</p>
+                        <p class="txt-body3">
+                            <template v-if="props.userInfoSet.firstName || props.userInfoSet.lastName">
+                                {{ props.userInfoSet.firstName || '' }} {{ props.userInfoSet.lastName || '' }}
+                            </template>
+                            <template v-else>
+                                #{{ props.userInfoSet.id }}
+                            </template>
+                        </p>
                     </div>
                     <!-- <p class="searchUserCard__head__subtitle txt-cap1">г. Санкт-Петербург</p> -->
                     <p class="searchUserCard__head__subtitle txt-cap1">{{ props.userInfoSet.login }}</p>
@@ -18,7 +28,7 @@
 
         <div class="searchUserCard__body">
             <div class="searchUserCard__body__skills">
-                <div v-for="(skill, id) in  props.userInfoSet.interests" :key="id">
+                <div v-for="(skill, id) in props.userInfoSet.interests" :key="id">
                     <div class="searchUserCard__body__skills__item txt-body1">{{ skill.name }}</div>
                 </div>
             </div>
@@ -68,6 +78,8 @@
 </template>
 
 <script setup lang="ts">
+import defAva from "~/assets/demo/defAva.svg"
+
 import project from "~/assets/icons/footer/account.svg"
 import share from "~/assets/icons/share-blue.svg"
 import warning from "~/assets/icons/warning-red.svg"
@@ -76,7 +88,7 @@ import follow from "~/assets/modal_icon/follow.svg"
 import UiTextArea from "~/components/ui-kit/UiTextArea.vue"
 import UiButton from "~/components/ui-kit/UiButton.vue"
 
-import { ref,computed } from 'vue'
+import { ref, computed } from 'vue'
 import { VueBottomSheet } from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import { modalActionsList } from '~/helpers/types'
@@ -146,10 +158,6 @@ const modalItems: modalActionsList[] = [
     },
 ]
 const baseURL = 'https://itnt.store/';
-
-const fullAvatarUrl = computed(() => {
-    return props.userInfoSet.value.pictureUrl ? `${baseURL}files/${props.userInfoSe.value.pictureUrl}` : '';
-});
 
 </script>
 

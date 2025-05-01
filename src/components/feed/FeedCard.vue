@@ -81,7 +81,7 @@
                 <UiButton @click="sharePost" v-if="props.feedCardType != 'PROJECT_ACTIVITY'" bgColor="def" class="mr-3"
                     :imgSrc="share" style="padding: 10px 13px 9px 14px" onlyIcon />
 
-                <Fire :id="1" />
+                <Fire :prjType="false" :id="props.post.id" />
             </div>
         </div>
     </div>

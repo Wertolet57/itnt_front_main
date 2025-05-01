@@ -13,7 +13,7 @@
                 <p class="userInfo__status__title txt-body1">{{ $t('open') }}</p>
                 <img src="@/assets/icons/footer/message.svg" alt="Открыт к предложениям" />
             </div>
-            <div v-show="props.proposition && props.profile" @click="router.push(`/messenger/chat/${currentUserId}`)" class="send">
+            <div v-show="props.proposition && props.profile" @click="goToChat" class="send">
                 <button >
                     <div class="svg-wrapper-1">
                         <div class="svg-wrapper">
@@ -58,6 +58,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute , useRouter} from 'vue-router';
 import { addFollow, delFollow, getFollowed } from "@/API/ways/user";
+import { createDialog } from "@/API/ways/dialog";
 import follow from "@/assets/modal_icon/follow.svg";
 import star from "@/assets/modal_icon/star-filled.svg";
 import Arr from '@/helpers/set';
@@ -134,6 +135,19 @@ async function fetchFolloweds() {
         console.log('Fetched followeds:', followeds.value);
     } catch (error) {
         console.error('Ошибка при получении подписок:', error);
+    }
+}
+
+async function goToChat() {
+    if (!currentUserId.value) return;
+    try {
+        const response = await createDialog(currentUserId.value);
+        const chatId = response.data?.object?.id || response.data?.id;
+        if (chatId) {
+            router.push(`/messenger/chat/${chatId}`);
+        }
+    } catch (e) {
+        console.error('Ошибка при создании чата:', e);
     }
 }
 

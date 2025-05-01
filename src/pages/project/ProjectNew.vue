@@ -8,15 +8,18 @@
             </div>
             <input ref="fileInput" type="file" accept="image/*" @change="onAvatarChange" class="hidden-input" />
         </div>
-        <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
-        <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
-        <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
+        
         <!-- <div class="project-id-input">
             <span class="prefix">{{ defaultPrefix }}</span>
             <input type="text" v-model="projectId" @input="syncValue" class="editable-input" />
         </div> -->
     </div>
     <v-container>
+        <div class="flex flex-col gap-[1vw]">
+            <UiInput v-model="projectName" label="Название проекта*" :required="true" ref="projectNameRef" />
+            <UiInput v-model="projectSlogan" label="Слоган*" :required="true" ref="projectSloganRef" />
+            <UiInput v-model="projectId" label="id проекта*" :required="true" ref="projectIdRef" />
+        </div>
         <div class="projectCard__editable__tags">
             <p>Ваш проект в трёх словах (теги)*</p>
             <ProjectSkills :tags="projectTags" :is-new-project="true" v-model="projectTags" :readOnly="false"

@@ -5,11 +5,16 @@
         <UiPrompt v-show="projectsType === 1">
             {{ $t('prompts.topProjects.top') }}
         </UiPrompt>
-        <UiSwitch @change-value="projectsType = $event"
-            :items="[`${$t('prompts.topProjects.freshSwitch')} `, `${$t('prompts.topProjects.topSwitch')}`]" />
+        <UiSwitch
+            v-model:modelValue="projectsType"
+            :items="[`${$t('prompts.topProjects.freshSwitch')} `, `${$t('prompts.topProjects.topSwitch')}`]"
+        />
 
-        <UiSwitch v-if="projectsType === 1" @change-value="topProjectsData = $event"
-            :items="[`${$t('prompts.topProjects.week')} `, `${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]" />
+        <UiSwitch
+            v-if="projectsType === 1"
+            v-model:modelValue="topProjectsData"
+            :items="[`${$t('prompts.topProjects.week')} `, `${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]"
+        />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
                 <div v-for="(project, id) in projectByWeek" :key="id" class="mt-6">
@@ -27,8 +32,8 @@
                 </div>
             </div>
         </div>
-        <div v-if="projectsType === 0" v-for="(project, id) in projectByFresh" :key="id" class="mt-6">
-            <RatingProjectCard :followers="followers" :fresh="true" :listID="++id" :projectInfoSet="project" />
+        <div v-if="projectsType === 0" v-for="(project, index) in projectByFresh" :key="index" class="mt-6">
+            <RatingProjectCard :followers="followers" :fresh="true" :listID="++index" :projectInfoSet="project" />
         </div>
          <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />

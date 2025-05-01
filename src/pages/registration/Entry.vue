@@ -7,7 +7,7 @@
       <img src="../../assets/img/logos/itnt.svg" />
       <!-- {{ o?s }} -->
       <div class="mt-12 pl-2 pr-2">
-        <div @click="dialog = !dialog">
+        <!-- <div @click="dialog = !dialog">
           <UiButton :bgColor="'purple'" :imgSrc="vallet">{{ $t('entry.login') }}
           </UiButton>
         </div>
@@ -16,7 +16,7 @@
           <br />
           <router-link class="button-purse-subtitle-href" to=""> {{ $t('entry.know') }}
           </router-link>
-        </p>
+        </p> -->
         <div style="margin-top: 48px" @click="$router.push('/log')">
           <UiButton bgColor="blue">{{ $t('entry.phone') }}</UiButton>
         </div>

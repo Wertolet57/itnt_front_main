@@ -210,7 +210,7 @@ export const getProjectsByValue = (prjValue: any) => {
 }
 export const searcgProjects = (params: any) => {
     const queryParams = new URLSearchParams(params).toString();
-    return API.get(`${prefix}?${queryParams}`);
+    return API.get(`${prefix}/search?${queryParams}`);
 }
 
 export const getProjectPosts = (projectId: Number) => {

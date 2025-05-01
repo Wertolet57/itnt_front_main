@@ -1,5 +1,5 @@
 <template>
-    <Header showLogo />
+    <Header :messenger="true" showLogo />
     <v-col class="pa-0">
         <v-row class="container pa-0 ma-0" justify="center" align="center">
             <!-- phone -->

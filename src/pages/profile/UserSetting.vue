@@ -1,5 +1,5 @@
 <template>
-    <Header showID :showUserMinify="true" />
+    <Header :messenger="true" showID :showUserMinify="true" />
     <v-container style="padding: 0 20px; margin-bottom: 48px">
         <div class="card">
             <div class="card__title">

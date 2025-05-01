@@ -1,5 +1,5 @@
 <template>
-    <Header showUserMinify />
+    <Header :messenger="true" showUserMinify />
     <v-container>
         <v-row class="grid grid-cols-2 gap-[0.4vw] my-[1vw]">
             <div class="col-span-1">
