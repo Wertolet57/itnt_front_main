@@ -6,7 +6,7 @@
         </div>
         <div v-if="props.me === true" class="userPics__ava">
             <div v-if="props.avaPic == null || props.avaPic == ''" class="">
-                <img class="def" :src="ava">
+                <img class="def" :src="ava" @click="uploadAva">
                 <div @click="uploadAva" class="refresh">
                     <img class="" src="../../assets/demo/refresh.svg" alt="">
                 </div>
@@ -50,8 +50,8 @@
             <img @click="openAvaModal" :src="props.avaPic" />
         </div>
         <div v-else class="userPics__ava">
-            <img class="def" :src="ava">
-            <div @click="uploadAva" class="refresh">
+            <img class="def" :src="ava" @click="uploadAva">
+            <div class="refresh">
                 <img class="" src="../../assets/demo/refresh.svg" alt="">
             </div>
             <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">

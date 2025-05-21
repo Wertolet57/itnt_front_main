@@ -1,7 +1,7 @@
 <template>
     <Header showID showUserMinify />
-    <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" :read-only="false"  />
     <v-container >
+        <ProjectHeader :class="{ 'ml-[0px]': isSidePanel } " :prjAva="fullAvatarUrl" :read-only="false"  />
         <ProjectCard />
         <ProjectTeam :userID="owner" :team="data.users" class="mt-12" />
         <!-- <ProjectInvesting /> -->

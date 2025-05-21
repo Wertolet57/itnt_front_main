@@ -48,7 +48,9 @@
             </div>
             <UiAgree @click="changeUser" />
         </div>
-
+        <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout" color="error">
+            {{ snackbar.message }}
+        </v-snackbar>
     </v-container>
 </template>
 
@@ -155,20 +157,21 @@ const onCountryChange = async () => {
         await fetchCities(user.value.country.id);
     }
 };
-function scrollToEmptyInput() {
-    if (!user.value.firstName) {
-        firstNameRef.value.$el.scrollIntoView({ behavior: 'smooth' });
-        return;
-    }
-    if (!user.value.lastName) {
-        lastNameRef.value.$el.scrollIntoView({ behavior: 'smooth' });
-        return;
-    }
-}
+
+const snackbar = ref({
+    show: false,
+    message: '',
+    timeout: 3000
+});
+
+const showSnackbar = (message: string) => {
+    snackbar.value.message = message;
+    snackbar.value.show = true;
+};
 
 const changeUser = async () => {
-    if (!user.value.firstName || !user.value.lastName) {
-        scrollToEmptyInput();
+    if (!user.value.firstName || !user.value.lastName || !user.value.country || !user.value.city) {
+        showSnackbar('Заполните обязательные поля');
         return;
     }
 
