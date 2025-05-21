@@ -15,7 +15,8 @@
                 <v-select clearable :label="$t('tags')" v-model="projectTags" :items="tagList" item-title="name" item-value="id"
                     variant="outlined" class="blue-select" multiple color="active" item-color="active"
                     chips />
-
+                    <v-select clearable color="active" item-color="active" variant="outlined" class="my-[8px]" :label="$t('screening.country')" v-model="selectedCountry"
+                    :items="countries" item-title="name" item-value="id" hide-details />
                 <div class="details__body__switchs">
                     <div class="details__body__switchs__item">
                         <p class="txt-body1">{{ $t('search.vacancee') }}</p>

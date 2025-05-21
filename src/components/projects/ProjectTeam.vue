@@ -98,7 +98,7 @@
         </div>
         <vue-bottom-sheet full-screen ref="joinTeam">
             <div class="searchTeammateModal modal">
-                <p class="mb-2 p-4">К команде iTalent хотят присоединиться пользователи:</p>
+                <p class="mb-2 p-4">К команде {{ project?.name }} хотят присоединиться пользователи:</p>
                 <div v-for="(user, index) in teamMembers" :key="user.id" class="user-item"
                     :class="{ 'expanded': expandedIndex === index }">
                     <div class="user-header" @click="toggleExpand(index)">
@@ -217,7 +217,7 @@ const state = ref(false)
 const checkOrders = ref()
 const editState = ref(false)
 const selectedUserId = ref(null)
-
+const project = ref(null)
 const openModal = (userId) => {
     selectedUserId.value = userId
     modalState.value.open()
@@ -225,6 +225,7 @@ const openModal = (userId) => {
 onMounted(async () => {
     const response = await getProjectByID(Number(route.params.ID));
     checkOrders.value = response.data.object.owner;
+    project.value = response.data.object;
 })
 function togleState() {
     state.value = !state.value

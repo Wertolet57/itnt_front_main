@@ -1,7 +1,7 @@
 <template>
     <Header showControlDotsProject showID show-user-minify />
-    <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
     <v-container >
+        <ProjectHeader :class="{ 'ml-[0px]': isSidePanel }" :prjAva="fullAvatarUrl" readOnly :prj-name="data.name" :prjID="data.id" :prj-slogan="data.slogan" />
         <ProjectCard readOnly class="mt-12" :prj-desc-body="data.description" :prj-desc-head="data.descriptionHeader" />
         <ProjectTeam  :userID="owner" :team="data.users" class="mt-12" readOnly />
         <ProjectVacancys :project-name="data.name" :project-id="data.id" class="mt-12" readOnly />
