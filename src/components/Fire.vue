@@ -45,11 +45,15 @@ const props = defineProps({
     prjType:{
         type:Boolean,
         default:true
-    }
+    },
+    likedByMe: { // New prop to handle initial liked state
+        type: Boolean,
+        default: false,
+    },
 })
 
-const status = ref("default") // Используйте ref для создания реактивного состояния
-const isLiked = ref(false) // Добавляем новое состояние
+const status = ref(props.likedByMe ? "success" : "default"); // Initialize based on likedByMe
+const isLiked = ref(props.likedByMe); // Initialize based on likedByMe
 
 async function handleLike() {
     console.log('clicked')
@@ -64,11 +68,7 @@ async function handleLike() {
         }
         console.log(response)
         setTimeout(() => {
-            if (isLiked.value) {
-                status.value = 'default'
-            } else {
-                status.value = 'success'
-            }
+            status.value = isLiked.value ? 'default' : 'success';
             isLiked.value = !isLiked.value 
         }, 500);
     } catch (error) {
@@ -91,11 +91,7 @@ async function handleLikePost() {
         }
         console.log(response)
         setTimeout(() => {
-            if (isLiked.value) {
-                status.value = 'default'
-            } else {
-                status.value = 'success'
-            }
+            status.value = isLiked.value ? 'default' : 'success';
             isLiked.value = !isLiked.value 
         }, 500);
     } catch (error) {

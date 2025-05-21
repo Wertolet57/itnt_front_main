@@ -26,7 +26,8 @@
                     <div v-if="users.relationType === 'PROJECT_USER'"
                         class="projectTeam__item d-flex justify-space-between">
                         <div class="d-flex projectTeam__item__main">
-                            <img class="mr-5" src="../../assets/demo/projectsmallphoto.svg" alt="" />
+                            <img v-if="users.user.pictureUrl" class="mr-5" :src="`${baseURL}/files/${users.user.pictureUrl}`" alt="" />
+                            <img v-else class="mr-5 w-[35px] h-[35px]" :src="ava" alt="" />
                             <div class="txt-body2">
                                 <p style="color: #263238">{{ users.user.firstName }}</p>
                                 <p style="color: #9e9e9e"> {{ users.user.id }}</p>
@@ -187,6 +188,9 @@
                 </div>
             </v-card>
         </v-dialog>
+        <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="3000" class="snackbar-above">
+            {{ snackbar.message }}
+        </v-snackbar>
     </div>
 </template>
 
@@ -195,6 +199,7 @@
 import close from '~/assets/project_team/close.svg'
 import commit from '~/assets/project_team/commit.svg'
 import key from '~/assets/project_team/key.svg'
+import ava from "~/assets/demo/defAva.svg"
 
 //
 import UiTextArea from '../ui-kit/UiTextArea.vue'
@@ -212,11 +217,25 @@ import { useRoute } from 'vue-router'
 import { getProjectByID, addUser } from "../../API/ways/project.ts"
 import debounce from 'lodash/debounce';
 import { createDialog } from '~/API/ways/dialog';
-import ava from '../../assets/demo/ava-small-header.svg'
+
+const snackbar = ref({
+    visible: false,
+    message: '',
+    color: 'success',
+});
+
+const showSnackbar = (message: string, color: string = 'success') => {
+    snackbar.value.message = message;
+    snackbar.value.color = color;
+    snackbar.value.visible = true;
+};
+
 const state = ref(false)
 const checkOrders = ref()
 const editState = ref(false)
 const selectedUserId = ref(null)
+const baseURL = 'https://itnt.store/';
+
 const project = ref(null)
 const openModal = (userId) => {
     selectedUserId.value = userId
@@ -337,23 +356,35 @@ const searchUsers = debounce(async (query: string) => {
 }, 300);
 const addUsers = async (userObj: any) => {
     try {
-        await react(Answer.Yes, userObj.id)
-        const response = await addUser(route.params.ID, userObj.user.id)
-        console.log(response)
-        await getProjectPropositionsApi()
+        await react(Answer.Yes, userObj.id);
+        const response = await addUser(route.params.ID, userObj.user.id);
+        if (response.data.operationResult === "ERROR" && response.data.operationInfo === "The user is already a member of the project") {
+            showSnackbar("Такой пользователь уже находится в команде", "error");
+        } else {
+            showSnackbar("Пользователь успешно добавлен в команду", "success");
+        }
+        await getProjectPropositionsApi();
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        showSnackbar("Произошла ошибка при добавлении пользователя", "error");
     }
-}
+};
 
 const react = async (propositionAnswer: Answer, propositionId: number) => {
     try {
-        const response = await reactToProposition(propositionAnswer, propositionId)
-        console.log(response)
+        const response = await reactToProposition(propositionAnswer, propositionId);
+        showSnackbar(
+            propositionAnswer === Answer.Yes
+                ? "Запрос успешно одобрен"
+                : "Запрос отклонен",
+            "success"
+        );
+        console.log(response);
     } catch (error) {
-        console.error('Error sending proposition:', error)
+        console.error('Error sending proposition:', error);
+        showSnackbar("Произошла ошибка при обработке запроса", "error");
     }
-}
+};
 const baseAvaURL = 'https://itnt.store/';
 
 const teamRoles = ref(false)
@@ -639,5 +670,12 @@ watch(inviteDialog, (val) => {
         }
     }
 
+}
+
+.snackbar-above {
+    z-index: 9999999 !important; // Ensure it is above the bottom sheet
+}
+::v-deep(.bottom-sheet__backdrop){
+    z-index: 1000 !important;
 }
 </style>

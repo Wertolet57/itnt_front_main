@@ -61,7 +61,8 @@ export default {
                 <UiTextArea label="Описание*" v-model="vacancyParams.description" />
                 <UiInput label="Что мы предлагаем*" v-model="vacancyParams.offer" />
 
-                <UiButton @click="archiveVacancy(false)" class="mt-4" bg-color="blue__no__shadow" >Разархивировать</UiButton>
+                <UiButton @click="archiveVacancy(false)" class="mt-4" bg-color="blue__no__shadow">Разархивировать
+                </UiButton>
             </div>
         </div>
         <div v-if="vacancyParams.archive == false" class="">
@@ -96,6 +97,10 @@ export default {
             </div>
         </vue-bottom-sheet>
     </div>
+
+    <v-snackbar v-model="snackbar.show" :timeout="snackbar.timeout">
+        {{ snackbar.message }}
+    </v-snackbar>
 </template>
 
 <script lang="ts" setup>
@@ -227,6 +232,12 @@ onMounted(getVacancyByIDApi);
 const modalState = ref(null)
 const vacancyPanel = ref(null)
 const propMessage = ref('')
+const snackbar = ref({
+    show: false,
+    message: '',
+    color: 'success',
+    timeout: 3000,
+});
 const sendPropositions = async () => {
     const proposition = {
         answer: 'YES',
@@ -241,8 +252,21 @@ const sendPropositions = async () => {
     };
     try {
         await sendProposition(proposition);
+        modalState.value?.close(); // Close the bottom sheet
+        snackbar.value = {
+            show: true,
+            message: 'Запрос на вступление в проект отправлен',
+            color: 'success',
+            timeout: 3000,
+        };
     } catch (error) {
         console.error(error);
+        snackbar.value = {
+            show: true,
+            message: 'Ошибка при отправке запроса',
+            color: 'error',
+            timeout: 3000,
+        };
     }
 };
 
@@ -313,12 +337,14 @@ const editableModalItems: modalActionsList[] = [
     background: #ffffff;
     border: #c7edff 1px solid !important;
 }
-.box-shadow {
-    background-color: white; /* Цвет фона бокса */
-    border-radius: 50%; /* Для круглой формы */
-    box-shadow: 0 0 0px rgba(0, 0, 0, 0.1),
-                0 0 20px rgba(0, 0, 0, 0.1),
-                0 0 0px rgba(0, 0, 0, 0.1);
-}
 
+.box-shadow {
+    background-color: white;
+    /* Цвет фона бокса */
+    border-radius: 50%;
+    /* Для круглой формы */
+    box-shadow: 0 0 0px rgba(0, 0, 0, 0.1),
+        0 0 20px rgba(0, 0, 0, 0.1),
+        0 0 0px rgba(0, 0, 0, 0.1);
+}
 </style>

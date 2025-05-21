@@ -5,8 +5,8 @@ const prefix = '/main'
 interface Data {
     description: string;
     descriptionHeader: string;
-    authorProject: { id: number };
-    authorUser: { id: number };
+    authorProject: number ;
+    authorUser:  number;
 }
 
 export const postProject = async (

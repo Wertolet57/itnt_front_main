@@ -33,7 +33,7 @@
                         </div>
                     </v-snackbar>
                     <UiButton @click="shareProject()" :imgSrc="shareIcon" onlyIcon />
-                    <Fire :id="props.prjID" />
+                    <Fire :id="props.prjID" :likedByMe="projectData.likedByMe" />
                 </div>
                 <UiButton @click="$router.push(`/`+ props.prjID + '/blogComment')" bgColor="def"
                     :imgSrc="messageIcon">
@@ -89,12 +89,13 @@ const isFollowing = ref(false);
 const user = ref();
 const followers = ref([]);
 const projects = ref([]);
+const projectData = ref({});
 const { prjObject } = storeToRefs(useProjectStore())
 onMounted(async () => {
     try {
         user.value = (await getUserByID(Number(userID))).data.object;
-        const projectData = await getProjectByID(route.params.ID);
-        projects.value = projectData.data.object.users;
+        projectData.value = await getProjectByID(route.params.ID);
+        projects.value = projectData.value.data.object.users;
         followers.value = projects.value.filter(user => user.relationType === 'PROJECT_FOLLOWER');
     } catch (error) {
         console.error('Error loading data:', error);
