@@ -14,7 +14,7 @@
             <UiSkills :skillList="data?.interests" readOnly />
             <ProjectsList :read-only="true" class="my-8" :projects="data?.projects" />
         </div>
-        <ProjectInvest />
+<!--        <ProjectInvest /> -->
         <div v-if="posts" v-for="post in posts">
             <ProjectBlog :blog-data="post" :authorID="post.authorUser.id" :author="post.authorUser.firstName"
                 user-type="user" feedCardType="newProjectStage" />

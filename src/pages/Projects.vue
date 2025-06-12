@@ -13,7 +13,11 @@
         <UiSwitch
             v-if="projectsType === 1"
             v-model:modelValue="topProjectsData"
-            :items="[`${$t('prompts.topProjects.week')} `, `${$t('prompts.topProjects.month')} `, `${$t('prompts.topProjects.year')} `]"
+            :items="[
+                `${$t('prompts.topProjects.week')} `,
+                `${$t('prompts.topProjects.month')} `,
+                `${$t('prompts.topProjects.year')} `,
+            ]"
         />
         <div v-if="projectsType === 1" class="">
             <div v-if="topProjectsData === 0" class="">
@@ -28,23 +32,21 @@
             </div>
             <div v-if="topProjectsData === 2" class="">
                 <div v-for="(project, id) in projectByYear" :key="id" class="mt-6">
-                    <RatingProjectCard :followers="followers"  :projectInfoSet="project" />
+                    <RatingProjectCard :followers="followers" :projectInfoSet="project" />
                 </div>
             </div>
         </div>
         <div v-if="projectsType === 0" v-for="(project, index) in projectByFresh" :key="index" class="mt-6">
             <RatingProjectCard :followers="followers" :fresh="true" :listID="++index" :projectInfoSet="project" />
         </div>
-         <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
+        <!-- <div v-for="(project, id) in projectsInfo" :key="id" class="mt-6">
             <RatingProjectCard :listID="++id" :projectInfoSet="project" />
         </div> -->
-
     </v-container>
     <Footer />
 </template>
 
 <script setup lang="ts">
-
 import Header from '~/components/Header.vue'
 import Footer from '~/components/Footer.vue'
 import UiPrompt from '~/components/ui-kit/UiPrompt.vue'
@@ -52,7 +54,7 @@ import UiSwitch from '~/components/ui-kit/UiSwitch.vue'
 import RatingProjectCard from '~/components/projects/RatingProjectCard.vue'
 
 import { ref, onMounted } from 'vue'
-import { getAllProjects,getProjectFollowers } from '~/API/ways/project'
+import { getAllProjects, getProjectFollowers } from '~/API/ways/project'
 import { getProjectWeek, getProjectMonth, getProjectYear, getProjectFresh } from '~/API/ways/post'
 let projectsInfo = ref({})
 
@@ -117,9 +119,7 @@ const getFollowers = async () => {
     try {
         const response = await getProjectFollowers(projectsInfo?.id)
         followers.value = response.data
-    } catch (error) {
-
-    }
+    } catch (error) {}
 }
 onMounted(getFollowers)
 const projectsType = ref(0)

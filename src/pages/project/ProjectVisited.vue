@@ -42,9 +42,9 @@
         <div v-show="projectsType === 0" v-if="posts" v-for="(post, index) in posts " :key="index">
             <ProjectBlog :blog-data="post" user-type="me" withoutBg feedCardType="newProjectStage" />
         </div>
-        <div v-show="projectsType === 2" class="">
-            <ProjectInvest />
-        </div>
+      <!--  <div v-show="projectsType === 2" class=""> -->
+           <!-- <ProjectInvest /> -->
+      <!--  </div> -->
     </v-container>
     <Footer class="relative z-9" />
 </template>

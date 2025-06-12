@@ -23,14 +23,14 @@
         <ProjectsList class="mt-12" :projects="userInfo.projects" />
         
         <!-- Talent Data -->
-        <div v-if="talant" class="mt-12">
-            <ProjectInvest
-                :minContribution="talant.minContribution"
-                :shareForSale="talant.shareForSale"
-                :amountAttracted="talant.amountAttracted"
-                :alreadyPurchased="talant.alreadyPurchased"
-            />
-        </div>
+       <!-- <div v-if="talant" class="mt-12"> -->
+          <!--  <ProjectInvest -->
+           <!--     :minContribution="talant.minContribution" -->
+               <!-- :shareForSale="talant.shareForSale" -->
+               <!-- :amountAttracted="talant.amountAttracted" -->
+               <!-- :alreadyPurchased="talant.alreadyPurchased" -->
+           <!-- /> -->
+       <!-- </div> -->
 
         <v-container>
             <div class="my-[48px]">

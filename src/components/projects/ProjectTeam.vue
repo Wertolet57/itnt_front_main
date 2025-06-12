@@ -40,7 +40,7 @@
 
             <vue-bottom-sheet max-height="105px" full-screen ref="modalState">
                 <div class="modalList">
-                    <div @click="$router.push('/user/' + selectedUserId)" class="modalList__item flex flex-row">
+                    <div @click="() => { cleanupOverflow(); $router.push('/user/' + selectedUserId) }" class="modalList__item flex flex-row">
                         <img :src="account" alt="" />
                         <p class="txt-body1">Открыть профиль</p>
                     </div>
@@ -241,6 +241,11 @@ const openModal = (userId) => {
     selectedUserId.value = userId
     modalState.value.open()
 }
+
+const cleanupOverflow = () => {
+    document.documentElement.style.overflowY = 'auto'
+}
+
 onMounted(async () => {
     const response = await getProjectByID(Number(route.params.ID));
     checkOrders.value = response.data.object.owner;
