@@ -3,7 +3,7 @@
         <div class="d-flex mb-2 align-center justify-space-between">
             <p v-show="props.readOnly" style="color: #263238" class="txt-cap2">Наша команда:</p>
             <p v-show="!props.readOnly" style="color: #263238" class="txt-cap2">Участники проекта:</p>
-            <UiButton v-if="checkOrders && checkOrders.id && checkOrders.id == props.userID" @click="joinTeam.open()" fit
+            <UiButton v-if="showRequest" @click="joinTeam.open()" fit
                 style="height: 36px; padding: 11px 16px" bgColor="smBlue" isSmall>
                 <p @click="joinTeam.open()" class="txt-cap2">Заявки
                 <div v-if="teamMembers.length > 0" class="length">{{ teamMembers.length }}</div>
@@ -237,6 +237,7 @@ const selectedUserId = ref(null)
 const baseURL = 'https://itnt.store/';
 
 const project = ref(null)
+const showRequest = ref(null)
 const openModal = (userId) => {
     selectedUserId.value = userId
     modalState.value.open()
@@ -250,6 +251,9 @@ onMounted(async () => {
     const response = await getProjectByID(Number(route.params.ID));
     checkOrders.value = response.data.object.owner;
     project.value = response.data.object;
+    const userID = localStorage.getItem('userId');
+    showRequest.value = String(checkOrders.value.id) == userID;
+
 })
 function togleState() {
     state.value = !state.value
