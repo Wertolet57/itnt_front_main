@@ -33,7 +33,7 @@
                         </div>
                     </v-snackbar>
                     <UiButton @click="shareProject()" :imgSrc="shareIcon" onlyIcon />
-                    <Fire :id="props.prjID" :likedByMe="projectData.likedByMe" />
+                    <Fire :id="props.prjID" :likedByMe="projectLikedByMe" />
                 </div>
                 <UiButton @click="$router.push(`/`+ props.prjID + '/blogComment')" bgColor="def"
                     :imgSrc="messageIcon">
@@ -87,6 +87,7 @@ const prjAva = ref(props.prjAva);
 const snackbarVisible = ref(false);
 const isFollowing = ref(false);
 const user = ref();
+const projectLikedByMe = ref(false);
 const followers = ref([]);
 const projects = ref([]);
 const projectData = ref({});
@@ -96,6 +97,8 @@ onMounted(async () => {
         user.value = (await getUserByID(Number(userID))).data.object;
         projectData.value = await getProjectByID(route.params.ID);
         projects.value = projectData.value.data.object.users;
+        projectLikedByMe.value = projectData.value.data.object.likedByMe;
+        console.log("AAAAAAAAAAAA>>> ", projectLikedByMe.value);
         followers.value = projects.value.filter(user => user.relationType === 'PROJECT_FOLLOWER');
     } catch (error) {
         console.error('Error loading data:', error);

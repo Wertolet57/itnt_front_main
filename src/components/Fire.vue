@@ -34,10 +34,9 @@ export default {
 <script setup lang="ts">
 import sucess from '~/assets/LoadingIcon.svg'
 import flame from '~/assets/icons/fire/flame.svg'
-import { nextTick } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { addLike, delLike } from '~/API/ways/project'
 import { addLikes, delLikes } from '~/API/ways/post'
-import { ref } from 'vue'
 const props = defineProps({
     id: {
         type: Number,
@@ -52,8 +51,13 @@ const props = defineProps({
     },
 })
 
-const status = ref(props.likedByMe ? "success" : "default"); // Initialize based on likedByMe
-const isLiked = ref(props.likedByMe); // Initialize based on likedByMe
+const status = ref(props.likedByMe ? "success" : "default");
+const isLiked = ref(props.likedByMe);
+
+watch(() => props.likedByMe, (newValue) => {
+    status.value = newValue ? "success" : "default";
+    isLiked.value = newValue;
+});
 
 async function handleLike() {
     console.log('clicked')

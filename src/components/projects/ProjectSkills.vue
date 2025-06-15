@@ -40,12 +40,12 @@
     <transition name="bottom-sheet">
         <div v-if="isBottomSheetOpen == true" class="bottom-sheet min-h-[400px] bg-white text-left">
             <div class="txt-body1 mb-2 mx-4">Выбрано : {{ selectedSkills.length }} </div>
-            <UiInput class="mx-4 mb-2" label="Введите навык для поиска" />
-            <div class="skill-category" v-for="(skillCategory, index) in projectSkill" :key="index">
+            <UiInput v-model="searchTerm" class="mx-4" label="Введите навык для поиска" />
+            <div class="skill-category" v-for="(skillCategory, index) in filteredSkills" :key="index">
                 <div class="skill-item px-4" v-for="skill in skillCategory" :key="skill.key" :class="{
-        'selected': selectedSkills.includes(skill.key),
-        'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill.key)
-    }" @click="toggleSkill(skill.key)">
+                    'selected': selectedSkills.includes(skill.key),
+                    'disabled': selectedSkills.length >= 3 && !selectedSkills.includes(skill.key)
+                }" @click="toggleSkill(skill.key)">
                     {{ skill.key }}
                 </div>
             </div>
@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import UiInput from '../ui-kit/UiInput.vue';
 import projectSkill from '../../helpers/projectSkill';
 import { patchProject, getProjectByID } from '~/API/ways/project';
@@ -67,6 +67,7 @@ import { onMounted } from 'vue';
 const route = useRoute();
 const isBottomSheetOpen = ref(false);
 const selectedSkills = ref<string[]>([]);
+const searchTerm = ref('');
 const props = defineProps({
     readOnly: {
         type: Boolean,
@@ -84,6 +85,17 @@ const props = defineProps({
         default: false,
     },
 });
+
+const filteredSkills = computed(() => {
+    if (!searchTerm.value) return [projectSkill.manageSkills];
+    
+    const filtered = projectSkill.manageSkills.filter(skill => 
+        skill.key.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+        skill.value.toLowerCase().includes(searchTerm.value.toLowerCase())
+    );
+    return [filtered];
+});
+
 const emit = defineEmits(['add-skills']);
 
 const emitAddSkills = () => {
