@@ -1,7 +1,7 @@
 <template>
     <Header showID :showUserMinify="true" />
     <!-- {{events}} -->
-    <ProfileHeader :me="true" :read-only="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <ProfileHeader :me="true" :read-only="true" v-model:bg-pic="fullBannerUrl" v-model:ava-pic="fullAvatarUrl" />
     <v-container>
         <ProfileInfo :proposition="userInfo.openedForProposition" :user-description="userInfo.fullDescription"
             :user-name="userInfo.firstName ? userInfo.firstName : ''" :city="userInfo.city ? userInfo.city.name : ''"
@@ -173,13 +173,20 @@ const getTalentSearchApi = async () => {
 // const userTalents = computed(() => talentDetails.value || []);
 const baseURL = 'https://itnt.store/';
 
-const fullAvatarUrl = computed(() => {
-    return userInfo.value.pictureUrl ? `${baseURL}files/${userInfo.value.pictureUrl}` : '';
-});
-const fullBannerUrl = computed(() => {
-    return userInfo.value.backgroundPictureUrl ? `${baseURL}files/${userInfo.value.backgroundPictureUrl}` : '';
-});
+const fullAvatarUrl = ref('');
+const fullBannerUrl = ref('');
+
 onMounted(async () => {
+    try {
+        const response = await getUserByID(Number(localStorage.getItem("userId")));
+        if (response?.data?.object) {
+            const userData = response.data.object;
+            fullAvatarUrl.value = userData.pictureUrl ? `${baseURL}files/${userData.pictureUrl}` : '';
+            fullBannerUrl.value = userData.backgroundPictureUrl ? `${baseURL}files/${userData.backgroundPictureUrl}` : '';
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+    }
     await fetchUserInfo();
     await feedEvents();
     getTalentSearchApi();

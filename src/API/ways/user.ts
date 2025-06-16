@@ -72,6 +72,12 @@ export const delFollow = (userId: Number) => {
 export const deleteUserPicture = (id: Number) => {
     return API.delete(`${prefix}/delUserPicture?id=${id}`);
 }
+export const deleteBackgroundPicture = () => {
+    return API.delete(`${prefix}/delBackgroundPicture`);
+}
+export const deleteAvaPicture = () => {
+    return API.delete(`${prefix}/delAvaPicture`);
+}
 export const getFollowed = () => {
     return API.get(`${prefix}/followed`)
 }

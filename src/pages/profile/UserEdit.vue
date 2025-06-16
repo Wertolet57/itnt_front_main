@@ -1,6 +1,6 @@
 <template>
     <Header :messenger="true" showUserMinify showID />
-    <ProfileHeader :me="true" :bg-pic="fullBannerUrl" :ava-pic="fullAvatarUrl" />
+    <ProfileHeader :me="true" v-model:bg-pic="fullBannerUrl" v-model:ava-pic="fullAvatarUrl" />
     <v-container>
         <div class="userEdit my-4">
             <UiInput v-model="user.firstName" class="mb-4" :label="$t('user-edit.name')" :required="true" ref="firstNameRef" />
@@ -70,7 +70,21 @@ import { getCountryList, getCityList } from '../../API/ways/dictionary';
 
 const router = useRouter();
 
-const user = ref({
+interface User {
+    id: string | null;
+    city: string | City;
+    country: string | Country;
+    firstName: string;
+    lastName: string;
+    nickName: string;
+    fullDescription: string;
+    pictureUrl: string;
+    projects: any[];
+    backgroundPictureUrl: string;
+    openedForProposition: boolean;
+}
+
+const user = ref<User>({
     id: localStorage.getItem('userId'),
     city: '',
     country: '',
@@ -80,24 +94,25 @@ const user = ref({
     fullDescription: '',
     pictureUrl: '',
     projects: [],
-    backgroundPictureUrl: ''
+    backgroundPictureUrl: '',
+    openedForProposition: false
 });
 
 const posts = ref();
-const cities = ref([]);
-const countries = ref([]);
+const cities = ref<City[]>([]);
+const countries = ref<Country[]>([]);
 const selectedCountryId = ref<number | null>(null);
 
-onMounted(async () => {
-    try {
-        const response = await getPostByUser(Number(localStorage.getItem('userId')));
-        posts.value = response;
-    } catch (e) {
-        console.error('Error fetching posts:', e);
-    }
-});
+const fullAvatarUrl = ref('');
+const fullBannerUrl = ref('');
 
-let userInfo = ref({});
+interface UserInfo {
+    interests: any[];
+    [key: string]: any;
+}
+
+let userInfo = ref<UserInfo>({ interests: [] });
+
 const fetchUserInfo = async () => {
     await getUserByID(Number(localStorage.getItem("userId"))).then((response) => {
         try {
@@ -123,6 +138,18 @@ const fetchCities = async (countryId: number) => {
         console.error('Error fetching cities:', error);
     }
 };
+
+interface Country {
+    id: number;
+    name: string;
+}
+
+interface City {
+    id: number;
+    name: string;
+    country: Country;
+}
+
 onMounted(async () => {
     try {
         const countryResp = await getCountryList();
@@ -133,9 +160,9 @@ onMounted(async () => {
             ...response.data.object
         };
 
-        if (user.value.country) {
-            selectedCountryId.value = user.value.country.id;
-            await fetchCities(user.value.country.id);
+        if (user.value.country && typeof user.value.country === 'object') {
+            selectedCountryId.value = (user.value.country as Country).id;
+            await fetchCities((user.value.country as Country).id);
         }
         if (!user.value.country) {
             user.value.country = '';
@@ -144,17 +171,23 @@ onMounted(async () => {
             user.value.city = '';
         }
 
+        // Update image URLs
+        fullAvatarUrl.value = user.value.pictureUrl ? `${baseURL}files/${user.value.pictureUrl}` : '';
+        fullBannerUrl.value = user.value.backgroundPictureUrl ? `${baseURL}files/${user.value.backgroundPictureUrl}` : '';
+
     } catch (e) {
         console.error('Error fetching user data or countries:', e);
     }
 });
+
 const filteredCities = computed(() => {
     return cities.value.filter(city => city.country && city.country.id === selectedCountryId.value);
 });
+
 const onCountryChange = async () => {
-    if (user.value.country) {
-        selectedCountryId.value = user.value.country.id;
-        await fetchCities(user.value.country.id);
+    if (user.value.country && typeof user.value.country === 'object') {
+        selectedCountryId.value = (user.value.country as Country).id;
+        await fetchCities((user.value.country as Country).id);
     }
 };
 
@@ -184,14 +217,6 @@ const changeUser = async () => {
 };
 
 const baseURL = 'https://itnt.store/';
-
-const fullAvatarUrl = computed(() => {
-    return user.value.pictureUrl ? `${baseURL}files/${user.value.pictureUrl}` : '';
-});
-
-const fullBannerUrl = computed(() => {
-    return user.value.backgroundPictureUrl ? `${baseURL}files/${user.value.backgroundPictureUrl}` : '';
-});
 </script>
 
 <style lang="scss" scoped>

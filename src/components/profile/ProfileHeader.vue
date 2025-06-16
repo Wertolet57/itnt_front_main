@@ -10,7 +10,7 @@
                 <div @click="uploadAva" class="refresh">
                     <img class="" src="../../assets/demo/refresh.svg" alt="">
                 </div>
-                <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
+                <input type="file" ref="avaFleInput" style="display: none;" accept="image/*" @change="handleFileAva">
             </div>
             <img v-else v-show="props.avaPic" :src="props.avaPic" alt="User avatar">
         </div>
@@ -25,10 +25,10 @@
             <img @click="openBgModal" :src="props.bgPic" />
         </div>
         <div v-else class="userPics__upload">
-            <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
-            <button class=" userPics__btn" @click="uploadBg">
-                <img src="/src/assets/Profile/icons.svg" alt="">
-            </button>
+            <input type="file" id="bgFileInput" style="display: none;" accept="image/*, image/heic" @change="handleFileInputChange">
+            <label for="bgFileInput" class=" userPics__btn">
+                <img src="/src/assets/Profile/icons.svg" alt="Upload">
+            </label>
         </div>
 
         <v-dialog v-model="bgModal" width="100%">
@@ -37,10 +37,10 @@
                     <span>Изменение фонового изображения</span>
                 </p>
                 <div class="ui-skills__search__actions">
-                    <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
+                    <UiButton @click="removeBackgroundPicture()" bgColor="smOutlined" isSmall>Удалить</UiButton>
                     <div class="p-0 flex w-full justify-end">
-                        <UiButton @click="uploadBg" bgColor="smOutlined" isSmall>Заменить</UiButton>
-                        <input type="file" ref="bgFileInput" style="display: none;" @change="handleFileInputChange">
+                        <UiButton bgColor="smOutlined" isSmall><label for="bgFileInput1">Заменить</label></UiButton>
+                        <input type="file" id="bgFileInput1" style="display: none;" accept="image/*" @change="handleFileInputChange">
                     </div>
                 </div>
             </v-card>
@@ -50,11 +50,13 @@
             <img @click="openAvaModal" :src="props.avaPic" />
         </div>
         <div v-else class="userPics__ava">
-            <img class="def" :src="ava" @click="uploadAva">
+            <label for="avaFileInput">
+                <img class="def" :src="ava">
+            </label>
             <div class="refresh">
                 <img class="" src="../../assets/demo/refresh.svg" alt="">
             </div>
-            <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
+            <input type="file" id="avaFileInput" style="display: none;" accept="image/*" @change="handleFileAva">
         </div>
         <v-dialog v-model="avaModal" width="100%">
             <v-card class="ui-skills__search p-4">
@@ -62,10 +64,10 @@
                     <span>Изменение аватарки</span>
                 </p>
                 <div class="ui-skills__search__actions">
-                    <UiButton @click="removeBackgroundPicture(id)" bgColor="smOutlined" isSmall>Удалить</UiButton>
+                    <UiButton @click="removeAvaPicture()" bgColor="smOutlined" isSmall>Удалить</UiButton>
                     <div class="p-0 flex w-full justify-end">
-                        <UiButton @click="uploadAva" bgColor="smOutlined" isSmall>Заменить</UiButton>
-                        <input type="file" ref="avaFleInput" style="display: none;" @change="handleFileAva">
+                        <UiButton bgColor="smOutlined" isSmall><label for="avaFleInput">Заменить</label></UiButton>
+                        <input type="file" id="avaFleInput" style="display: none;" accept="image/*" @change="handleFileAva">
                     </div>
                 </div>
             </v-card>
@@ -83,7 +85,7 @@
 <script setup lang="ts">
 import ava from "../../assets/demo/defAva.svg"
 import { ref } from 'vue'
-import { postAddUserPicture, postAddBackgroundPicture, deleteUserPicture, getUserByID } from '~/API/ways/user';
+import { postAddUserPicture, postAddBackgroundPicture, deleteAvaPicture, deleteBackgroundPicture, getUserByID } from '~/API/ways/user';
 import UiButton from '../ui-kit/UiButton.vue';
 import { onMounted } from "vue";
 const props = defineProps({
@@ -104,9 +106,12 @@ const props = defineProps({
     }
 })
 
+const emit = defineEmits(['update:bgPic', 'update:avaPic'])
+
 const avaModal = ref(false)
 const bgModal = ref(false)
 const snackbarVisible = ref(false)
+const baseURL = 'https://itnt.store/';
 
 function openAvaModal() {
     avaModal.value = true
@@ -114,86 +119,103 @@ function openAvaModal() {
 function openBgModal() {
     bgModal.value = true
 }
-const bgFileInput = ref<HTMLInputElement | null>(null);
-const uploadedBgImageUrl = ref<string>('');
 
-const avaFleInput = ref<HTMLInputElement | null>(null);
-const uploadedAvaImageUrl = ref<string>('');
-
-const handleFileInputChange = async () => {
-    const files = bgFileInput.value?.files;
-    if (files && files.length > 0) {
-        const selectedFile = files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
-        reader.onload = async () => {
-            uploadedBgImageUrl.value = reader.result as string;
-            try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                await postAddBackgroundPicture(formData);
-            } catch (error) {
-                console.error('error:', error);
-            }
-        };
+const uploadAva = () => {
+    const input = document.getElementById('avaFileInput') as HTMLInputElement;
+    if (input) {
+        input.click();
     }
-    await getUserByIDApi()
-    bgModal.value = false
-    snackbarVisible.value = true
 }
-const handleFileAva = async () => {
-    const files = avaFleInput.value?.files;
-    if (files && files.length > 0) {
-        const selectedFile = files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
-        reader.onload = async () => {
-            uploadedAvaImageUrl.value = reader.result as string;
-            try {
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                await postAddUserPicture(formData, true);
-            } catch (error) {
-                console.error('error:', error);
+
+const handleFileInputChange = async (event: Event) => {    
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const selectedFile = input.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedFile);
+    reader.onload = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            await postAddBackgroundPicture(formData);
+            const response = await getUserByIDApi();
+            if (response?.data?.object?.backgroundPictureUrl) {
+                emit('update:bgPic', `${baseURL}files/${response.data.object.backgroundPictureUrl}`);
             }
-        };
-        await getUserByIDApi()
-    }
-    avaModal.value = false
-    snackbarVisible.value = true
+        } catch (error) {
+            console.error('error:', error);
+        }
+    };
+    bgModal.value = false;
+    console.log("Изображение успешно обновлено");
+    snackbarVisible.value = true;
 }
 
-const uploadBg = async () => {
-    await getUserByIDApi()
-    bgFileInput.value?.click();
+const handleFileAva = async (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const selectedFile = input.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedFile);
+    reader.onload = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            await postAddUserPicture(formData, true);
+            const response = await getUserByIDApi();
+            if (response?.data?.object?.pictureUrl) {
+                emit('update:avaPic', `${baseURL}files/${response.data.object.pictureUrl}`);
+            }
+        } catch (error) {
+            console.error('error:', error);
+        }
+    };
+    avaModal.value = false;
+    snackbarVisible.value = true;
 }
 
-const uploadAva = async () => {
-    await getUserByIDApi()
-    avaFleInput.value?.click();
-}
-
-const id = ref<number>(0);
-
-const removeBackgroundPicture = async (id: Number) => {
+const removeAvaPicture = async () => {
     try {
-        await deleteUserPicture(id);
+        await deleteAvaPicture();
+        const response = await getUserByIDApi();
+        if (response?.data?.object?.pictureUrl) {
+            emit('update:avaPic', `${baseURL}files/${response.data.object.pictureUrl}`);
+        } else {
+            emit('update:avaPic', '');
+        }
         console.log("Изображение успешно удалено");
-
-        // searchModalState.value = false;
+        avaModal.value = false;
     } catch (error) {
         console.error("Произошла ошибка при удалении изображения", error);
     }
 };
+
+const removeBackgroundPicture = async () => {
+    try {
+        await deleteBackgroundPicture();
+        const response = await getUserByIDApi();
+        if (response?.data?.object?.backgroundPictureUrl) {
+            emit('update:bgPic', `${baseURL}files/${response.data.object.backgroundPictureUrl}`);
+        } else {
+            emit('update:bgPic', '');
+        }
+        console.log("Изображение успешно удалено");
+        bgModal.value = false;
+    } catch (error) {
+        console.error("Произошла ошибка при удалении изображения", error);
+    }
+};
+
 const getUserByIDApi = async () => {
     try {
         const response = await getUserByID(Number(localStorage.getItem("userId")))
-        console.log(response);
-
+        return response;
     } catch (error) {
-
+        console.error("Ошибка при получении данных пользователя:", error);
+        return null;
     }
 }
+
 onMounted(getUserByIDApi)
 </script>
 
@@ -202,6 +224,17 @@ onMounted(getUserByIDApi)
     position: relative;
     overflow: hidden;
     /* Обрезает все, что выходит за границы */
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .userPics {
