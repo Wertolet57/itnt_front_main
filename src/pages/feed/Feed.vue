@@ -7,11 +7,11 @@
                 </div>
             <div v-if="posts && posts.object" v-for="(post, index) in posts.object" :key="index">
                 <div v-if="post.authorProject">
-                    <ProjectBlog :authorType="'project'" :blog-data="post" :authorID="post.authorProject.id"
+                    <ProjectBlog :authorType="'project'" :blogData="post" :authorID="post.authorProject.id"
                     :author="post.authorProject.name" user-type="user" feedCardType="newProjectStage" />
                 </div>
                 <div v-else-if="post.authorUser">
-                    <ProjectBlog :authorType="'user'" :blog-data="post" :authorID="post.authorUser.id"
+                    <ProjectBlog :authorType="'user'" :blogData="post" :authorID="post.authorUser.id"
                     :author="post.authorUser.firstName || post.authorUser.id || 'Неизвестный пользователь'"
                     user-type="user" feedCardType="newProjectStage" />
                 </div>

@@ -16,9 +16,9 @@
         "put": "Enter your number",
         "continue": "Continue",
         "click": "By clicking on the button, you agree to the processing of data",
-        "sms": "Enter the code from the sms message:",
+        "sms": "Enter the code from the SMS message or the last 4 digits of the incoming number:",
         "error": " Incorrect code",
-        "noSms": "No text message within ",
+        "noSms": "Didn't receive the code within ",
         "minut": "minut",
         "again": "Send again",
         "pin": "Enter your pin-code:",
@@ -94,6 +94,7 @@
         "comments": "Look into the comments",
         "today": "Today",
         "dis": "Discuss this post",
+        "toComment":"View comments",
         "yesterday": "Yesterday"
     },
     "feedPanels": {

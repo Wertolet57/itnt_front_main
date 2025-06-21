@@ -23,7 +23,7 @@
                         @postSuccess="closeModal"
                         v-model:description="postData.description"
                         :author-user="postData.authorUser"
-                        :author-project="postData.authorProject"
+                        v-model:authorProject="postData.authorProject"
                         card
                     />
                 </div>

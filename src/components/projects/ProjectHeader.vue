@@ -5,14 +5,16 @@
         </div>
         <div class="back w-full" v-else>
             <div class="upload-wrapper">
-                <div v-if="!props.prjAva" class="mx-auto cursor-pointer">
+                <div v-if="!prjAva" class="mx-auto cursor-pointer">
                     <v-file-input @change="uploadImage" accept="image/png, image/jpeg, image/bmp"
                         class="input-file bg-black" />
                     <img src="../../assets/img/regSteps/addProfilePic.svg" class="rounded-circle" height="208"
                         width="208" />
                 </div>
                 <div v-else class="ava">
-                    <img class="object-cover" :src="props.prjAva" height="208" width="208" />
+                    <v-file-input @change="uploadImage" accept="image/png, image/jpeg, image/bmp"
+                        class="input-file bg-black" />
+                    <img class="object-cover" :src="prjAva" height="208" width="208" />
                 </div>
             </div>
         </div>
@@ -98,7 +100,6 @@ onMounted(async () => {
         projectData.value = await getProjectByID(route.params.ID);
         projects.value = projectData.value.data.object.users;
         projectLikedByMe.value = projectData.value.data.object.likedByMe;
-        console.log("AAAAAAAAAAAA>>> ", projectLikedByMe.value);
         followers.value = projects.value.filter(user => user.relationType === 'PROJECT_FOLLOWER');
     } catch (error) {
         console.error('Error loading data:', error);
@@ -113,6 +114,7 @@ async function uploadImage(event: any) {
     try {
         await addProjectAvatar(formData, Number(route.params.ID));
         prjAva.value = URL.createObjectURL(file);
+        console.log("<<<uploadImage>>>");
     } catch (error) {
         console.error('Error uploading avatar:', error);
     }

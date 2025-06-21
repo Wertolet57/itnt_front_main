@@ -5,7 +5,7 @@
             <div class="d-flex align-center">
                 <div>
                     <div class="d-flex align-center">
-                        <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
+                        <span style="color: #9e9e9e" class="txt-cap1">{{ time }}</span>
                     </div>
                     <p class="txt-body3 text-black mb-2"> post id: {{ props.blogData.id }}</p>
                 </div>
@@ -19,13 +19,14 @@
             <div class="d-flex align-center">
                 <div>
                     <div class="d-flex align-center">
-                        <span style="color: #9e9e9e" class="txt-cap1">{{ $t('feed.time') }}</span>
+                        <span style="color: #9e9e9e" class="txt-cap1">{{ time }}</span>
                     </div>
-                    <p class="txt-body3 text-white mb-2">id: {{ props.blogData.id }}</p>
-                    <!-- <p @click="$router.push(`user/${props.authorID}`)" class="txt-body3 p-0 text-start text-white mb-2">{{ props.author }}</p> -->
+                    <p @click="$router.push(`/${authorType}/${authorID}`)" class="txt-body3 p-0 text-start mb-2">
+                         {{ author }}
+                    </p>
                 </div>
             </div>
-            <button v-if="props.editable == false" @click="modalState.open()">
+            <button v-if="props.editable == false" @click="modalState?.open()">
                 <v-icon icon="mdi-dots-vertical" />
             </button>
         </div>
@@ -130,6 +131,7 @@ const props = defineProps({
         default: false
     }
 })
+
 let complaintData = ref()
 const complaint = async () => {
     const data = addComplaint(Number(props.blogData.id), Number(localStorage.getItem('userId')), '123')
@@ -148,11 +150,11 @@ const emitUpdate = () => {
     emit('update', {
         description: localBlogData.value.description,
         descriptionHeader: localBlogData.value.descriptionHeader,
-        babackgroundPictureUrl: null,
+        backgroundPictureUrl: null,
         id: localBlogData.value.id,
     })
 }
-const modalState = ref(null)
+const modalState = ref<any>(null)
 const shareBlog = () => {
     try {
         navigator.share({
@@ -164,18 +166,24 @@ const shareBlog = () => {
         console.log('error :' + error)
     }
 }
-const backgroundImageUrl = ref(bgImage);
 
-const hasImage = computed(() => {
-    return backgroundImageUrl.value !== bgImage;
+const baseURL = 'https://itnt.store/';
+
+const backgroundImageUrl = computed(() => {
+    return props.blogData?.backgroundPictureUrl ? `${baseURL}files/${props.blogData.backgroundPictureUrl}` : bgImage;
+});
+
+const hasCustomImage = computed(() => {
+    return !!props.blogData?.backgroundPictureUrl;
 });
 
 const imageHeight = computed(() => {
-    return hasImage.value ? '0' : '120px';
-})
+    return '120px';
+});
+
 const Color = computed(() => {
-    return hasImage.value ? 'black' : 'white;'
-})
+    return hasCustomImage.value ? 'white' : 'black'
+});
 
 const feedCardSubtitle = computed(() => {
     if (props.feedCardType === 'newProjectStage') {
@@ -183,7 +191,24 @@ const feedCardSubtitle = computed(() => {
     } else if (props.feedCardType === 'newProjectPhotos') {
         return ' В проекте обновились фото: '
     }
-})
+});
+
+const authorID = computed(() => {
+    return props.blogData?.authorProject ? props.blogData?.authorProject.id : props.blogData?.authorUser.id;
+});
+
+const authorType = computed(() => {
+    return props.blogData?.authorProject ? "project" : "user";
+});
+
+const author = computed(() => {
+    return props.blogData?.authorProject ? props.blogData?.authorProject.name : props.blogData?.authorUser?.firstName;
+});
+
+const time = computed(() => {
+    return props.blogData?.created?.split("T")[0];
+});
+
 </script>
 
 <style scoped lang="scss">

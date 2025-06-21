@@ -14,9 +14,11 @@
         <v-bottom-sheet inset v-model="isBottomSheetOpen" :click-to-close="true" :background-scrollable="false">
             <div class="max-h-[650px] overflow-y-auto">
                 <div class="searchTeammateModal__items">
-                    <UiPost :user-auth="true" v-model:description-header="postData.descriptionHeader"
-                        v-model:description="postData.description" :author-project="postData?.authorProject"
-                        :author-user="postData?.authorUser" @postSuccess="closeBottomSheet" card />
+                    <UiPost :user-auth="true"
+                        v-model:description-header="postData.descriptionHeader"
+                        v-model:description="postData.description"
+                        :authorProject="postData?.authorProject"
+                        @postSuccess="closeBottomSheet" card />
                 </div>
             </div>
         </v-bottom-sheet>
@@ -85,7 +87,7 @@ async function feedEvents() {
 }
 const isBottomSheetOpen = ref(false);
 const closeBottomSheet = async () => {
-    await postProject(postData.value, )
+    // await postProject(postData.value, )
     isBottomSheetOpen.value = false;
     await getPosts()
 };

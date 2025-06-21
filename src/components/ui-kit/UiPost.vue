@@ -55,7 +55,6 @@ const snackbarVisible = ref(false);
 const props = defineProps({
     descriptionHeader: String,
     description: String,
-    authorUser: String,
     authorProject: String,
     prjAuth: {
         type: Boolean,
@@ -82,6 +81,8 @@ const localDescription = computed({
     get: () => props.description,
     set: (value) => emit('update:description', value)
 });
+
+
 const maxImages = 6;
 const files = ref([]);
 const background = ref<File | null>(null); 
@@ -133,13 +134,14 @@ const removeImage = (index:any) => {
 
 const submitImages = async () => {
   try {
-    const otherFiles = files.value.slice(1); 
+    const otherFiles = files.value.slice(0);
     const postData = {
-        description: localDescription.value || 'My Project Description',
-        descriptionHeader: localDescriptionHeader.value || 'My Project Header',
-      authorProject: { id: 0 },
-      authorUser: { id: 1 },
+        description: localDescription.value || '',
+        descriptionHeader: localDescriptionHeader.value || '',
+      authorProject: { id: props.authorProject || 0 },
+      authorUser: { id: 2 },
     };
+    console.log(postData);
     const response = await postProject(background.value as File, otherFiles, postData);
     snackbarVisible.value = true
     emit('postSuccess')

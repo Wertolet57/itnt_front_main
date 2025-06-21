@@ -10,7 +10,7 @@
                         <span class="txt-cap1 text-grey">{{ $t('feed.time') }}</span>
                     </div>
                     <p v-if="withoutBg" class="txt-body3 text-black mb-2">post id: {{ blogData.id }}</p>
-                    <p v-else @click="$router.push(`user/${authorID}`)"
+                    <p v-else @click="$router.push(`${authorType}/${authorID}`)"
                         class="txt-body3 p-0 text-start text-white mb-2">
                         {{ author }}
                     </p>
@@ -45,10 +45,10 @@
             <div class="d-flex align-center">
                 <UiButton @click="shareBlog" bgColor="def " class="mr-3" :imgSrc="share"
                     style="padding: 10px 13px 10px 14px" onlyIcon />
-                <div @click="$router.push(`${blogData.id}` + '/postComment')" class="def">
-                    <img :src="chat" width="20" height="20" alt="">
-                    <p class="text-xs text-center p-0 m-0">2</p>
-                </div>
+                <UiButton bgColor="def" class="feedCard__footer__button"
+                    @click="$router.push(`${blogData.id}` + '/postComment')" fit>
+                    <p class="txt-cap1">{{$t("feed.toComment")}}</p>
+                </UiButton>
             </div>
             <Fire :prjType="false" :id="props.blogData.id" />
         </div>
@@ -128,11 +128,10 @@ const postData = ref(null)
 const complaintData = ref(null)
 const dialog = ref(false)
 const headStyle = computed(() => ({
-    'background-image': `url(${bgImage})`,
+    'background-image': `url(${backgroundUrl.value || bgImage})`,
     'height': props.withoutBg ? 'auto' : '120px',
     'color': props.withoutBg ? 'black' : 'white'
 }))
-
 
 const shareBlog = () => {
     try {
@@ -164,7 +163,7 @@ const getPost = async () => {
 const baseURL = 'https://itnt.store/';
 
 const backgroundUrl = computed(() => {
-    return props.blogData.backgroundPictureUrl ? `${baseURL}post-backgrounds/${props.blogData.backgroundPictureUrl}` : '';
+    return props.blogData.backgroundPictureUrl ? `${baseURL}files/${props.blogData.backgroundPictureUrl}` : '';
 });
 onMounted(getPost)
 </script>

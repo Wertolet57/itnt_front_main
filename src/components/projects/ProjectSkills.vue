@@ -1,6 +1,6 @@
 <template>
     <div class="" v-if="props.readOnly === true">
-        <div v-if="props.tags && props.tags.length > 0" class="projectCard__tags" :class="{
+        <div v-if="props.tags && props.tags.length > 0" class="projectCard__tags flex-wrap" :class="{
         'justify-center': props.tags.length === 1,
         'justify-between mx-[8%] gap-2': props.tags.length === 2,
         'justify-between': props.tags.length === 3
@@ -30,7 +30,7 @@
                     <img src="../../assets/icons/trash.svg" alt="trash icon" />
                 </div> -->
             </div>
-            <div class="ui-skills__list justify-between">
+            <div class="ui-skills__list justify-between gap-2 flex-wrap">
                 <div v-for="skill in props.tags"  class="ui-skills__skill">
                     {{ skill }}
                 </div>
@@ -255,6 +255,8 @@ onMounted(getProject);
         justify-content: space-between;
         margin-top: 24px;
         margin-bottom: 48px;
+        gap: 8px;
+        flex-wrap: wrap;
 
         &--tag {
             border-radius: 8px;

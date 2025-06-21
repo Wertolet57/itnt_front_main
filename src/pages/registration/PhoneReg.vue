@@ -24,7 +24,7 @@
                     </UiButton>
 
                     <div v-else>
-                        <UiButton @click="sendPhoneInfo" bgColor="blue"> {{ $t('log.send') }} </UiButton>
+                        <UiButton @click="sendPhoneInfo" bgColor="blue"> {{ $t('log.continue') }} </UiButton>
                         <p class="txt-cap1 color-gray" style="margin-top: 18px">
                             {{ $t('log.click') }}
                         </p>
